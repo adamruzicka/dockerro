@@ -1,0 +1,48 @@
+<h1>New docker image</h1>
+<%= form_for :docker_image, url: dockerro_images_path do |d| %>
+<p>
+  <%= d.label :compute_resource %><br>
+  <%= d.select :compute_resource_id, options_for_select(@compute_resources) %>
+</p>
+<p>
+  <%= d.label :image %><br>
+  <%= d.text_field :image %>
+</p>
+<p>
+  <%= d.label :git_url %><br>
+  <%= d.text_field :git_url %>
+</p>
+
+<p>
+  <%= d.label :git_commit %><br>
+  <%= d.text_field :git_commit %>
+</p>
+
+<p>
+  <%= d.label :parent_registries %><br>
+  <ul style="list-style-type:none;">
+  <% @registries.each do |registry| %>
+  <li>
+    <%= check_box_tag 'parent_registry_ids[]', registry.id -%>
+    <%= h registry.name -%>
+  </li>
+  <% end %>
+  </ul>
+</p>
+
+<p>
+  <%= d.label :target_registries %><br>
+  <ul style="list-style-type:none;">
+  <% @registries.each do |registry| %>
+  <li>
+    <%= check_box_tag 'target_registry_ids[]', registry.id -%>
+    <%= h registry.name -%>
+  </li>
+  <% end %>
+  </ul>
+</p>
+
+<p>
+  <%= d.submit "Create image" %>
+</p>
+<% end %>

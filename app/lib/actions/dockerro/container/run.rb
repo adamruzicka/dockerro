@@ -12,8 +12,8 @@
 
 module Actions
   module Dockerro
-    module Image
-      class Create < Actions::EntryAction
+    module Container
+      class Run < Actions::EntryAction
         include Actions::Base::Polling
         include ::Dynflow::Action::Cancellable
 
@@ -22,21 +22,26 @@ module Actions
           param :compute_resource_id
         end
         
-        def plan(builder_image, build_config, compute_resource_id)
-          # create container
-          config = {
-            "BUILD_JSON" => JSON.dump(build_config)
-          }
-          container = plan_action(::Actions::Dockerro::Container::Create, config)
-          # run it and wait for it to finish
-          plan_action(::Actions::Dockerro::Container::Run,
-                      :container_id => container.output[:uuid],
-                      :compute_resource_id => compute_resource_id)
-          # [delete container]
+        def done?
+          find_container(input[:container_id], input[:compute_resource_id]).state == 'Stopped'
         end
 
+        def invoke_external_task
+          find_container(input[:container_id], input[:compute_resource_id]).send(:start)
+          true
+        end
+
+        def poll_external_task
+        end
+        
         def humanized_name
           _("Create")
+        end
+
+        private
+
+        def find_container(container_id, resource_id)
+          ComputeResource.find(resource_id).find_vm_by_uuid(container_id)
         end
       end
     end
