@@ -19,10 +19,25 @@ module Actions
           param :container_settings
         end
         
-        def plan(options)
-          require 'pry'; binding.pry
-          plan_self(:environment_variables => options, :container_settings => add_defaults)
-          # TODO: return container id
+        # @param [Hash] container_options can set any of the following
+        # @option container_options [String] :repository_name       Name of the image to use as build container
+        # @option container_options [String] :tag ('latest')        Tag of the image to use as build container
+        # @option container_options [Int]    :registry_id           TODO: find out what it does
+        # @option container_options [String] :name                  Name of the build container
+        # @option container_options [Int]    :compute_resource_id   Id of the compute resource on which the build should be performed
+        # @option container_options [Bool]   :tty (false)           If the container should have pseudo-tty allocated
+        # @option container_options [String] :memory ('')           Quota on build container's memory usage
+        # @option container_options [String] :entrypoint ('')       Build container's entrypoint
+        # @option container_options [String] :command ('')          Command to run in the build container
+        # @option container_options [Bool]   :attach_stdout (true)  If the build container should have stdout allocated
+        # @option container_options [Bool]   :attach_stdin (true)   If the build container should have stdin allocated
+        # @option container_options [Bool]   :attach_stderr (true)  If the build container should have stderr allocated
+        # @option container_options [String] :cpu_shares (nil)      TODO: find out what it does
+        # @option container_options [String] :spu_set (nil)         TODO: find out what it does
+        # @param [Hash] environment_variables Hash of environment variables passed to the build
+        def plan(container_options, environment_variables = {})
+          plan_self(:environment_variables => environment_variables,
+                    :container_settings => add_defaults(container_options))
         end
 
         def run
@@ -32,9 +47,9 @@ module Actions
                                             :value => v
             end
           end
-          fail "Bogus" unless ::Service::Containers.start_container(container)
+          # TODO: Find out why it failed
+          fail "Failed to start the container" unless ::Service::Containers.start_container(container)
           container.save!
-          require 'pry'; binding.pry
           output[:uuid] = container.uuid
         end
 
@@ -44,13 +59,10 @@ module Actions
 
         private
 
-        def add_defaults
+        def add_defaults(options)
           {
-            :repository_name=>"dockerhost-builder",
             :tag=>"latest",
             :registry_id=>nil,
-#            :name=>"s2",
-            :compute_resource_id=>1,
             :tty=>false,
             :memory=>"",
             :entrypoint=>"",
@@ -60,7 +72,7 @@ module Actions
             :attach_stderr=>true,
             :cpu_shares=>nil,
             :cpu_set=>nil
-          }
+          }.merge(options)
         end
 
       end
