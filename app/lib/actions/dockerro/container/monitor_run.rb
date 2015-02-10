@@ -13,7 +13,7 @@
 module Actions
   module Dockerro
     module Container
-      class Run < Actions::EntryAction
+      class MonitorRun < Actions::EntryAction
         include Actions::Base::Polling
         include ::Dynflow::Action::Cancellable
 
@@ -23,15 +23,25 @@ module Actions
         end
         
         def done?
-          find_container(input[:container_id], input[:compute_resource_id]).state == 'Stopped'
+          task_container.state == 'Stopped'
         end
 
         def invoke_external_task
-          find_container(input[:container_id], input[:compute_resource_id]).send(:start)
+          input[:container_uuid] = ::Container.find(input[:container_id]).uuid
+          task_container.start
           true
         end
 
         def poll_external_task
+          container = Docker::Container.get(input[:container_uuid])
+          tmp = { :stdout => [], :stderr => [] }
+          container.streaming_logs(stdout: true, stderr: true) do |stream, chunk|
+            tmp[stream.to_sym] << chunk
+          end
+          {
+            :stdout => tmp[:stdout].join("\n"),
+            :stderr => tmp[:stderr].join("\n")
+          }
         end
         
         def humanized_name
@@ -40,8 +50,9 @@ module Actions
 
         private
 
-        def find_container(container_id, resource_id)
-          ComputeResource.find(resource_id).find_vm_by_uuid(container_id)
+        def task_container
+          ComputeResource.find(input[:compute_resource_id]).
+            find_vm_by_uuid(input[:container_uuid])
         end
       end
     end

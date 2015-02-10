@@ -33,12 +33,14 @@ module Actions
         # @param [Hash] environment_variables Hash of environment variables passed to the build
         def plan(build_options, environment_variables = {})
           # create container
-          container = plan_action(::Actions::Dockerro::Container::Create, build_options, environment_variables)
-          # run it and wait for it to finish
-          plan_action(::Actions::Dockerro::Container::Run,
-                      :container_id => container.output[:uuid],
-                      :compute_resource_id => compute_resource_id)
-          # [delete container]
+          sequence do
+            container = plan_action(::Actions::Dockerro::Container::Create, build_options, environment_variables)
+            # run it and wait for it to finish
+            plan_action(::Actions::Dockerro::Container::MonitorRun,
+                        :container_id => container.output[:uuid],
+                        :compute_resource_id => build_options[:compute_resource_id])
+            # [delete container]
+          end
         end
 
         def humanized_name

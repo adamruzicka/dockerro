@@ -1,21 +1,25 @@
 module Dockerro
   class ImagesController < ::ApplicationController
-    before_action :prepare_form_data, :only [:new]
+    # before_action :prepare_form_data, :only => [:new]
     def index
       render json: {'key'=> 'value'}
     end
 
     def new
+      prepare_form_data
     end
 
     def create
+      compute_resource = ComputeResource.find(params[:docker_image][:compute_resource_id].to_i)
+      fail "TODO: this doesn't work yet" if compute_resource.url[/^unix:\/\//]
       environment_variables = {
-        'BUILD_JSON' => JSON.dump(get_build_options(params))
+        'BUILD_JSON' => JSON.dump(get_build_options(params)),
+        'DOCKER_CONNECTION' => compute_resource.url
       }
       build_config = {}
-      build_config[:compute_resource_id] = params[:docker_image][:compute_resource_id].to_i
-      # TODO: load :repository_name from settings
-      build_config[:repository_name] = 'dockerhost-builder'
+      build_config[:compute_resource_id] = compute_resource.id
+      build_config[:repository_name] = Setting[:dockerro_builder_image]
+      build_config[:command] = "dock -v inside-build --input env"
       ForemanTasks.trigger(::Actions::Dockerro::Image::Create, build_config, environment_variables)
       render json: {'action' => 'create'}
     end

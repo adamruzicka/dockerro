@@ -36,21 +36,20 @@ module Actions
         # @option container_options [String] :spu_set (nil)         TODO: find out what it does
         # @param [Hash] environment_variables Hash of environment variables passed to the build
         def plan(container_options, environment_variables = {})
-          plan_self(:environment_variables => environment_variables,
-                    :container_settings => add_defaults(container_options))
-        end
-
-        def run
-          container = ::Service::Containers::Container.new(input[:container_settings]) do |c|
-            input[:environment_variables].each_pair do |k, v|
+          container_settings = add_defaults container_options
+          container = ::ForemanDocker::Service::Containers::Container.new(container_settings) do |c|
+            environment_variables.each_pair do |k, v|
               c.environment_variables.build :name => k,
                                             :value => v
             end
           end
-          # TODO: Find out why it failed
-          fail "Failed to start the container" unless ::Service::Containers.start_container(container)
           container.save!
-          output[:uuid] = container.uuid
+          plan_self(:container_id => container.id)
+          plan_action(::ForemanDocker::Service::Actions::Container::Provision, container)
+         end
+
+        def run
+          output[:uuid] = input[:container_id]
         end
 
         def humanized_name
@@ -65,8 +64,8 @@ module Actions
             :registry_id=>nil,
             :tty=>false,
             :memory=>"",
-            :entrypoint=>"",
-            :command=>"",
+#            :entrypoint=>"",
+#            :command=>"",
             :attach_stdout=>true,
             :attach_stdin=>true,
             :attach_stderr=>true,

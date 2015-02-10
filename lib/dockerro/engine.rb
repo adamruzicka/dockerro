@@ -13,6 +13,10 @@ module Dockerro
       app.config.paths['db/migrate'] += ForemanDocker::Engine.paths['db/migrate'].existent
     end
 
+    initializer 'dockerro.load_default_settings', :before => :load_config_initializers do
+      require_dependency File.expand_path('../../../app/models/setting/dockerro.rb', __FILE__) if (Setting.table_exists? rescue(false))
+    end
+
     initializer "dockerro.register_actions", :before => 'foreman-tasks.initialize_dynflow' do |_app|
       ForemanTasks.dynflow.require!
             ForemanTasks.dynflow.config.eager_load_paths.concat(%W[#{ForemanTasks::Engine.root}/app/lib/actions])
