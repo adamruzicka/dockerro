@@ -4,6 +4,10 @@
   <%= d.label :compute_resource %><br>
   <%= d.select :compute_resource_id, options_for_select(@compute_resources) %>
 </p>
+    <p>
+      <%= d.label :content_view %><br>
+      <%= d.select :content_view_id, options_for_select(@content_views) %>
+    </p>
 <p>
   <%= d.label :image %><br>
   <%= d.text_field :image %>

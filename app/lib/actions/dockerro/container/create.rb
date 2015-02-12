@@ -44,12 +44,12 @@ module Actions
             end
           end
           container.save!
-          plan_self(:container_id => container.id)
+          plan_self(:container_id => container.id, :container_settings => container_settings)
           plan_action(::ForemanDocker::Service::Actions::Container::Provision, container)
          end
 
         def run
-          output[:uuid] = input[:container_id]
+          output[:id] = input[:container_id]
         end
 
         def humanized_name
@@ -64,8 +64,6 @@ module Actions
             :registry_id=>nil,
             :tty=>false,
             :memory=>"",
-#            :entrypoint=>"",
-#            :command=>"",
             :attach_stdout=>true,
             :attach_stdin=>true,
             :attach_stderr=>true,

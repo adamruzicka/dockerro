@@ -37,8 +37,10 @@ module Actions
             container = plan_action(::Actions::Dockerro::Container::Create, build_options, environment_variables)
             # run it and wait for it to finish
             plan_action(::Actions::Dockerro::Container::MonitorRun,
-                        :container_id => container.output[:uuid],
+                        :container_id        => container.output[:id],
                         :compute_resource_id => build_options[:compute_resource_id])
+            package_list = plan_action(::Actions::Dockerro::Container::RetrievePackageList,
+                                       :container_id => container.output[:id])
             # [delete container]
           end
         end

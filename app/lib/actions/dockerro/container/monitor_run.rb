@@ -39,8 +39,8 @@ module Actions
             tmp[stream.to_sym] << chunk
           end
           {
-            :stdout => tmp[:stdout].join("\n"),
-            :stderr => tmp[:stderr].join("\n")
+            :stdout => tmp[:stdout].join().split("\n"),
+            :stderr => tmp[:stderr].join().split("\n")
           }
         end
         
