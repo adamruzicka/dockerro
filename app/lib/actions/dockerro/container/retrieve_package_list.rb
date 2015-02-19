@@ -27,7 +27,7 @@ module Actions
         end
 
         def humanized_name
-          _("Extract RPMs")
+          _("Retrieve package list")
         end
       end
     end

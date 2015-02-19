@@ -35,6 +35,7 @@ module Dockerro
                            map &fmt
       @registries = DockerRegistry.select { |dr| dr.organization_ids.include? current_organization.id }
       @content_views = current_organization.content_views.map &fmt
+      @lifecycle_environments = current_organization.content_view_environments.map(&fmt)
     end
 
     def get_build_options(params)
@@ -64,21 +65,24 @@ module Dockerro
       #         }
       #     }
       # ]
-      # res << @content_view.repos.map do |repo|
-      #   {
-      #     'name' => 'add_yum_repo',
-      #     'args' => {
-      #       'repo_name' => repo.name,
-      #       'baseurl' => repo.url
-      #     }
-      #   }
-      # end
-      # TODO: enable if changing repos
-      # res << {
-      #   'name' => 'inject_yum_repo',
-      #   'args' => {}
-      # }
-      []
+      [
+        @content_view_environment.content_view_version.repos(@content_view_environment.environment).select(&:yum?).map do |repo|
+          hostname = /https?:\/\/([^\/]+)/.match(repo.uri)[1]
+          addr = Resolv.getaddress hostname
+          {
+            'name' => 'add_yum_repo',
+            'args' => {
+              'repo_name' => repo.name,
+              'basehostname' => repo.uri.gsub(hostname, addr).gsub('https', 'http')
+            }
+          }
+        end,
+        # TODO: enable if changing repos
+        {
+          'name' => 'inject_yum_repo',
+          'args' => {}
+        }
+      ].flatten
     end
 
     def postbuild_plugins
@@ -100,6 +104,7 @@ module Dockerro
 
     def find_content_view
       @content_view = ::Katello::ContentView.find(params[:docker_image][:content_view_id].to_i)
+      @content_view_environment = ::Katello::ContentViewEnvironment.find(params[:docker_image][:lifecycle_environment_id].to_i)
     end
 
     def find_compute_resource
