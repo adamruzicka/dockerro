@@ -21,9 +21,14 @@ module Actions
           param :container_id
           param :compute_resource_id
         end
-        
+
         def done?
           task_container.state == 'Stopped'
+        end
+
+        def on_finish
+          output[:error_code] = ::Docker::Container.get(task_container.id).json["State"]["ExitCode"]
+          fail "Build container exited with return code #{output[:error_code]}" if output[:error_code] != 0
         end
 
         def invoke_external_task
@@ -43,6 +48,10 @@ module Actions
             :stderr => tmp[:stderr].join().split("\n")
           }
         end
+
+        def cancel!
+          task_container.stop if task_container.state != 'Stopped'
+        end
         
         def humanized_name
           _("Create")
@@ -51,8 +60,8 @@ module Actions
         private
 
         def task_container
-          ComputeResource.find(input[:compute_resource_id]).
-            find_vm_by_uuid(input[:container_uuid])
+          @task_container ||= ComputeResource.find(input[:compute_resource_id]).
+                              find_vm_by_uuid(input[:container_uuid])
         end
       end
     end

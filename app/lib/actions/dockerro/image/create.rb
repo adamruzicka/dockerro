@@ -31,18 +31,30 @@ module Actions
         # @option build_options [String] :cpu_shares (nil)      TODO: find out what it does
         # @option build_options [String] :spu_set (nil)         TODO: find out what it does
         # @param [Hash] environment_variables Hash of environment variables passed to the build
-        def plan(build_options, environment_variables = {})
+        def plan(image_name, content_view_environment, repository, build_options, environment_variables = {})
           # create container
           sequence do
+            plan_self(:build_options => build_options,
+                      :environment_variables => environment_variables)
             container = plan_action(::Actions::Dockerro::Container::Create, build_options, environment_variables)
             # run it and wait for it to finish
             plan_action(::Actions::Dockerro::Container::MonitorRun,
-                        :container_id        => container.output[:id],
-                        :compute_resource_id => build_options[:compute_resource_id])
+                          :container_id        => container.output[:id],
+                          :compute_resource_id => build_options[:compute_resource_id])
             package_list = plan_action(::Actions::Dockerro::Container::RetrievePackageList,
                                        :container_id => container.output[:id])
+            # save package list into pulp
+            plan_action(::Actions::Dockerro::Image::SaveToPulp,
+                        image_name,
+                        repository)
             # [delete container]
+            plan_action(::Actions::Dockerro::Container::Destroy,
+                        :container_id => container.output[:id])
           end
+        end
+
+        def run
+          output = input
         end
 
         def humanized_name

@@ -1,12 +1,16 @@
 module Dockerro
-  class ImagesController < ::ApplicationController
+  class Api::V2::ImagesController < ::ApplicationController
     before_filter :prepare_form_data, :only => [:new]
     before_filter :find_content_view, :only => [:create]
     before_filter :find_compute_resource, :only => [:create]
     before_filter :find_repository, :only => [:create]
 
-    def new
-      require 'pry'; binding.pry
+    def index
+      []
+    end
+
+    def show
+
     end
 
     def create
@@ -27,19 +31,6 @@ module Dockerro
 
     def current_organization
       ::Organization.current
-    end
-
-    def prepare_form_data
-      fmt = lambda { |x| [x.name, x.id] }
-      @compute_resources = current_organization.
-                           compute_resources.
-                           select { |cr| cr.type == 'ForemanDocker::Docker' }.
-                           map &fmt
-      @registries = DockerRegistry.select { |dr| dr.organization_ids.include? current_organization.id }
-      @content_views = current_organization.content_views.map &fmt
-      @lifecycle_environments = current_organization.content_view_environments.map(&fmt)
-      @repositories = current_organization.products.
-          map { |p| p.repositories.select(&:docker?) }.flatten
     end
 
     def get_build_options(params)
@@ -77,7 +68,6 @@ module Dockerro
             }
           }
         end,
-        # TODO: enable if changing repos
         {
           'name' => 'inject_yum_repo',
           'args' => {}
