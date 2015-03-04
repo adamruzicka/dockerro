@@ -10,5 +10,7 @@
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
  */
 
-//= require "bastion_dockerro/docker-images/docker-images.module.js"
+//= require "dockerro/docker-images/docker-images.module.js"
 //= require_tree "./docker-images"
+
+//= require "dockerro/dockerro.bootstrap.js"

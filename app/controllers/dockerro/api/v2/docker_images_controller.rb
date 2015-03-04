@@ -1,30 +1,30 @@
 module Dockerro
-  class Api::V2::ImagesController < ::ApplicationController
-    before_filter :prepare_form_data, :only => [:new]
+  class Api::V2::DockerImagesController < ::Katello::Api::V2::ApiController
     before_filter :find_content_view, :only => [:create]
     before_filter :find_compute_resource, :only => [:create]
     before_filter :find_repository, :only => [:create]
 
-    def index
-      []
-    end
+    respond_to :json
 
-    def show
-
+    resource_description do
+      api_version 'v2'
+      api_base_url "/dockerro/api"
     end
 
     def create
+      require 'pry'; binding.pry
       fail "TODO: this doesn't work yet" if @compute_resource.url[/^unix:\/\//]
       environment_variables = {
-        'BUILD_JSON' => JSON.dump(get_build_options(params)),
+        'BUILD_JSON' => JSON.dump(get_build_options),
         'DOCKER_CONNECTION' => @compute_resource.url
       }
       build_config = {}
       build_config[:compute_resource_id] = @compute_resource.id
       build_config[:repository_name] = Setting[:dockerro_builder_image]
       build_config[:command] = "dock -v inside-build --input env"
-      ForemanTasks.trigger(::Actions::Dockerro::Image::Create, image_name, @content_view_environment, @repository, build_config, environment_variables)
-      render json: {'action' => 'create'}
+      task = async_task(::Actions::Dockerro::Image::Create, image_name, @content_view_environment, @repository, build_config, environment_variables)
+      respond_for_async(:resource => task)
+      # render json: {'response' => "Docker Image build started with plan id #{plan.execution_plan_id}"}
     end
 
     private
@@ -33,17 +33,21 @@ module Dockerro
       ::Organization.current
     end
 
-    def get_build_options(params)
+    def get_build_options
       build_config = {}
-      params[:target_registry_ids] &&
-        build_config[:target_registries] = DockerRegistry.
-                                       select { |dr| params[:target_registry_ids].include? dr.id.to_s }.
+
+      if params.key? :target_registry_ids
+        build_config[:target_registries] = docker_registries.
+                                       select { |dr| params[:target_registry_ids].include? dr.id }.
                                        map { |reg| reg.url.gsub(/https?:\/\//, '') }
-      params[:parent_registry_ids] &&
-        build_config[:parent_registry] = DockerRegistry.
-                                       find(params[:parent_registry_ids].to_i).url.gsub(/https?:\/\//, '')
+      end
+      if params.key? [:parent_registry_id]
+        build_config[:parent_registry] = docker_registries.
+                                       select { |dr| params[:parent_registry_id] == dr.id }.
+                                       first.url.gsub(/https?:\/\//, '')
+      end
       [:git_url, :git_commit, :tag].each do |key|
-        params[:docker_image][key] && build_config[key] = params[:docker_image][key]
+        build_config[key] = params[key] if params.key?(key)
       end
       build_config[:image] = image_name
       build_config[:prebuild_plugins] = prebuild_plugins
@@ -52,7 +56,11 @@ module Dockerro
     end
 
     def image_name
-      @image_name ||= "#{params[:docker_image][:image]}:#{params[:docker_image][:tag]}"
+      @image_name ||= "#{params[:name]}:#{params[:tag]}"
+    end
+
+    def docker_registries
+      @docker_registries || DockerRegistry.all
     end
 
     def prebuild_plugins
@@ -93,16 +101,16 @@ module Dockerro
     end
 
     def find_content_view
-      @content_view = ::Katello::ContentView.find(params[:docker_image][:content_view_id].to_i)
-      @content_view_environment = ::Katello::ContentViewEnvironment.find(params[:docker_image][:lifecycle_environment_id].to_i)
+      @content_view = ::Katello::ContentView.find(params[:content_view_id])
+      @content_view_environment = ::Katello::ContentViewEnvironment.find(params[:environment][:id])
     end
 
     def find_repository
-      @repository = ::Katello::Repository.find(params[:target_repository]) if params[:target_repository]
+      @repository = ::Katello::Repository.find(params[:pulp_repository_id]) if params.key? :pulp_repository_id
     end
 
     def find_compute_resource
-      @compute_resource = ::ComputeResource.find(params[:docker_image][:compute_resource_id].to_i)
+      @compute_resource = ::ComputeResource.find(params[:compute_resource_id])
     end
   end
 end

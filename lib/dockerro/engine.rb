@@ -5,10 +5,15 @@ module Dockerro
   # Inherit from the Rails module of the parent app (Foreman), not the plugin.
   # Thus, inherits from ::Rails::Engine and not from Rails::Engine
   class Engine < ::Rails::Engine
+    isolate_namespace Dockerro
     engine_name 'dockerro'
 
     config.autoload_paths += Dir["#{config.root}/app/lib"]
     config.autoload_paths += Dir["#{config.root}/app/controllers"]
+
+    initializer 'dockerro.mount_engine', :after => :build_middleware_stack do |app|
+      app.routes_reloader.paths << "#{Dockerro::Engine.root}/config/mount_engine.rb"
+    end
 
     initializer 'dockerro.load_app_instance_data' do |app|
       app.config.paths['db/migrate'] += Dockerro::Engine.paths['db/migrate'].existent
@@ -32,29 +37,46 @@ module Dockerro
     #   Foreman::Gettext::Support.add_text_domain locale_domain, locale_dir
     # end
 
-    initializer "dockerro.assets.paths", :group => :all do |app|
-      if Rails.env.production?
-        app.config.assets.paths << Bastion::Engine.root.join('vendor', 'assets', 'stylesheets', 'bastion',
-                                                             'font-awesome', 'scss')
-      else
-        app.config.sass.load_paths << Bastion::Engine.root.join('vendor', 'assets', 'stylesheets', 'bastion',
-                                                                'font-awesome', 'scss')
-      end
-    end
+    # initializer "dockerro.assets.paths", :group => :all do |app|
+    #   if Rails.env.production?
+    #     app.config.assets.paths << Bastion::Engine.root.join('vendor', 'assets', 'stylesheets', 'bastion',
+    #                                                          'font-awesome', 'scss')
+    #   else
+    #     app.config.sass.load_paths << Bastion::Engine.root.join('vendor', 'assets', 'stylesheets', 'bastion',
+    #                                                             'font-awesome', 'scss')
+    #   end
+    # end
 
     initializer 'dockerro.register_plugin', :after=> :finisher_hook do |app|
       Foreman::Plugin.register :dockerro do
-        sub_menu :top_menu, :dockerro_menu, :caption => N_('Dockerro'),
-                 :after => :monitor_menu do
-          menu :top_menu, :new_image, :caption => N_('New image'),
-               :url_hash => { :controller => 'dockerro/images',
-                              :action => :new }
+        requires_foreman '> 1.3'
+        # divider :top_menu, :parent => :content_menu
+        #   menu :top_menu, :new_image,
+        #        :caption => N_('New image'),
+        #        :url => '/docker_images/new',
+        #        :url_hash => {:controller => 'dockerro/api/v2/docker_images',
+        #                      :action => 'new'},
+        #        :engine => Dockerro::Engine,
+        #        :parent => :content_menu
+
+        security_block :docker_images do
+          permission :create_docker_images,
+                     :docker_images          => [:create, :new],
+                     :'api/v2/docker_images' => [:create, :new]
         end
+
       end
     end
 
-    # config.to_prepare do
-    #   ::Katello::ContentView.send :include, ::Dockerro::Concerns::ContentViewExtensions
-    # end
+    config.to_prepare do
+      Bastion.register_plugin({
+        :name       => 'dockerro',
+        :javascript => 'dockerro/dockerro',
+        :stylesheet => 'dockerro/dockerro',
+        :pages      => %w(
+          docker_images
+        )
+        })
+    end
   end
 end

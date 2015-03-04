@@ -1,12 +1,15 @@
-Rails.application.routes.draw do
-  namespace :dockerro do
-    resources :docker_images
+require 'katello/api/mapper_extensions'
+class ActionDispatch::Routing::Mapper
+  include Katello::Routing::MapperExtensions
+end
+
+Dockerro::Engine.routes.draw do
+  scope :dockerro, :path => '/dockerro' do
 
     namespace :api do
-      scope "(:apiv)", :module => :v2, :defaults => { :apiv => 'v2' }, :apiv => /v2/,
-            :constraints => ApiConstraints.new(:version => 2) do
-        resources :docker_images, :only => [:index, :create, :show]
-      end
+      scope "(:api_version)", :module => :v2, :defaults => {:api_version => 'v2'}, :api_version => /v2/, :constraints => ApiConstraints.new(:version => 2, :default => true) do
+        api_resources :docker_images, :only => [:create]
+        end
     end
   end
 end

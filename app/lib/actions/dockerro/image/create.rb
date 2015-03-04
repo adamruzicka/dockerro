@@ -46,7 +46,7 @@ module Actions
             # save package list into pulp
             plan_action(::Actions::Dockerro::Image::SaveToPulp,
                         image_name,
-                        repository)
+                        repository) unless repository.nil?
             # [delete container]
             plan_action(::Actions::Dockerro::Container::Destroy,
                         :container_id => container.output[:id])
@@ -58,7 +58,7 @@ module Actions
         end
 
         def humanized_name
-          _("Create")
+          _("Create Docker Image")
         end
       end
     end

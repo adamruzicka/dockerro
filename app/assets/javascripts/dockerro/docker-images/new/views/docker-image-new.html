@@ -1,0 +1,156 @@
+<span page-title>{{ 'New Docker Image' | translate }}</span>
+
+<div data-block="messages">
+    <div bst-alerts success-messages="successMessages" error-messages="errorMessages"></div>
+</div>
+
+<div class="loading-mask fa-3x" ng-show="panel.loading">
+<i class="fa fa-spinner fa-spin"></i>
+{{ "Loading..." | translate }}
+</div>
+
+<header class="new-header details-header">
+    <h2 class="pull-left" translate>New Docker Image</h2>
+</header>
+
+<form name="dockerImageForm" class="form-horizontal" novalidate role="form">
+
+    <div bst-form-group label="{{ 'Name' | translate }}">
+        <input id="name"
+               name="name"
+               ng-model="dockerImage.name"
+               type="text"
+               tabindex="1"
+               autofocus
+               required/>
+    </div>
+
+    <div bst-form-group label="{{ 'Tag' | translate }}">
+        <input id="tag"
+               name="tag"
+               ng-model="dockerImage.tag"
+               type="text"
+               tabindex="1"
+               autofocus
+               placeholder="latest"
+                />
+    </div>
+
+    <div bst-form-group label="{{ 'Git URL' | translate }}">
+        <input id="git_url"
+               name="tag"
+               ng-model="dockerImage.git_url"
+               type="text"
+               tabindex="1"
+               autofocus
+               required/>
+    </div>
+
+    <div bst-form-group label="{{ 'Git commit' | translate }}">
+        <input id="git_commit"
+               name="git_commit"
+               ng-model="dockerImage.git_commit"
+               type="text"
+               tabindex="1"
+               autofocus
+                />
+    </div>
+
+    <div bst-form-group label="{{ 'Compute Resource' | translate }}">
+        <select ng-hide="computeResources.length === 0"
+                id="compute_resource_id"
+                name="compute_resource_id"
+                ng-model="dockerImage.compute_resource_id"
+                ng-options="computeResource.id as computeResource.name for computeResource in computeResources"
+                tabindex="4"
+                autofocus
+                single>
+        </select>
+        <span class="help-block" ng-show="computeResources.length === 0" translate>
+            You have no defined Compute Resources.
+        </span>
+    </div>
+
+  <span bst-feature-flag="lifecycle_environments">
+    <div class="form-group">
+        <label class="control-label col-sm-2" translate>Environment</label>
+
+        <div class="col-sm-5 input">
+        <span path-selector="environments"
+              ng-model="dockerImage.environment"
+              selection-required="false"
+              mode="singleSelect">
+        </span>
+        </div>
+    </div>
+
+    <div bst-form-group label="{{ 'Content View' | translate }}">
+        <select ng-hide="contentViews.length === 0 || dockerImage.environment === undefined "
+                id="content_view_id"
+                name="content_view_id"
+                ng-model="dockerImage.content_view_id"
+                ng-options="contentView.id as contentView.name for contentView in contentViews"
+                tabindex="4"
+                autofocus
+                required>
+        </select>
+      <span class="help-block" ng-show="dockerImage.environment !== undefined && contentViews.length === 0" translate>
+        The selected environment contains no Content Views, please select a different environment.
+      </span>
+      <span class="help-block" ng-show="dockerImage.environment === undefined" translate>
+        Please select an environment.
+      </span>
+    </div>
+  </span>
+
+    <div bst-form-group label="{{ 'Parent Docker Registry' | translate }}">
+        <select ng-hide="dockerRegistries.length === 0"
+                id="parent_docker_registry_id"
+                name="parent_docker_registry_id"
+                ng-model="dockerImage.parent_docker_registry_id"
+                ng-options="dockerRegistry.id as dockerRegistry.name for dockerRegistry in dockerRegistries"
+                tabindex="4"
+                autofocus>
+        </select>
+        <span class="help-block" ng-show="dockerRegistries.length === 0" translate>
+            You have no defined Docker registries.
+        </span>
+    </div>
+
+    <div bst-form-group label="{{ 'Target Docker Registries' | translate }}">
+        <select ng-hide="dockerRegistries.length === 0"
+                id="target_docker_registry_ids"
+                name="target_docker_registry_ids"
+                ng-model="dockerImage.target_docker_registry_ids"
+                ng-options="dockerRegistry.id as dockerRegistry.name for dockerRegistry in dockerRegistries"
+                tabindex="4"
+                autofocus
+                multiple>
+        </select>
+        <span class="help-block" ng-show="dockerRegistries.length === 0" translate>
+            You have no defined Docker registries.
+        </span>
+    </div>
+
+    <div bst-form-group label="{{ 'Target Pulp Repository' | translate }}">
+        <select ng-hide="pulpRepositories.length === 0"
+                id="pulp_repository_id"
+                name="pulp_repository_id"
+                ng-model="dockerImage.pulp_repository_id"
+                ng-options="pulpRepository.id as pulpRepository.name for pulpRepository in pulpRepositories"
+                tabindex="4"
+                autofocus>
+        </select>
+        <span class="help-block" ng-show="pulpRepositories.length === 0" translate>
+            You have no defined Pulp repositories.
+        </span>
+    </div>
+
+
+    <div bst-form-buttons
+         on-save="save(dockerImage)"
+         working="working">
+    </div>
+
+</form>
+
