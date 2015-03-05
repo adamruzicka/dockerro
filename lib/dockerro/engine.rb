@@ -47,17 +47,17 @@ module Dockerro
     #   end
     # end
 
-    initializer 'dockerro.register_plugin', :after=> :finisher_hook do |app|
+    initializer 'dockerro.register_plugin', :after=> :finisher_hook, :after => 'foreman_docker.register_plugin'  do |app|
       Foreman::Plugin.register :dockerro do
         requires_foreman '> 1.3'
-        # divider :top_menu, :parent => :content_menu
-        #   menu :top_menu, :new_image,
-        #        :caption => N_('New image'),
-        #        :url => '/docker_images/new',
-        #        :url_hash => {:controller => 'dockerro/api/v2/docker_images',
-        #                      :action => 'new'},
-        #        :engine => Dockerro::Engine,
-        #        :parent => :content_menu
+        divider :top_menu, :parent => :containers_menu
+          menu :top_menu, :new_image,
+               :caption => N_('New image'),
+               :url => '/docker_images/new',
+               :url_hash => {:controller => 'dockerro/api/v2/docker_images',
+                             :action => 'new'},
+               :engine => Dockerro::Engine,
+               :parent => :containers_menu
 
         security_block :docker_images do
           permission :create_docker_images,

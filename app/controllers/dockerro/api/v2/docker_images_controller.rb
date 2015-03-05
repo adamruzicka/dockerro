@@ -11,8 +11,20 @@ module Dockerro
       api_base_url "/dockerro/api"
     end
 
+    api :POST, '/docker_images'
+    param :name, String, :desc => N_("name"), :required => true
+    param :tag, String, :desc => N_("tag"), :required => true
+    param :git_url, String, :desc => N_("git url"), :required => true
+    param :git_commit, String, :desc => N_("git commit hash")
+    param :environment_id, :identifier, :desc => N_("environment")
+    param :content_view_id, :identifier, :desc => N_("content view id"), :required => true
+    param :parent_registry_id, :identifier, :desc => N_("id of the parent registry")
+    param :target_registry_ids, Array, :desc => N_("list of target docker registry ids")
+    param :pulp_repository_id, :identifier, :desc => N_("target pulp repository id")
+    param :compute_resource_id, :identifier, :desc => N_("compute resource id"), :required => true
     def create
       require 'pry'; binding.pry
+      fail "stop, hammer time"
       fail "TODO: this doesn't work yet" if @compute_resource.url[/^unix:\/\//]
       environment_variables = {
         'BUILD_JSON' => JSON.dump(get_build_options),
@@ -24,14 +36,9 @@ module Dockerro
       build_config[:command] = "dock -v inside-build --input env"
       task = async_task(::Actions::Dockerro::Image::Create, image_name, @content_view_environment, @repository, build_config, environment_variables)
       respond_for_async(:resource => task)
-      # render json: {'response' => "Docker Image build started with plan id #{plan.execution_plan_id}"}
     end
 
     private
-
-    def current_organization
-      ::Organization.current
-    end
 
     def get_build_options
       build_config = {}
@@ -102,7 +109,7 @@ module Dockerro
 
     def find_content_view
       @content_view = ::Katello::ContentView.find(params[:content_view_id])
-      @content_view_environment = ::Katello::ContentViewEnvironment.find(params[:environment][:id])
+      @content_view_environment = ::Katello::ContentViewEnvironment.find(params[:environment_id])
     end
 
     def find_repository

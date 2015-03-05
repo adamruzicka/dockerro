@@ -33,7 +33,17 @@ angular.module('Dockerro.docker-images').controller('NewDockerImageController',
             $scope.successMessages = [];
             $scope.errorMessages = [];
 
-            resetForm();
+            $scope.dockerImage = $scope.dockerImage || new DockerImage();
+            $scope.panel = { 'loading': true };
+            $scope.form = { 'environment': undefined };
+            $scope.contentViews = [];
+            $scope.dockerRegistries = [];
+            $scope.pulpRepositories = [];
+            $scope.computeResources = [];
+            $scope.cvloaded = true;
+            $q.all([fetchPulpRepositories().$promise, fetchComputeResources().$promise]).finally(function () {
+                $scope.panel.loading = false;
+            });
 
             function fetchPulpRepositories() {
                 return Repository.queryUnpaged({'content_type': 'docker'}, function (repos) {
@@ -52,31 +62,25 @@ angular.module('Dockerro.docker-images').controller('NewDockerImageController',
 
             $scope.environments = Organization.readableEnvironments({id: CurrentOrganization});
 
-            $scope.$watch('dockerImage.environment', function (environment) {
+            $scope.$watch('form.environment', function (environment) {
+                console.log("env changed");
                 if (environment) {
-                    $scope.editContentView = true;
+                    $scope.cvloaded = false;
                     ContentView.queryUnpaged({ 'environment_id': environment.id }, function (response) {
                         $scope.contentViews = response.results;
+                        $scope.cvloaded = true;
                     });
+                } else {
+                    $scope.contentViews = [];
                 }
             });
 
             $scope.save = function (dockerImage) {
+                dockerImage.environment_id = form.environment.id;
+                console.log(dockerImage);
+                console.log(dockerImage.docker_image);
                 dockerImage.$save(success, error);
             };
-
-            function resetForm() {
-                $scope.dockerImage = $scope.dockerImage || new DockerImage();
-                $scope.panel = { 'loading': true }
-                $scope.contentViews = [];
-                $scope.editContentView = false;
-                $scope.dockerRegistries = [];
-                $scope.pulpRepositories = [];
-                $scope.computeResources = [];
-                $q.all([fetchPulpRepositories().$promise, fetchComputeResources().$promise]).finally(function () {
-                    $scope.panel.loading = false;
-                });
-            }
 
             function success(response) {
                 $scope.working = false

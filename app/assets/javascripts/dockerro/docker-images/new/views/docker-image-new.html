@@ -38,7 +38,7 @@
 
     <div bst-form-group label="{{ 'Git URL' | translate }}">
         <input id="git_url"
-               name="tag"
+               name="git_url"
                ng-model="dockerImage.git_url"
                type="text"
                tabindex="1"
@@ -77,15 +77,15 @@
 
         <div class="col-sm-5 input">
         <span path-selector="environments"
-              ng-model="dockerImage.environment"
-              selection-required="false"
+              ng-model="form.environment"
+              selection-required="true"
               mode="singleSelect">
         </span>
         </div>
     </div>
 
     <div bst-form-group label="{{ 'Content View' | translate }}">
-        <select ng-hide="contentViews.length === 0 || dockerImage.environment === undefined "
+        <select ng-hide="contentViews.length === 0 || form.environment === undefined "
                 id="content_view_id"
                 name="content_view_id"
                 ng-model="dockerImage.content_view_id"
@@ -94,10 +94,11 @@
                 autofocus
                 required>
         </select>
-      <span class="help-block" ng-show="dockerImage.environment !== undefined && contentViews.length === 0" translate>
+      <span class="help-block" ng-show="cvloaded && form.environment !== undefined && contentViews.length === 0" translate>
         The selected environment contains no Content Views, please select a different environment.
       </span>
-      <span class="help-block" ng-show="dockerImage.environment === undefined" translate>
+        <i class="fa fa-spinner fa-spin" ng-hide="cvloaded"></i>
+      <span class="help-block" ng-show="form.environment === undefined" translate>
         Please select an environment.
       </span>
     </div>
