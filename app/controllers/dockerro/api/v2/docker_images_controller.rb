@@ -23,8 +23,6 @@ module Dockerro
     param :pulp_repository_id, :identifier, :desc => N_("target pulp repository id")
     param :compute_resource_id, :identifier, :desc => N_("compute resource id"), :required => true
     def create
-      require 'pry'; binding.pry
-      fail "stop, hammer time"
       fail "TODO: this doesn't work yet" if @compute_resource.url[/^unix:\/\//]
       environment_variables = {
         'BUILD_JSON' => JSON.dump(get_build_options),
@@ -72,39 +70,28 @@ module Dockerro
 
     def prebuild_plugins
       [
+        plugin('change_from_in_dockerfile', 'base_image' => params[:base_image]),
         @content_view_environment.content_view_version.repos(@content_view_environment.environment).select(&:yum?).map do |repo|
           hostname = /https?:\/\/([^\/]+)/.match(repo.uri)[1]
           addr = Resolv.getaddress hostname
-          {
-            'name' => 'add_yum_repo',
-            'args' => {
-              'repo_name' => repo.name,
-              'baseurl' => repo.uri.gsub(hostname, addr).gsub('https', 'http')
-            }
-          }
+          plugin('add_yum_repo', 'repo_name' => repo.name, 'baseurl' => repo.uri.gsub(hostname, addr).gsub('https', 'http'))
         end,
-        {
-          'name' => 'inject_yum_repo',
-          'args' => {}
-        }
+        plugin('inject_yum_repo')
       ].flatten
     end
 
     def postbuild_plugins
       [
-        {
-          'name' => 'all_rpm_packages',
-          'args' => {
-            'image_id' => image_name
-          }
-        },
-        {
-          'name' => 'store_logs_to_file',
-          'args' => {
-            'file_path' => '/var/rpms'
-          }
-        }
+        plugin('all_rpm_packages', 'image_id' => image_name),
+        plugin('store_logs_to_file', 'file_path' => '/var/rpms')
       ]
+    end
+
+    def plugin(name, args = {})
+      {
+        'name' => name,
+        'args' => args
+      }
     end
 
     def find_content_view

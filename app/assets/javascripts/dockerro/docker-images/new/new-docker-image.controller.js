@@ -27,8 +27,8 @@
  *   Controls the creation of an empty DockerImage object for use by sub-controllers.
  */
 angular.module('Dockerro.docker-images').controller('NewDockerImageController',
-    ['$scope', '$q', 'FormUtils', 'DDockerImage', 'Organization', 'CurrentOrganization', 'ContentView', 'Repository', 'BastionResource',
-        function ($scope, $q, FormUtils, DockerImage, Organization, CurrentOrganization, ContentView, Repository, BastionResource) {
+    ['$scope', '$q', 'FormUtils', 'DDockerImage', 'DockerTag', 'Organization', 'CurrentOrganization', 'ContentView', 'Repository', 'BastionResource',
+        function ($scope, $q, FormUtils, DockerImage, DockerTag, Organization, CurrentOrganization, ContentView, Repository, BastionResource) {
 
             $scope.successMessages = [];
             $scope.errorMessages = [];
@@ -40,8 +40,9 @@ angular.module('Dockerro.docker-images').controller('NewDockerImageController',
             $scope.dockerRegistries = [];
             $scope.pulpRepositories = [];
             $scope.computeResources = [];
+            $scope.baseImages = [];
             $scope.cvloaded = true;
-            $q.all([fetchPulpRepositories().$promise, fetchComputeResources().$promise]).finally(function () {
+            $q.all([fetchPulpRepositories().$promise, fetchComputeResources().$promise, fetchBaseImages().$promise]).finally(function () {
                 $scope.panel.loading = false;
             });
 
@@ -58,6 +59,12 @@ angular.module('Dockerro.docker-images').controller('NewDockerImageController',
                 return ComputeResource.queryUnpaged({'search': 'docker'}, function (resources) {
                     $scope.computeResources = resources.results.filter(function(x) { if(x.provider == 'Docker') return x;});
                 });
+            }
+
+            function fetchBaseImages() {
+                return DockerTag.queryUnpaged(function (tags) {
+                    $scope.baseImages = tags.results;
+                })
             }
 
             $scope.environments = Organization.readableEnvironments({id: CurrentOrganization});

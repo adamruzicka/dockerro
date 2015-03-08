@@ -56,6 +56,22 @@
                 />
     </div>
 
+    <div bst-form-group label="{{ 'Base Image' | translate }}">
+        <select ng-hide="baseImages.length === 0"
+                id="base_image"
+                name="base_image"
+                ng-model="dockerImage.base_image"
+                ng-options="baseImage.url as baseImage.name for baseImage in baseImages"
+                tabindex="4"
+                autofocus
+                single>
+        </select>
+        <span class="help-block" ng-show="baseImages.length === 0" translate>
+            You have no Docker Images in Pulp repositories.
+        </span>
+    </div>
+
+
     <div bst-form-group label="{{ 'Compute Resource' | translate }}">
         <select ng-hide="computeResources.length === 0"
                 id="compute_resource_id"
