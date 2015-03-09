@@ -32,7 +32,7 @@ module Dockerro
       build_config = {}
       build_config[:compute_resource_id] = @compute_resource.id
       build_config[:repository_name] = Setting[:dockerro_builder_image]
-      build_config[:command] = "dock -v inside-build --input env"
+      build_config[:command] = "dock --verbose inside-build --input env"
       task = async_task(::Actions::Dockerro::Image::Create, image_name, @content_view_environment, @repository, build_config, environment_variables)
       respond_for_async(:resource => task)
     end
@@ -71,11 +71,16 @@ module Dockerro
 
     def prebuild_plugins
       plugins = []
+      # TODO: Parametrize
+     register_commands = "yum localinstall -y http://centos6-2.v2/pub/katello-ca-consumer-latest.noarch.rpm &&" +
+       "subscription-manager register --org='docker-0' --activationkey='zoo-qa-key'"
+      plugins << plugin('run_cmd_in_container',
+                        'cmd' => register_commands)
       plugins << plugin('change_from_in_dockerfile', 'base_image' => params[:base_image]) if params.key?(:base_image)
-      plugins << @content_view_environment.content_view_version.repos(@content_view_environment.environment).select(&:yum?).map do |repo|
-          plugin('add_yum_repo', 'repo_name' => repo.name, 'baseurl' => repo.uri.gsub(/^https/, 'http'))
-        end
-      plugins << plugin('inject_yum_repo')
+      # plugins << @content_view_environment.content_view_version.repos(@content_view_environment.environment).select(&:yum?).map do |repo|
+      #     plugin('add_yum_repo', 'repo_name' => repo.name, 'baseurl' => repo.uri.gsub(/^https/, 'http'))
+      #   end
+      # plugins << plugin('inject_yum_repo')
       plugins.flatten
     end
 
