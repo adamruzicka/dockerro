@@ -22,6 +22,7 @@ module Dockerro
     param :target_registry_ids, Array, :desc => N_("list of target docker registry ids")
     param :pulp_repository_id, :identifier, :desc => N_("target pulp repository id")
     param :compute_resource_id, :identifier, :desc => N_("compute resource id"), :required => true
+    param :base_image, String, :desc => N_("base image to build on")
     def create
       fail "TODO: this doesn't work yet" if @compute_resource.url[/^unix:\/\//]
       environment_variables = {
@@ -69,15 +70,13 @@ module Dockerro
     end
 
     def prebuild_plugins
-      [
-        plugin('change_from_in_dockerfile', 'base_image' => params[:base_image]),
-        @content_view_environment.content_view_version.repos(@content_view_environment.environment).select(&:yum?).map do |repo|
-          hostname = /https?:\/\/([^\/]+)/.match(repo.uri)[1]
-          addr = Resolv.getaddress hostname
-          plugin('add_yum_repo', 'repo_name' => repo.name, 'baseurl' => repo.uri.gsub(hostname, addr).gsub('https', 'http'))
-        end,
-        plugin('inject_yum_repo')
-      ].flatten
+      plugins = []
+      plugins << plugin('change_from_in_dockerfile', 'base_image' => params[:base_image]) if params.key?(:base_image)
+      plugins << @content_view_environment.content_view_version.repos(@content_view_environment.environment).select(&:yum?).map do |repo|
+          plugin('add_yum_repo', 'repo_name' => repo.name, 'baseurl' => repo.uri.gsub(/^https/, 'http'))
+        end
+      plugins << plugin('inject_yum_repo')
+      plugins.flatten
     end
 
     def postbuild_plugins

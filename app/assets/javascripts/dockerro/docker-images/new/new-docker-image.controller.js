@@ -83,7 +83,7 @@ angular.module('Dockerro.docker-images').controller('NewDockerImageController',
             });
 
             $scope.save = function (dockerImage) {
-                dockerImage.environment_id = form.environment.id;
+                dockerImage.environment_id = $scope.form.environment.id;
                 console.log(dockerImage);
                 console.log(dockerImage.docker_image);
                 dockerImage.$save(success, error);

@@ -57,7 +57,8 @@ module Dockerro
                :url_hash => {:controller => 'dockerro/api/v2/docker_images',
                              :action => 'new'},
                :engine => Dockerro::Engine,
-               :parent => :containers_menu
+               :parent => :containers_menu,
+               :turbolink => false
 
         security_block :docker_images do
           permission :create_docker_images,

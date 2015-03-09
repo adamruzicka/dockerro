@@ -28,6 +28,8 @@ module Actions
 
         def on_finish
           output[:error_code] = ::Docker::Container.get(task_container.id).json["State"]["ExitCode"]
+          logs = get_logs
+          [:stdout, :stderr].each { |key| output[:task][key] = logs[key].join().split("\n") }
           fail "Build container exited with return code #{output[:error_code]}" if output[:error_code] != 0
         end
 
@@ -37,12 +39,17 @@ module Actions
           true
         end
 
-        def poll_external_task
+        def get_logs
           container = Docker::Container.get(input[:container_uuid])
           tmp = { :stdout => [], :stderr => [] }
           container.streaming_logs(stdout: true, stderr: true) do |stream, chunk|
             tmp[stream.to_sym] << chunk
           end
+          tmp
+        end
+
+        def poll_external_task
+          tmp = get_logs
           {
             :stdout => tmp[:stdout].join().split("\n"),
             :stderr => tmp[:stderr].join().split("\n")
@@ -52,7 +59,7 @@ module Actions
         def cancel!
           task_container.stop if task_container.state != 'Stopped'
         end
-        
+
         def humanized_name
           _("Create")
         end

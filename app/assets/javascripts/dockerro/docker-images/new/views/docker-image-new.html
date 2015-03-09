@@ -61,7 +61,7 @@
                 id="base_image"
                 name="base_image"
                 ng-model="dockerImage.base_image"
-                ng-options="baseImage.url as baseImage.name for baseImage in baseImages"
+                ng-options="baseImage.repository.full_path as baseImage.full_name for baseImage in baseImages"
                 tabindex="4"
                 autofocus
                 single>
@@ -170,4 +170,3 @@
     </div>
 
 </form>
-
