@@ -58,7 +58,7 @@ module Dockerro
                              :action => 'new'},
                :engine => Dockerro::Engine,
                :parent => :containers_menu,
-               :turbolink => false
+               :turbolinks => false
 
         security_block :docker_images do
           permission :create_docker_images,

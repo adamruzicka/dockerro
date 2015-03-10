@@ -5,8 +5,8 @@
 </div>
 
 <div class="loading-mask fa-3x" ng-show="panel.loading">
-<i class="fa fa-spinner fa-spin"></i>
-{{ "Loading..." | translate }}
+    <i class="fa fa-spinner fa-spin"></i>
+    {{ "Loading..." | translate }}
 </div>
 
 <header class="new-header details-header">
@@ -61,7 +61,7 @@
                 id="base_image"
                 name="base_image"
                 ng-model="dockerImage.base_image"
-                ng-options="baseImage.repository.full_path as baseImage.full_name for baseImage in baseImages"
+                ng-options="baseImage.id as baseImage.full_name for baseImage in baseImages"
                 tabindex="4"
                 autofocus
                 single>
@@ -87,13 +87,36 @@
         </span>
     </div>
 
-  <span bst-feature-flag="lifecycle_environments">
+    <div bst-form-group label="{{ 'Use default activation key' | translate }}" field="max_content_hosts">
+        <!--<span translate>Use default activation key:</span>-->
+        <input type="checkbox"
+               name="limit"
+               ng-model="dockerImage.default_key"/>
+    </div>
+
+    <div bst-form-group label="{{ 'Activation Key' | translate }}" ng-hide="dockerImage.default_key">
+        <select ng-hide="activationKeys.length === 0 || !keyloaded"
+                id="activation_key_id"
+                name="activation_key_id"
+                ng-model="dockerImage.activation_key_id"
+                ng-options="activationKey.id as activationKey.name for activationKey in activationKeys"
+                tabindex="4"
+                autofocus
+                single>
+        </select>
+        <i class="fa fa-spinner fa-spin" ng-hide="keyloaded"></i>
+        <span class="help-block" ng-show="activationKeys.length === 0 && keyloaded" translate>
+            You have no defined Activation Keys.
+        </span>
+    </div>
+
+  <span bst-feature-flag="lifecycle_environments" ng-show="dockerImage.default_key">
     <div class="form-group">
         <label class="control-label col-sm-2" translate>Environment</label>
 
         <div class="col-sm-5 input">
         <span path-selector="environments"
-              ng-model="form.environment"
+              ng-model="dockerImage.environment"
               selection-required="true"
               mode="singleSelect">
         </span>
@@ -101,38 +124,38 @@
     </div>
 
     <div bst-form-group label="{{ 'Content View' | translate }}">
-        <select ng-hide="contentViews.length === 0 || form.environment === undefined "
+        <select ng-hide="contentViews.length === 0 || dockerImage.environment === undefined "
                 id="content_view_id"
                 name="content_view_id"
                 ng-model="dockerImage.content_view_id"
                 ng-options="contentView.id as contentView.name for contentView in contentViews"
                 tabindex="4"
-                autofocus
-                required>
+                autofocus>
         </select>
-      <span class="help-block" ng-show="cvloaded && form.environment !== undefined && contentViews.length === 0" translate>
+      <span class="help-block" ng-show="cvloaded && dockerImage.environment !== undefined && contentViews.length === 0"
+            translate>
         The selected environment contains no Content Views, please select a different environment.
       </span>
         <i class="fa fa-spinner fa-spin" ng-hide="cvloaded"></i>
-      <span class="help-block" ng-show="form.environment === undefined" translate>
+      <span class="help-block" ng-show="dockerImage.environment === undefined" translate>
         Please select an environment.
       </span>
     </div>
   </span>
 
-    <div bst-form-group label="{{ 'Parent Docker Registry' | translate }}">
-        <select ng-hide="dockerRegistries.length === 0"
-                id="parent_docker_registry_id"
-                name="parent_docker_registry_id"
-                ng-model="dockerImage.parent_docker_registry_id"
-                ng-options="dockerRegistry.id as dockerRegistry.name for dockerRegistry in dockerRegistries"
-                tabindex="4"
-                autofocus>
-        </select>
-        <span class="help-block" ng-show="dockerRegistries.length === 0" translate>
-            You have no defined Docker registries.
-        </span>
-    </div>
+    <!--<div bst-form-group label="{{ 'Parent Docker Registry' | translate }}">-->
+    <!--<select ng-hide="dockerRegistries.length === 0"-->
+    <!--id="parent_docker_registry_id"-->
+    <!--name="parent_docker_registry_id"-->
+    <!--ng-model="dockerImage.parent_docker_registry_id"-->
+    <!--ng-options="dockerRegistry.id as dockerRegistry.name for dockerRegistry in dockerRegistries"-->
+    <!--tabindex="4"-->
+    <!--autofocus>-->
+    <!--</select>-->
+    <!--<span class="help-block" ng-show="dockerRegistries.length === 0" translate>-->
+    <!--You have no defined Docker registries.-->
+    <!--</span>-->
+    <!--</div>-->
 
     <div bst-form-group label="{{ 'Target Docker Registries' | translate }}">
         <select ng-hide="dockerRegistries.length === 0"

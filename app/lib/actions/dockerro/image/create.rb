@@ -31,7 +31,7 @@ module Actions
         # @option build_options [String] :cpu_shares (nil)      TODO: find out what it does
         # @option build_options [String] :spu_set (nil)         TODO: find out what it does
         # @param [Hash] environment_variables Hash of environment variables passed to the build
-        def plan(image_name, content_view_environment, repository, build_options, environment_variables = {})
+        def plan(image_name, activation_key, repository, build_options, environment_variables = {})
           # create container
           sequence do
             plan_self(:build_options => build_options,

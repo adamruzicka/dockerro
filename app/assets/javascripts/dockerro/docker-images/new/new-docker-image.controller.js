@@ -27,8 +27,8 @@
  *   Controls the creation of an empty DockerImage object for use by sub-controllers.
  */
 angular.module('Dockerro.docker-images').controller('NewDockerImageController',
-    ['$scope', '$q', 'FormUtils', 'DDockerImage', 'DockerTag', 'Organization', 'CurrentOrganization', 'ContentView', 'Repository', 'BastionResource',
-        function ($scope, $q, FormUtils, DockerImage, DockerTag, Organization, CurrentOrganization, ContentView, Repository, BastionResource) {
+    ['$scope', '$q', '$location', 'FormUtils', 'DDockerImage', 'DockerTag', 'Organization', 'CurrentOrganization', 'ActivationKey', 'ContentView', 'Repository', 'BastionResource',
+        function ($scope, $q, $location, FormUtils, DockerImage, DockerTag, Organization, CurrentOrganization, ActivationKey, ContentView, Repository, BastionResource) {
 
             $scope.successMessages = [];
             $scope.errorMessages = [];
@@ -42,6 +42,7 @@ angular.module('Dockerro.docker-images').controller('NewDockerImageController',
             $scope.computeResources = [];
             $scope.baseImages = [];
             $scope.cvloaded = true;
+            $scope.dockerImage.default_key = true;
             $q.all([fetchPulpRepositories().$promise, fetchComputeResources().$promise, fetchBaseImages().$promise]).finally(function () {
                 $scope.panel.loading = false;
             });
@@ -56,21 +57,32 @@ angular.module('Dockerro.docker-images').controller('NewDockerImageController',
                 var ComputeResource = BastionResource('/api/v2/compute_resources/:id/:action',
                     {id: '@id', organizationId: CurrentOrganization}, {
                     });
-                return ComputeResource.queryUnpaged({'search': 'docker'}, function (resources) {
+                return ComputeResource.queryUnpaged({'search': 'docker', 'organization_id': CurrentOrganization }, function (resources) {
                     $scope.computeResources = resources.results.filter(function(x) { if(x.provider == 'Docker') return x;});
                 });
             }
 
             function fetchBaseImages() {
-                return DockerTag.queryUnpaged(function (tags) {
+                return DockerTag.queryUnpaged({ 'organization_id': CurrentOrganization }, function (tags) {
                     $scope.baseImages = tags.results;
                 })
             }
 
             $scope.environments = Organization.readableEnvironments({id: CurrentOrganization});
 
-            $scope.$watch('form.environment', function (environment) {
-                console.log("env changed");
+            $scope.$watch('dockerImage.default_key', function(default_key) {
+                if(!default_key) {
+                    $scope.keyloaded = false;
+                    ActivationKey.queryUnpaged({ 'organization_id': CurrentOrganization }, function(response) {
+                        $scope.activationKeys = response.results;
+                        $scope.keyloaded = true;
+                    })
+                } else {
+                    $scope.activationKeys = [];
+                }
+            })
+
+            $scope.$watch('dockerImage.environment', function (environment) {
                 if (environment) {
                     $scope.cvloaded = false;
                     ContentView.queryUnpaged({ 'environment_id': environment.id }, function (response) {
@@ -83,9 +95,9 @@ angular.module('Dockerro.docker-images').controller('NewDockerImageController',
             });
 
             $scope.save = function (dockerImage) {
-                dockerImage.environment_id = $scope.form.environment.id;
-                console.log(dockerImage);
-                console.log(dockerImage.docker_image);
+                dockerImage.katello_hostname = $location.host();
+                if(dockerImage.tag === undefined) { dockerImage.tag = "latest"; }
+                dockerImage.organization_id = CurrentOrganization;
                 dockerImage.$save(success, error);
             };
 
