@@ -62,8 +62,8 @@ module Dockerro
 
         security_block :docker_images do
           permission :create_docker_images,
-                     :docker_images          => [:create, :new],
-                     :'api/v2/docker_images' => [:create, :new]
+                     :docker_images          => [:create],
+                     :'api/v2/docker_images' => [:create]
         end
 
       end

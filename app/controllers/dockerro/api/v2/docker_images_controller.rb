@@ -35,6 +35,7 @@ module Dockerro
       build_config                       = {}
       build_config[:compute_resource_id] = @compute_resource.id
       build_config[:repository_name]     = Setting[:dockerro_builder_image]
+      build_config[:tag]                 = Setting[:dockerro_builder_image_tag]
       build_config[:command]             = "dock --verbose inside-build --input env"
       if @activation_key.new_record?
         task = sync_task(::Actions::Katello::ActivationKey::Create, @activation_key)

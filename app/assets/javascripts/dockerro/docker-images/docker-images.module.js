@@ -13,7 +13,7 @@ angular.module('Dockerro.docker-images').config(['$stateProvider', function ($st
         })
         .state('new-docker-image', {
             url: '/docker_images/new',
-            permission: 'view_images',
+            permission: 'create_docker_images',
             controller: 'NewDockerImageController',
             templateUrl: 'dockerro/docker-images/new/views/docker-image-new.html'
         })
