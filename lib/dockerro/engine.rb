@@ -78,6 +78,11 @@ module Dockerro
           docker_images
         )
         })
+
+      ::Katello::ActivationKey.send :include, Dockerro::Concerns::ActivationKeyExtensions
+      ::Katello::ContentView.send :include, Dockerro::Concerns::ContentViewExtensions
+      ::Katello::DockerTag.send :include, Dockerro::Concerns::DockerTagExtensions
+      ::Katello::Repository.send :include, Dockerro::Concerns::RepositoryExtensions
     end
   end
 end
