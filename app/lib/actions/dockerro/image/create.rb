@@ -15,38 +15,27 @@ module Actions
     module Image
       class Create < Actions::EntryAction
 
-        # @param [Hash] build_options can set any of the following
-        # @option build_options [String] :repository_name       Name of the image to use as build container
-        # @option build_options [String] :tag ('latest')        Tag of the image to use as build container
-        # @option build_options [Int]    :registry_id           TODO: find out what it does
-        # @option build_options [String] :name                  Name of the build container
-        # @option build_options [Int]    :compute_resource_id   Id of the compute resource on which the build should be performed
-        # @option build_options [Bool]   :tty (false)           If the container should have pseudo-tty allocated
-        # @option build_options [String] :memory ('')           Quota on build container's memory usage
-        # @option build_options [String] :entrypoint ('')       Build container's entrypoint
-        # @option build_options [String] :command ('')          Command to run in the build container
-        # @option build_options [Bool]   :attach_stdout (true)  If the build container should have stdout allocated
-        # @option build_options [Bool]   :attach_stdin (true)   If the build container should have stdin allocated
-        # @option build_options [Bool]   :attach_stderr (true)  If the build container should have stderr allocated
-        # @option build_options [String] :cpu_shares (nil)      TODO: find out what it does
-        # @option build_options [String] :spu_set (nil)         TODO: find out what it does
-        # @param [Hash] environment_variables Hash of environment variables passed to the build
-        def plan(image_name, activation_key, repository, build_options, environment_variables = {})
+        def plan(build_config, base_image, compute_resource, hostname)
           # create container
+          build_options         = build_config.build_container_options compute_resource
+          environment_variables = build_config.generate_environment_variables compute_resource, hostname, base_image
+
           sequence do
-            plan_self(:build_options => build_options,
+            plan_self(:build_options         => build_options,
                       :environment_variables => environment_variables)
+
             container = plan_action(::Actions::Dockerro::Container::Create, build_options, environment_variables)
+
             # run it and wait for it to finish
             plan_action(::Actions::Dockerro::Container::MonitorRun,
-                          :container_id        => container.output[:id],
-                          :compute_resource_id => build_options[:compute_resource_id])
-            package_list = plan_action(::Actions::Dockerro::Container::RetrievePackageList,
-                                       :container_id => container.output[:id])
+                        :container_id        => container.output[:id],
+                        :compute_resource_id => compute_resource.id)
+
             # save package list into pulp
             plan_action(::Actions::Dockerro::Image::SaveToPulp,
-                        image_name,
-                        repository) unless repository.nil?
+                        build_config.image_name,
+                        build_config.repository)
+
             # [delete container]
             plan_action(::Actions::Dockerro::Container::Destroy,
                         :container_id => container.output[:id])
@@ -60,6 +49,7 @@ module Actions
         def humanized_name
           _("Create Docker Image")
         end
+
       end
     end
   end

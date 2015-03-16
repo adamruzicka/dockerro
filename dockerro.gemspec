@@ -16,8 +16,9 @@ Gem::Specification.new do |s|
   s.require_paths  = ["lib"]
   # s.test_files = Dir['test/**/*']
   s.add_dependency 'docker-api', '~> 1.13'
-  # s.add_dependency 'wicked', '~> 1.1'
   s.add_dependency 'dynflow', '~> 0.7.5'
+  s.add_dependency 'rails'
+  s.add_dependency "strong_parameters"
   s.add_dependency 'foreman-tasks', '~> 0.6.10'
   s.add_dependency 'katello'
   s.add_development_dependency 'rubocop', '~> 0.26'

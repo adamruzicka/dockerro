@@ -1,6 +1,3 @@
-require 'fast_gettext'
-require 'gettext_i18n_rails'
-
 module Dockerro
   # Inherit from the Rails module of the parent app (Foreman), not the plugin.
   # Thus, inherits from ::Rails::Engine and not from Rails::Engine
@@ -79,9 +76,11 @@ module Dockerro
         )
         })
 
-      ::Katello::ActivationKey.send :include, Dockerro::Concerns::ActivationKeyExtensions
+      require 'strong_parameters'
+
       ::Katello::ContentView.send :include, Dockerro::Concerns::ContentViewExtensions
-      ::Katello::DockerTag.send :include, Dockerro::Concerns::DockerTagExtensions
+      ::Katello::ContentViewVersion.send :include, Dockerro::Concerns::ContentViewVersionExtensions
+      ::Katello::DockerImage.send :include, Dockerro::Concerns::DockerImageExtensions
       ::Katello::Repository.send :include, Dockerro::Concerns::RepositoryExtensions
     end
   end

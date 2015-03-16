@@ -10,19 +10,23 @@
 # have received a copy of GPLv2 along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
-module Dockerro
-  module Concerns
-    module DockerTagExtensions
-      extend ActiveSupport::Concern
+module Actions
+  module Dockerro
+    module DockerImageBuildConfig
+      class Create < Actions::EntryAction
 
-      included do
-        has_one :docker_image_build_config,
-                :class_name => "::Dockerro::DockerImageBuildConfig",
-                :dependent  => :nullify,
-                :inverse_of => :base_image
-        has_one :activation_key,
-                :class_name => "::Katello::ActivationKey",
-                :through    => :docker_image_build_config
+        def plan(build_config)
+          build_config.save!
+          plan_self :build_config_id => build_config.id
+        end
+
+        def run
+          output = input
+        end
+
+        def humanized_name
+          _("Create Build Config")
+        end
 
       end
     end

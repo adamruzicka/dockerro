@@ -15,27 +15,6 @@
 
 <form name="dockerImageForm" class="form-horizontal" novalidate role="form">
 
-    <div bst-form-group label="{{ 'Name' | translate }}">
-        <input id="name"
-               name="name"
-               ng-model="dockerImage.name"
-               type="text"
-               tabindex="1"
-               autofocus
-               required/>
-    </div>
-
-    <div bst-form-group label="{{ 'Tag' | translate }}">
-        <input id="tag"
-               name="tag"
-               ng-model="dockerImage.tag"
-               type="text"
-               tabindex="1"
-               autofocus
-               placeholder="latest"
-                />
-    </div>
-
     <div bst-form-group label="{{ 'Git URL' | translate }}">
         <input id="git_url"
                name="git_url"
@@ -60,7 +39,7 @@
         <select ng-hide="baseImages.length === 0"
                 id="base_image"
                 name="base_image"
-                ng-model="dockerImage.base_image"
+                ng-model="dockerImage.base_image_id"
                 ng-options="baseImage.id as baseImage.full_name for baseImage in baseImages"
                 tabindex="4"
                 autofocus
@@ -84,29 +63,6 @@
         </select>
         <span class="help-block" ng-show="computeResources.length === 0" translate>
             You have no defined Compute Resources.
-        </span>
-    </div>
-
-    <div bst-form-group label="{{ 'Use auto-generated activation key' | translate }}" field="max_content_hosts">
-        <!--<span translate>Use default activation key:</span>-->
-        <input type="checkbox"
-               name="limit"
-               ng-model="dockerImage.default_key"/>
-    </div>
-
-    <div bst-form-group label="{{ 'Activation Key' | translate }}" ng-hide="dockerImage.default_key">
-        <select ng-hide="activationKeys.length === 0 || !keyloaded"
-                id="activation_key_id"
-                name="activation_key_id"
-                ng-model="dockerImage.activation_key_id"
-                ng-options="activationKey.id as activationKey.name for activationKey in activationKeys"
-                tabindex="4"
-                autofocus
-                single>
-        </select>
-        <i class="fa fa-spinner fa-spin" ng-hide="keyloaded"></i>
-        <span class="help-block" ng-show="activationKeys.length === 0 && keyloaded" translate>
-            You have no defined Activation Keys.
         </span>
     </div>
 
@@ -143,40 +99,11 @@
     </div>
   </span>
 
-    <!--<div bst-form-group label="{{ 'Parent Docker Registry' | translate }}">-->
-    <!--<select ng-hide="dockerRegistries.length === 0"-->
-    <!--id="parent_docker_registry_id"-->
-    <!--name="parent_docker_registry_id"-->
-    <!--ng-model="dockerImage.parent_docker_registry_id"-->
-    <!--ng-options="dockerRegistry.id as dockerRegistry.name for dockerRegistry in dockerRegistries"-->
-    <!--tabindex="4"-->
-    <!--autofocus>-->
-    <!--</select>-->
-    <!--<span class="help-block" ng-show="dockerRegistries.length === 0" translate>-->
-    <!--You have no defined Docker registries.-->
-    <!--</span>-->
-    <!--</div>-->
-
-    <div bst-form-group label="{{ 'Target Docker Registries' | translate }}">
-        <select ng-hide="dockerRegistries.length === 0"
-                id="target_docker_registry_ids"
-                name="target_docker_registry_ids"
-                ng-model="dockerImage.target_docker_registry_ids"
-                ng-options="dockerRegistry.id as dockerRegistry.name for dockerRegistry in dockerRegistries"
-                tabindex="4"
-                autofocus
-                multiple>
-        </select>
-        <span class="help-block" ng-show="dockerRegistries.length === 0" translate>
-            You have no defined Docker registries.
-        </span>
-    </div>
-
     <div bst-form-group label="{{ 'Target Pulp Repository' | translate }}">
         <select ng-hide="pulpRepositories.length === 0"
-                id="pulp_repository_id"
-                name="pulp_repository_id"
-                ng-model="dockerImage.pulp_repository_id"
+                id="repository_id"
+                name="repository_id"
+                ng-model="dockerImage.repository_id"
                 ng-options="pulpRepository.id as pulpRepository.name for pulpRepository in pulpRepositories"
                 tabindex="4"
                 autofocus>
