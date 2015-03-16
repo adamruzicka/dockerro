@@ -101,5 +101,9 @@ module Dockerro
       ::Katello::DockerImage.send :include, Dockerro::Concerns::DockerImageExtensions
       ::Katello::Repository.send :include, Dockerro::Concerns::RepositoryExtensions
     end
+
+    rake_tasks do
+      load File.expand_path('../tasks/test.rake', __FILE__)
+    end
   end
 end
