@@ -1,0 +1,28 @@
+@startuml
+
+title Docker Image Build Config
+
+set namespaceseparator ::
+
+"::Dockerro::DockerImageBuildConfig" : +string git_url
+"::Dockerro::DockerImageBuildConfig" : +string git_commit
+"::Dockerro::DockerImageBuildConfig" : +string base_image_tag
+"::Dockerro::DockerImageBuildConfig" : +bool abstract
+"::Dockerro::DockerImageBuildConfig" : +string activation_key_prefix
+
+::Dockerro::DockerImageBuildConfig "*" --> "1" ::Katello::ContentView : belongs to >
+::Katello::ContentView "*" --> "1" ::Organization : belongs to >
+
+::Dockerro::DockerImageBuildConfig "*" --> "1" ::Katello::Repository : pushes built images to >
+
+::Dockerro::DockerImageBuildConfig "0..1" --> "*" ::Katello::ContentViewEnvironment : gets content from >
+::Katello::ContentViewEnvironment "*" --> "1" ::Katello::ContentViewVersion : consists of
+::Katello::ContentViewEnvironment "*" --> "1" ::Katello::KTEnvironment : consists of
+
+
+::Dockerro::DockerImageBuildConfig "0..1" --> "*" ::Dockerro::DockerImageBuildConfig : used as template for
+::Dockerro::DockerImageBuildConfig "1" <-- "*" ::Katello::DockerImage : is built from <
+::Katello::DockerImage "*" --> "0..1" ::Katello::DockerImage : built from
+::Katello::DockerTag "*" --> "1" ::Katello::DockerImage : is tagged with <
+
+@enduml
