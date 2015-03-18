@@ -16,17 +16,21 @@ module Dockerro
       extend ActiveSupport::Concern
 
       included do
-        belongs_to :docker_build_image_config,
-                   :class_name => "::Dockerro::DockerImageBuildConfig",
-                   :inverse_of => :built_images
+        # belongs_to :docker_build_image_config,
+        #            :class_name => "::Dockerro::DockerImageBuildConfig",
+        #            :inverse_of => :built_images
 
-        belongs_to :base_image,
-                   :class_name => "::Katello::DockerImage",
-                   :inverse_of => :successor_images
+        has_one :docker_image_build_config,
+                :class_name => "::Dockerro::DockerImageBuildConfig",
+                :inverse_of => :base_image
 
-        has_many   :successor_images,
-                   :class_name => "::Katello::DockerImage",
-                   :inverse_of => :base_image
+        # belongs_to :base_image,
+        #            :class_name => "::Katello::DockerImage",
+        #            :inverse_of => :successor_images
+
+        # has_many   :successor_images,
+        #            :class_name => "::Katello::DockerImage"
+                   # :inverse_of => :base_image
 
       end
     end

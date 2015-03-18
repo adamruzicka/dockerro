@@ -14,6 +14,8 @@ module Dockerro
   class DockerImageBuildConfig < Katello::Model
     self.include_root_in_json = false
 
+    include Katello::Glue
+    include Glue::ElasticSearch::DockerImageBuildConfig
     include ActiveModel::Validations
 
     attr_accessible :git_url, :git_commit, :base_image_tag,
@@ -27,21 +29,24 @@ module Dockerro
     belongs_to :repository,
                :class_name => "::Katello::Repository",
                :inverse_of => :docker_image_build_configs
-    has_one    :content_view_version,
-               :class_name => "::Katello::ContentViewVersion",
-               :through => :content_view_environment
-    has_one    :environment,
-               :class_name => "::Katello::KTEnvironment",
-               :through => :content_view_environment
+    has_one :content_view_version,
+            :class_name => "::Katello::ContentViewVersion",
+            :through    => :content_view_environment
+    has_one :environment,
+            :class_name => "::Katello::KTEnvironment",
+            :through    => :content_view_environment
     belongs_to :content_view_environment,
                :class_name => "::Katello::ContentViewEnvironment"
-    has_many   :built_images,
-               :class_name => "::Katello::DockerImage",
-               :inverse_of => :docker_image_build_config,
-               :dependent => :nullify
-    has_one    :organization,
+    # has_many :built_images,
+    #          :class_name => "::Katello::DockerImage",
+    #          :inverse_of => :docker_image_build_config,
+    #          :dependent  => :nullify
+    belongs_to :organization,
                :class_name => "::Organization",
-               :through => :content_view
+               :dependent => :destroy
+    belongs_to :base_image,
+               :class_name => "::Katello::DockerImage",
+               :inverse_of => :docker_image_build_config
 
     validates :content_view, :presence => true
     validates :repository, :presence => true
@@ -61,11 +66,11 @@ module Dockerro
 
     def generate_build_options(hostname, base_image)
       {
-          :git_url => git_url,
-          :git_commit => git_commit,
-          :tag => tag,
-          :image => image_name,
-          :prebuild_plugins => prebuild_plugins(hostname, base_image),
+          :git_url           => git_url,
+          :git_commit        => git_commit,
+          :tag               => tag,
+          :image             => image_name,
+          :prebuild_plugins  => prebuild_plugins(hostname, base_image),
           :postbuild_plugins => postbuild_plugins
       }
     end
@@ -78,14 +83,15 @@ module Dockerro
     end
 
     def self.docker_image_build_config_params(params)
-      params.require(:docker_image).permit(:git_url,
-                                           :git_commit,
-                                           :base_image_tag,
-                                           :content_view_id,
-                                           :repository_id,
-                                           :content_view_version_id,
-                                           :abstract,
-                                           :activation_key_prefix)
+      params.require(:docker_image_build_config).permit(:git_url,
+                                                        :git_commit,
+                                                        :base_image_tag,
+                                                        :content_view_id,
+                                                        :repository_id,
+                                                        :content_view_version_id,
+                                                        :abstract,
+                                                        :activation_key_prefix,
+                                                        :organization_id)
     end
 
     def build_container_options(compute_resource)
@@ -104,16 +110,16 @@ module Dockerro
     private
 
     def find_activation_key
-      key_name = "#{activation_key_prefix}-#{content_view.name}-#{environment.name}"
-      matching_keys = ::Katello::ActivationKey.where(:name => key_name)
+      key_name       = "#{activation_key_prefix}-#{content_view.name}-#{environment.name}"
+      matching_keys  = ::Katello::ActivationKey.where(:name => key_name)
       activation_key = nil
       if matching_keys.empty?
-        activation_key = ::Katello::ActivationKey.new
-        activation_key.name = key_name
+        activation_key              = ::Katello::ActivationKey.new
+        activation_key.name         = key_name
         activation_key.content_view = content_view
-        activation_key.environment = environment
+        activation_key.environment  = environment
         activation_key.organization = content_view.organization
-        activation_key.auto_attach = false
+        activation_key.auto_attach  = false
       else
         activation_key = matching_keys.first
       end

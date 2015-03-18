@@ -1,7 +1,7 @@
 module Dockerro
   class Api::V2::DockerImagesController < ::Katello::Api::V2::ApiController
     before_filter :find_content_view, :only => [:create]
-    before_filter :find_compute_resource, :only => [:create]
+    before_filter :find_compute_resource, :only => [:create, :bulk_build]
     before_filter :find_repository, :only => [:create]
     before_filter :find_base_image, :only => [:create]
     before_filter :create_build_config, :only => [:create]
@@ -14,8 +14,6 @@ module Dockerro
     end
 
     api :POST, '/docker_images'
-    # param :name, String, :desc => N_("name"), :required => true
-    # param :tag, String, :desc => N_("tag"), :required => true
     param :git_url, String, :desc => N_("git url"), :required => true
     param :git_commit, String, :desc => N_("git commit hash")
     param :environment_id, :identifier, :desc => N_("environment")
@@ -32,6 +30,19 @@ module Dockerro
         @build_config.activation_key.available_subscriptions.each { |subscription| @build_config.activation_key.subscribe subscription.cp_id }
       end
       task = async_task(::Actions::Dockerro::Image::Create, @build_config, @base_image, @compute_resource, request.host)
+      respond_for_async(:resource => task)
+    end
+
+    api :POST, '/docker_images/bulk_build'
+    param :compute_resource_id, :identifier
+    param :ids, Array
+    def bulk_build
+      build_configs = params.fetch(:ids).map { |id| DockerImageBuildConfig.find(id) }
+      task = async_task ::Actions::BulkAction,
+                        ::Actions::Dockerro::Image::Create,
+                        build_configs,
+                        @compute_resource,
+                        request.host
       respond_for_async(:resource => task)
     end
 

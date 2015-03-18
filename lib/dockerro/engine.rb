@@ -73,6 +73,7 @@ module Dockerro
         :stylesheet => 'dockerro/dockerro',
         :pages      => %w(
           docker_images
+          docker_image_build_configs
         )
         })
 

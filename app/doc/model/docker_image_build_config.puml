@@ -13,6 +13,8 @@ set namespaceseparator ::
 ::Dockerro::DockerImageBuildConfig "*" --> "1" ::Katello::ContentView : belongs to >
 ::Katello::ContentView "*" --> "1" ::Organization : belongs to >
 
+::Dockerro::DockerImageBuildConfig "*" --> "1" ::Organization : belongs to >
+
 ::Dockerro::DockerImageBuildConfig "*" --> "1" ::Katello::Repository : pushes built images to >
 
 ::Dockerro::DockerImageBuildConfig "0..1" --> "*" ::Katello::ContentViewEnvironment : gets content from >
@@ -21,8 +23,8 @@ set namespaceseparator ::
 
 
 ::Dockerro::DockerImageBuildConfig "0..1" --> "*" ::Dockerro::DockerImageBuildConfig : used as template for
-::Dockerro::DockerImageBuildConfig "1" <-- "*" ::Katello::DockerImage : is built from <
-::Katello::DockerImage "*" --> "0..1" ::Katello::DockerImage : built from
-::Katello::DockerTag "*" --> "1" ::Katello::DockerImage : is tagged with <
+::Dockerro::DockerImageBuildConfig "*" --> "0..1" ::Katello::DockerImage : builds from >
+::Katello::DockerImage "*" --> "0..1" ::Dockerro::DockerImageBuildConfig : built using >
+::Katello::DockerTag "*" --> "1" ::Katello::DockerImage : tags >
 
 @enduml

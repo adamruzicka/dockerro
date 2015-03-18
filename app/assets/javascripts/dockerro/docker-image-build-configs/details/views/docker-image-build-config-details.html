@@ -1,0 +1,42 @@
+<span page-title ng-model="dockerImageBuildConfig">{{ 'Details for Docker Image Build Config:' | translate }} {{ dockerImageBuildConfig.repository.docker_upstream_name || dockerImageBuildConfig.repository.label}}</span>
+
+<div class="loading-mask loading-mask-panel" ng-show="panel.loading">
+  <i class="fa fa-spinner fa-spin"></i>
+  {{ "Loading..." | translate }}
+</div>
+
+<section class="nutupane-details" ng-cloak bst-container-scroll>
+
+  <header class="details-header">
+    <h2 class="fl" translate>Docker Image Build Config {{ dockerImageBuildConfig.repository.docker_upstream_name || dockerImageBuildConfig.repository.label }}</h2>
+
+    <div class="fr">
+
+      <div bst-modal="removeDockerImageBuildConfig(dockerImageBuildConfig)">
+        <div data-block="modal-header" translate>Remove Docker Image Build Config "{{  dockerImageBuildConfig.repository.docker_upstream_name || dockerImageBuildConfig.repository.label }}"?</div>
+        <div data-block="modal-body" translate>Are you sure you want to remove Docker Image Build Config "{{  dockerImageBuildConfig.repository.docker_upstream_name || dockerImageBuildConfig.repository.label }}"?</div>
+      </div>
+
+        <button class="btn btn-default" ui-sref="dockerImageBuildConfigs.index">
+            <i class="fa fa-plus"></i>
+            {{ "Build" | translate }}
+        </button>
+        <button class="btn btn-default" ui-sref="dockerImageBuildConfigs.index">
+            <i class="fa fa-leading"></i>
+            {{ "Clone" | translate }}
+        </button>
+      <button class="btn btn-default" bst-feature-flag="custom_dockerImageBuildConfigs"
+              ng-hide="denied('delete_dockerImageBuildConfigs', dockerImageBuildConfig)"
+              ng-click="openModal()">
+        <i class="fa fa-trash-o"></i>
+        {{ "Remove Docker Image Build Config" | translate }}
+      </button>
+      <button class="btn btn-default" ui-sref="docker-image-build-configs.index">
+        <i class="fa fa-remove"></i>
+        {{ "Close" | translate }}
+      </button>
+    </div>
+  </header>
+
+  <section class="nutupane-sub-section" ui-view></section>
+</section>

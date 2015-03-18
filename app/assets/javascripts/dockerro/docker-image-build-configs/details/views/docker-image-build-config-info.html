@@ -1,0 +1,27 @@
+<span page-title ng-model="dockerImageBuildConfig">{{ 'Docker Image Build Config information for:' | translate }} {{ dockerImageBuildConfig.repository.docker_upstream_name || dockerImageBuildConfig.repository.label }}</span>
+<div bst-alerts success-messages="successMessages" error-messages="errorMessages"></div>
+
+<div class="details fl">
+  <section>
+    <h4 translate>Basic Information</h4>
+
+    <div class="detail">
+      <span class="info-label" translate>Git url</span>
+      <span class="info-value"
+            bst-edit-text="dockerImageBuildConfig.git_url"
+            on-save="save(dockerImageBuildConfig)"
+            readonly="dockerImageBuildConfig.readonly || denied('edit_products', product)">
+      </span>
+    </div>
+
+      <div class="detail">
+          <span class="info-label" translate>Git commit</span>
+      <span class="info-value"
+            bst-edit-text="dockerImageBuildConfig.git_commit"
+            on-save="save(dockerImageBuildConfig)"
+            readonly="dockerImageBuildConfig.readonly || denied('edit_products', product)">
+      </span>
+      </div>
+
+  </section>
+</div>

@@ -1,3 +1,4 @@
 BASTION_MODULES.push(
-  'Dockerro.docker-images'
+  'Dockerro.docker-images',
+    'Dockerro.docker-image-build-configs'
 );
