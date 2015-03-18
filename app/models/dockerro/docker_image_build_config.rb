@@ -19,38 +19,33 @@ module Dockerro
     include ActiveModel::Validations
 
     attr_accessible :git_url, :git_commit, :base_image_tag,
-                    :abstract, :activation_key_prefix,
-                    :content_view_id, :content_view_version_id,
+                    :template, :activation_key_prefix,
+                    :content_view_version_id,
                     :repository_id
 
-    belongs_to :content_view,
-               :class_name => "::Katello::ContentView",
+    belongs_to :content_view_version,
+               :class_name => "::Katello::ContentViewVersion",
                :inverse_of => :docker_image_build_configs
+
     belongs_to :repository,
                :class_name => "::Katello::Repository",
                :inverse_of => :docker_image_build_configs
-    has_one :content_view_version,
+
+    has_one :content_view,
             :class_name => "::Katello::ContentViewVersion",
-            :through    => :content_view_environment
-    has_one :environment,
-            :class_name => "::Katello::KTEnvironment",
-            :through    => :content_view_environment
-    belongs_to :content_view_environment,
-               :class_name => "::Katello::ContentViewEnvironment"
-    # has_many :built_images,
-    #          :class_name => "::Katello::DockerImage",
-    #          :inverse_of => :docker_image_build_config,
-    #          :dependent  => :nullify
-    belongs_to :organization,
-               :class_name => "::Organization",
-               :dependent => :destroy
+            :through    => :content_view_version
+
+    has_one :organization,
+            :class_name => "::Organization",
+            :through => :content_view
+
     belongs_to :base_image,
                :class_name => "::Katello::DockerImage",
                :inverse_of => :docker_image_build_config
 
-    validates :content_view, :presence => true
     validates :repository, :presence => true
-    validates :content_view_version, :presence => true, :unless => :abstract
+    validates :content_view_version, :presence => true
+    validates :base_image, :presence => true
 
     def image_name
       "#{name}:#{tag}"
@@ -61,6 +56,7 @@ module Dockerro
     end
 
     def tag
+      # TODO: fix this for autopublish
       "#{content_view.name}-#{environment.name}"
     end
 
@@ -86,12 +82,11 @@ module Dockerro
       params.require(:docker_image_build_config).permit(:git_url,
                                                         :git_commit,
                                                         :base_image_tag,
-                                                        :content_view_id,
+                                                        :base_image_id,
                                                         :repository_id,
                                                         :content_view_version_id,
-                                                        :abstract,
-                                                        :activation_key_prefix,
-                                                        :organization_id)
+                                                        :template,
+                                                        :activation_key_prefix)
     end
 
     def build_container_options(compute_resource)
