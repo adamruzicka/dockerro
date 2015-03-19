@@ -7,11 +7,13 @@ set namespaceseparator ::
 "::Dockerro::DockerImageBuildConfig" : +string git_url
 "::Dockerro::DockerImageBuildConfig" : +string git_commit
 "::Dockerro::DockerImageBuildConfig" : +string base_image_tag
-"::Dockerro::DockerImageBuildConfig" : +bool template
 "::Dockerro::DockerImageBuildConfig" : +string activation_key_prefix
 
+::Dockerro::DockerImageBuildConfig "*" --> "0..1" ::Dockerro::DockerImageBuildConfig : is cloned from
+
 ::Dockerro::DockerImageBuildConfig "*" --> "1" ::Katello::ContentViewVersion : uses content from >
-::Katello::ContentViewVersion "1..*" --> "1" ::Katello::ContentView : is version of >
+
+::Dockerro::DockerImageBuildConfig "1..*" --> "1" ::Katello::ContentView : belongs to >
 ::Katello::ContentView "1..*" --> "1" ::Organization : belongs to >
 
 ::Dockerro::DockerImageBuildConfig "*" --> "1" ::Katello::Repository : pushes to >

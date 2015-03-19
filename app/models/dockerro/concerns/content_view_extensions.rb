@@ -19,7 +19,7 @@ module Dockerro
         has_many :docker_image_build_configs,
                  :class_name => "::Dockerro::DockerImageBuildConfig",
                  :dependent  => :destroy,
-                 :inverse_of => :content_view_version
+                 :inverse_of => :content_view
       end
     end
   end

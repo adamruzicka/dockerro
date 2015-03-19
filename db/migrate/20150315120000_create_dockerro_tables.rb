@@ -4,11 +4,13 @@ class CreateDockerroTables < ActiveRecord::Migration
       t.string  'git_url', :null => false
       t.string  'git_commit'
       t.string  'base_image_tag'
-      t.integer 'base_image_id'
-      t.boolean 'template', :null => false
       t.string  'activation_key_prefix', :default => 'dockerro'
-      t.integer 'content_view_version_id', :null => false
+
+      t.integer 'base_image_id', :null => false
+      t.integer 'content_view_id', :null => false
+      t.integer 'content_view_version_id'
       t.integer 'repository_id', :null => false
+      t.integer 'parent_config_id'
     end
 
   end

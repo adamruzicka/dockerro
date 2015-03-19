@@ -51,7 +51,6 @@ module Dockerro
     def find_content_view
       @content_view = ::Katello::ContentView.find(params[:content_view_id]) if params.key? :content_view_id
       @environment  = ::Katello::KTEnvironment.find(params[:environment][:id]) if params.key? :environment
-      @content_view_environment = ::Katello::ContentViewEnvironment.where(:environment_id => @environment.id, :content_view_id => @content_view.id).first
     end
 
     def find_base_image
@@ -67,11 +66,16 @@ module Dockerro
     end
 
     def create_build_config
-      @build_config = ::Dockerro::DockerImageBuildConfig.new(::Dockerro::DockerImageBuildConfig.docker_image_build_config_params(params))
+      @build_config = ::Dockerro::DockerImageBuildConfig.new
+      @build_config.git_url = params.fetch(:git_url)
+      @build_config.git_commit = params[:git_commit]
+      @build_config.content_view_version = @content_view.version(@environment)
       @build_config.content_view = @content_view
       @build_config.repository = @repository
       @build_config.base_image_tag = @base_image.name
-      @build_config.content_view_environment = @content_view_environment
+      @build_config.base_image = @base_image.docker_image
+      @build_config.activation_key_prefix = params[:activation_key_prefix] || 'dockerro'
+      @build_config.environment = @environment
     end
   end
 end

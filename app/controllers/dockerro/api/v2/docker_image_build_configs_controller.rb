@@ -15,7 +15,7 @@ module Dockerro
     end
 
     def index
-      ids = DockerImageBuildConfig.where(:organization_id => @organization.id).pluck(:id)
+      ids = DockerImageBuildConfig.select { |build_config| build_config.organization.id == @organization.id }.map(&:id)
       filters = [:terms => {:id => ids}]
       options = {
           :filters => filters,
@@ -35,16 +35,16 @@ module Dockerro
     # r git_url
     #   git_commit
     #   base_image_tag
-    #   abstract
     #   activation_key_prefix
     # r content_view_id
+    #   content_view_version_id
     # r repository_id
-    #   content_view_environment_id
     def create
+      require 'pry'; binding.pry
       sync_task(::Actions::Dockerro::DockerImageBuildConfig::Create, @build_config)
       @build_config.reload
-      # respond_for_show(:resource => @build_config)
-      render :json => @build_config
+      respond_for_show(:resource => @build_config)
+      # render :json => @build_config
     end
 
     # r id
@@ -57,12 +57,7 @@ module Dockerro
 
     def create_build_config
       @build_config = ::Dockerro::DockerImageBuildConfig.new(::Dockerro::DockerImageBuildConfig.docker_image_build_config_params(params))
-      content_view_environment = ::Katello::ContentViewEnvironment.where(:content_view_id => params[:content_view_id],
-                                                                         :environment_id => @organization.library.id).first
       @build_config.base_image_tag = @base_image.name
-      @build_config.content_view_environment = content_view_environment
-      @build_config.abstract = true
-      @build_config.organization = @organization
       @build_config.base_image = @base_image.docker_image
     end
 

@@ -19,7 +19,8 @@ module Dockerro
     include ActiveModel::Validations
 
     attr_accessible :git_url, :git_commit, :base_image_tag,
-                    :template, :activation_key_prefix,
+                    :activation_key_prefix, :content_view_id,
+                    :parent_config_id, :base_image_id,
                     :content_view_version_id,
                     :repository_id
 
@@ -31,9 +32,9 @@ module Dockerro
                :class_name => "::Katello::Repository",
                :inverse_of => :docker_image_build_configs
 
-    has_one :content_view,
-            :class_name => "::Katello::ContentViewVersion",
-            :through    => :content_view_version
+    belongs_to :content_view,
+               :class_name => "::Katello::ContentView",
+               :inverse_of => :docker_image_build_configs
 
     has_one :organization,
             :class_name => "::Organization",
@@ -43,8 +44,12 @@ module Dockerro
                :class_name => "::Katello::DockerImage",
                :inverse_of => :docker_image_build_config
 
+    belongs_to :parent_config,
+               :class_name => "::Dockerro::DockerImageBuildConfig",
+               :inverse_of => :child_configs
+
     validates :repository, :presence => true
-    validates :content_view_version, :presence => true
+    validates :content_view, :presence => true
     validates :base_image, :presence => true
 
     def image_name
@@ -56,7 +61,6 @@ module Dockerro
     end
 
     def tag
-      # TODO: fix this for autopublish
       "#{content_view.name}-#{environment.name}"
     end
 
@@ -85,8 +89,9 @@ module Dockerro
                                                         :base_image_id,
                                                         :repository_id,
                                                         :content_view_version_id,
-                                                        :template,
-                                                        :activation_key_prefix)
+                                                        :content_view_id,
+                                                        :activation_key_prefix,
+                                                        :parent_config_id)
     end
 
     def build_container_options(compute_resource)
@@ -102,9 +107,22 @@ module Dockerro
       @activation_key ||= find_activation_key
     end
 
+    def environment
+      template? ? nil : @environment ||= content_view_version.environments.last
+    end
+
+    def environment=(env)
+      @environment = env
+    end
+
+    def template?
+      content_view_version.nil?
+    end
+
     private
 
     def find_activation_key
+      fail "Cannot build from template Build Config" if template?
       key_name       = "#{activation_key_prefix}-#{content_view.name}-#{environment.name}"
       matching_keys  = ::Katello::ActivationKey.where(:name => key_name)
       activation_key = nil
