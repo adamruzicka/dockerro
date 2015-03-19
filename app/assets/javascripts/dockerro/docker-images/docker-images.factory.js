@@ -1,3 +1,12 @@
+/**
+ * @ngdoc service
+ * @name  Bastion.products.factory:ProductBulkAction
+ *
+ * @requires BastionResource
+ *
+ * @description
+ *   Provides a BastionResource for bulk actions on products.
+ */
 angular.module('Dockerro.docker-images').factory('DDockerImage',
 ['BastionResource',
 function (BastionResource) {
@@ -6,3 +15,4 @@ function (BastionResource) {
   })
 }]
 );
+

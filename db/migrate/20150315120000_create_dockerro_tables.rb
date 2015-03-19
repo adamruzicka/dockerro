@@ -13,6 +13,7 @@ class CreateDockerroTables < ActiveRecord::Migration
       t.integer 'parent_config_id'
     end
 
+    # TODO: add index here for unique combination of content_view and repository
   end
 
   def down

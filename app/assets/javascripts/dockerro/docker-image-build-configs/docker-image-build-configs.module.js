@@ -57,4 +57,24 @@ angular.module('Dockerro.docker-image-build-configs').config(['$stateProvider', 
             controller: 'DockerImageBuildConfigDetailsInfoController',
             templateUrl: 'dockerro/docker-image-build-configs/details/views/docker-image-build-config-info.html'
         })
+        .state("docker-image-build-configs.bulk-actions", {
+            abstract: true,
+            collapsed: true,
+            views: {
+                'table': {
+                    templateUrl: 'dockerro/docker-image-build-configs/views/docker-image-build-configs-table-collapsed.html'
+                },
+                'action-panel': {
+                    controller: 'DockerImageBuildConfigsBulkActionController',
+                    templateUrl: 'dockerro/docker-image-build-configs/bulk/views/bulk-actions.html'
+                }
+            }
+        })
+        .state('docker-image-build-configs.bulk-actions.build', {
+            url: '/docker_image_build_configs/bulk-actions/build',
+            permission: 'sync_products',
+            collapsed: true,
+            controller: 'DockerImageBuildConfigsBulkActionBuildController',
+            templateUrl: 'dockerro/docker-image-build-configs/bulk/views/bulk-actions-build.html'
+        })
 }]);

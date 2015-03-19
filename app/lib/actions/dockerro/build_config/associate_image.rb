@@ -13,20 +13,25 @@
 module Actions
   module Dockerro
     module DockerImageBuildConfig
-      class Create < Actions::EntryAction
+      class AssociateImage < Actions::EntryAction
 
-        def plan(build_config)
-          build_config.save!
-          require 'pry'; binding.pry
-          plan_self :build_config_id => build_config.id
+        input_format do
+          param :build_config_id
+          param :base_image_id
         end
 
-        def run
-          output[:build_config_id] = input[:build_config_id]
+        def finalize
+          require 'pry'; binding.pry
+          build_config = ::Dockerro::DockerImageBuildConfig.find(input[:build_config_id])
+          # base_image = ::Katello::DockerImage.find(input[:base_image_id])
+          image = build_config.repository.docker_tags.select { |docker_tag| docker_tag.name == build_config.tag }.first.docker_image
+          image.docker_image_build_config = build_config
+          # image.prior = build_config.base_image
+          image.save!
         end
 
         def humanized_name
-          _("Create Build Config")
+          _("Associate Build Config with Image")
         end
 
       end

@@ -39,9 +39,9 @@ module Dockerro
     def bulk_build
       build_configs = params.fetch(:ids).map { |id| DockerImageBuildConfig.find(id) }
       task = async_task ::Actions::BulkAction,
-                        ::Actions::Dockerro::Image::Create,
+                        ::Actions::Dockerro::DockerImageBuildConfig::Build,
                         build_configs,
-                        @compute_resource,
+                        @compute_resource.id,
                         request.host
       respond_for_async(:resource => task)
     end

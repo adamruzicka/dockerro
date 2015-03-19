@@ -16,7 +16,7 @@ module Dockerro
       extend ActiveSupport::Concern
 
       included do
-        has_one :docker_image_build_config,
+        belongs_to :docker_image_build_config,
                 :class_name => "::Dockerro::DockerImageBuildConfig",
                 :inverse_of => :base_image
 

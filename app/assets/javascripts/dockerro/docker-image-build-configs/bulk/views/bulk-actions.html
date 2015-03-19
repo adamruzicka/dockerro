@@ -1,0 +1,67 @@
+<span page-title>{{ 'Docker Image Build Config Bulk Actions' | translate }}</span>
+
+<section class="nutupane-details" ng-cloak bst-container-scroll>
+  <header class="details-header">
+    <h2 class="fl" translate>Bulk Actions</h2>
+
+    <div class="fr">
+      <button class="btn btn-default"
+              bst-feature-flag="custom_docker_image_build_configs"
+              ng-disabled="removeProducts.workingMode"
+              ng-click="openModal()"
+              ng-hide="denied('delete_docker_image_build_configs')">
+        <i class="fa fa-trash-o"></i>
+        {{ "Remove Docker Image Build Configs" | translate }}
+      </button>
+
+      <span ng-show="removeDockerImageBuildConfigs.workingMode">
+        <i class="fa fa-spinner inline-icon fa-spin"></i>
+        <span>{{ "Removing Docker Image Build Configs" | translate }}</span>
+      </span>
+
+      <button class="btn btn-default" ui-sref="dockerImageBuildConfigs.index">
+        <i class="fa fa-remove"></i>
+        {{ "Close" | translate }}
+      </button>
+
+      <div bst-modal="removeProducts()">
+        <div data-block="modal-header" translate>Remove {{ table.getSelected().length }} Docker Image Build Config(s)?</div>
+        <div data-block="modal-body" translate>Are you sure you want to remove the {{ table.getSelected().length }} docker image build config(s) selected?</div>
+      </div>
+    </div>
+  </header>
+
+  <!--<nav class="details-navigation">-->
+    <!--<ul>-->
+      <!--<li>-->
+        <!--<a translate-->
+           <!--ui-sref="products.bulk-actions.sync"-->
+           <!--ng-class="{active: stateIncludes('products.bulk-actions.sync')}">-->
+          <!--Product Sync-->
+        <!--</a>-->
+      <!--</li>-->
+
+      <!--<li>-->
+        <!--<a translate-->
+           <!--ui-sref="products.bulk-actions.sync-plan"-->
+           <!--ng-class="{active: stateIncludes('products.bulk-actions.sync-plan')}">-->
+          <!--Alter Sync Plans-->
+        <!--</a>-->
+      <!--</li>-->
+    <!--</ul>-->
+  <!--</nav>-->
+
+  <div>
+    <div bst-alerts success-messages="successMessages" error-messages="errorMessages"></div>
+
+    <div class="alert warning alert-warning" ng-show="table.numSelected == 0">
+      <i class="fa fa-exclamation-sign"></i>
+      {{ 'At least one docker image build config needs to be selected in order to perform a bulk action.' | translate }}
+    </div>
+
+    <span ng-hide="table.numSelected == 0">
+      <div ui-view></div>
+    </span>
+  </div>
+
+</section>

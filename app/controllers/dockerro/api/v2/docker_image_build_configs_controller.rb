@@ -7,7 +7,6 @@ module Dockerro
     before_filter :find_base_image, :only => [:create]
     before_filter :create_build_config, :only => [:create]
     before_filter :find_compute_resource, :only => [:bulk_create]
-    # before_filter :find_repository, :only => [:index]
 
     resource_description do
       api_version 'v2'
@@ -40,7 +39,6 @@ module Dockerro
     #   content_view_version_id
     # r repository_id
     def create
-      require 'pry'; binding.pry
       sync_task(::Actions::Dockerro::DockerImageBuildConfig::Create, @build_config)
       @build_config.reload
       respond_for_show(:resource => @build_config)

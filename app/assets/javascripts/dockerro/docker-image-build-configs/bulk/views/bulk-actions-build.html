@@ -1,0 +1,50 @@
+<span page-title>{{ 'Bulk Build Docker Images' | translate }}</span>
+
+<div>
+
+  <header translate>Press 'Build Now' below to begin building the following docker image build config(s).</header>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+          <th translate>Name</th>
+          <th translate>Content View</th>
+          <th translate>Repository</th>
+          <th translate>Base image tag</th>
+      </tr>
+    </thead>
+
+    <tbody>
+    <tr ng-repeat="dockerImageBuildConfig in table.getSelected()">
+        <td>
+            <a ui-sref="docker-image-build-configs.details.info({ dockerImageBuildConfigId: dockerImageBuildConfig.id })">{{ dockerImageBuildConfig.name }}</a>
+        </td>
+        <td>{{ dockerImageBuildConfig.content_view.name }}</td>
+        <td>{{ dockerImageBuildConfig.repository.name }}</td>
+        <td>{{ dockerImageBuildConfig.base_image_tag }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+      <div label="{{ 'Compute Resource' | translate }}">
+          <select ng-hide="computeResources.length === 0"
+                  id="compute_resource_id"
+                  name="compute_resource_id"
+                  ng-model="compute_resource"
+                  ng-options="computeResource as computeResource.name for computeResource in computeResources"
+                  tabindex="4"
+                  autofocus
+                  single>
+          </select>
+        <span class="help-block" ng-show="computeResources.length === 0" translate>
+            You have no defined Compute Resources.
+        </span>
+      </div>
+    <br/>
+    <button class="btn btn-default"
+            ng-hide="denied('sync_products')"
+            ng-click="buildDockerImageBuildConfigs()">
+        <i class="fa fa-refresh"></i>
+        <span translate>Build Now</span>
+    </button>
+</div>

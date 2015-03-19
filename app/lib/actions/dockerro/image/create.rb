@@ -21,29 +21,38 @@ module Actions
           environment_variables = build_config.generate_environment_variables compute_resource, hostname, base_image
 
           sequence do
-            plan_self(:build_options         => build_options,
-                      :environment_variables => environment_variables)
-
             container = plan_action(::Actions::Dockerro::Container::Create, build_options, environment_variables)
 
             # run it and wait for it to finish
             plan_action(::Actions::Dockerro::Container::MonitorRun,
                         :container_id        => container.output[:id],
                         :compute_resource_id => compute_resource.id)
+            concurrence do
+              # save package list into pulp
+              plan_action(::Actions::Dockerro::Image::SaveToPulp,
+                          build_config.image_name,
+                          build_config.repository)
 
-            # save package list into pulp
-            plan_action(::Actions::Dockerro::Image::SaveToPulp,
-                        build_config.image_name,
-                        build_config.repository)
+              # [delete container]
+              plan_action(::Actions::Dockerro::Container::Destroy,
+                          :container_id => container.output[:id])
+            end
 
-            # [delete container]
-            plan_action(::Actions::Dockerro::Container::Destroy,
-                        :container_id => container.output[:id])
+            plan_self(:build_options         => build_options,
+                      :environment_variables => environment_variables,
+                      :repository_id         => build_config.repository.id,
+                      :tag                   => build_config.tag,
+                      :prior_id              => build_config.base_image.id)
           end
         end
 
         def run
-          output = input
+          repository        = ::Katello::Repository.find(input[:repository_id])
+          built_image       = repository.docker_tags.select { |docker_tag| docker_tag.name == input[:tag] }.first.docker_image
+          base_image        = ::Katello::DockerImage.find(input[:prior_id])
+          built_image.prior = base_image
+          built_image.save!
+          output[:image_id] = built_image.id
         end
 
         def humanized_name

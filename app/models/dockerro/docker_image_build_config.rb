@@ -18,6 +18,8 @@ module Dockerro
     include Glue::ElasticSearch::DockerImageBuildConfig
     include ActiveModel::Validations
 
+    attr_writer :environment
+
     attr_accessible :git_url, :git_commit, :base_image_tag,
                     :activation_key_prefix, :content_view_id,
                     :parent_config_id, :base_image_id,
@@ -47,6 +49,10 @@ module Dockerro
     belongs_to :parent_config,
                :class_name => "::Dockerro::DockerImageBuildConfig",
                :inverse_of => :child_configs
+
+    has_one :built_image,
+            :class_name => "::Katello::DockerImage",
+            :inverse_of => :docker_image_build_config
 
     validates :repository, :presence => true
     validates :content_view, :presence => true
@@ -103,16 +109,14 @@ module Dockerro
       }
     end
 
+    def clone_for_latest_version
+      new_config = self.dup
+      new_config.content_view_version = content_view.versions.last
+      new_config
+    end
+
     def activation_key
       @activation_key ||= find_activation_key
-    end
-
-    def environment
-      template? ? nil : @environment ||= content_view_version.environments.last
-    end
-
-    def environment=(env)
-      @environment = env
     end
 
     def template?
@@ -120,6 +124,14 @@ module Dockerro
     end
 
     private
+
+    def environment
+      if template?
+        nil
+      else
+        @environment ||= content_view_version.environments.select(&:library?).first
+      end
+    end
 
     def find_activation_key
       fail "Cannot build from template Build Config" if template?

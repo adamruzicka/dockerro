@@ -37,7 +37,7 @@ module Actions
           end
         end
 
-        def finalize
+        def run
           File.unlink input[:path]
         end
 
