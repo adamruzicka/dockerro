@@ -56,11 +56,28 @@ module Dockerro
                :engine => Dockerro::Engine,
                :parent => :containers_menu,
                :turbolinks => false
+          menu :top_menu, :docker_image_build_configs,
+               :caption => N_('Docker image build configs'),
+               :url => '/docker_image_build_configs',
+               :url_hash => { :controller => 'dockerro/api/v2/docker_image_build_configs',
+                              :action => 'index' },
+               :engine => Dockerro::Engine,
+               :parent => :containers_menu,
+               :turbolinks => false
 
         security_block :docker_images do
           permission :create_docker_images,
                      :docker_images          => [:create],
                      :'api/v2/docker_images' => [:create]
+          permission :view_docker_image_build_configs,
+                     :docker_image_build_configs => [:index, :show],
+                     :'api/v2/docker_image_build_configs' => [:index, :show]
+          permission :create_docker_image_build_configs,
+                     :docker_image_build_configs => [:create],
+                     :'api/v2/docker_image_build_configs' => [:create]
+          permission :destroy_docker_image_build_configs,
+                     :docker_image_build_configs => [:destroy],
+                     :'api/v2/docker_image_build_configs' => [:destroy]
         end
 
       end
