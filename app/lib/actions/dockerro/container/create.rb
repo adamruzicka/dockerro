@@ -62,7 +62,7 @@ module Actions
           {
             :tag=>"latest",
             :registry_id=>nil,
-            :tty=>false,
+            :tty=>true,
             :memory=>"",
             :attach_stdout=>true,
             :attach_stdin=>true,

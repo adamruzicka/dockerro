@@ -17,6 +17,7 @@ module Dockerro
     include Katello::Glue
     include Glue::ElasticSearch::DockerImageBuildConfig
     include ActiveModel::Validations
+    include ForemanTasks::Concerns::ActionSubject
 
     attr_writer :environment
 
@@ -48,7 +49,13 @@ module Dockerro
 
     belongs_to :parent_config,
                :class_name => "::Dockerro::DockerImageBuildConfig",
-               :inverse_of => :child_configs
+               :inverse_of => :child_configs,
+               :foreign_key => :parent_config_id
+
+    has_many :child_configs,
+             :class_name => "::Dockerro::DockerImageBuildConfig",
+             :inverse_of => :parent_config,
+             :foreign_key => :parent_config_id
 
     has_one :built_image,
             :class_name => "::Katello::DockerImage",
@@ -57,6 +64,7 @@ module Dockerro
     validates :repository, :presence => true
     validates :content_view, :presence => true
     validates :base_image, :presence => true
+    validates_uniqueness_of :content_view_version_id, :scope => :repository_id
 
     def image_name
       "#{name}:#{tag}"
@@ -112,6 +120,11 @@ module Dockerro
     def clone_for_latest_version
       new_config = self.dup
       new_config.content_view_version = content_view.versions.last
+      new_config.parent_config = self
+      unless new_config.valid?
+        new_config = child_configs.
+            select { |config| config.content_view_version_id == new_config.content_view_version_id }.first
+      end
       new_config
     end
 

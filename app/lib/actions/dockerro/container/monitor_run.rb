@@ -40,8 +40,8 @@ module Actions
 
         def get_logs
           {
-            :stdout => task_container.logs(:stdout => true).split("\n"),
-            :stderr => task_container.logs(:stderr => true).split("\n")
+            :stdout => task_container.logs(:stdout => true).split("\r\n"),
+            :stderr => task_container.logs(:stderr => true).split("\r\n")
           }
         end
 

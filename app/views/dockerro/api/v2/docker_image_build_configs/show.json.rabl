@@ -5,6 +5,10 @@ child :content_view => :content_view do
     extends "katello/api/v2/content_views/show"
 end
 
+child :content_view_version => :content_view_version do
+    extends "katello/api/v2/content_view_versions/show"
+end
+
 child :repository => :repository do
     extends "katello/api/v2/repositories/show"
 end

@@ -21,8 +21,10 @@ module Actions
           sequence do
             if config.template?
               config         = build_config.clone_for_latest_version
-              created_config = plan_action(::Actions::Dockerro::DockerImageBuildConfig::Create, config)
+              created_config = plan_action(::Actions::Dockerro::DockerImageBuildConfig::Create, config) if config.new_record?
             end
+            config.reload
+            action_subject(config)
             plan_action ::Actions::Dockerro::Image::Create,
                         config,
                         config.base_image.docker_tags.where(:name => config.base_image_tag).first,

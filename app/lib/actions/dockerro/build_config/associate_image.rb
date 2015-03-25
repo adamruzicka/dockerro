@@ -21,12 +21,9 @@ module Actions
         end
 
         def finalize
-          require 'pry'; binding.pry
           build_config = ::Dockerro::DockerImageBuildConfig.find(input[:build_config_id])
-          # base_image = ::Katello::DockerImage.find(input[:base_image_id])
           image = build_config.repository.docker_tags.select { |docker_tag| docker_tag.name == build_config.tag }.first.docker_image
           image.docker_image_build_config = build_config
-          # image.prior = build_config.base_image
           image.save!
         end
 

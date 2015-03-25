@@ -13,7 +13,9 @@ class CreateDockerroTables < ActiveRecord::Migration
       t.integer 'parent_config_id'
     end
 
-    # TODO: add index here for unique combination of content_view and repository
+    add_index :dockerro_docker_image_build_configs, [:repository_id, :content_view_id, :content_view_version_id],
+              :unique => true,
+              :name => :index_dockerro_docker_image_build_config_unique
   end
 
   def down
