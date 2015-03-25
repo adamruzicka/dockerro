@@ -20,13 +20,15 @@ module Actions
 
         input_format do
           :image_name
+          :url
         end
 
         def run
           tmp = Tempfile.new 'dockerro.'
           tmp_path = tmp.path
           tmp.close true
-          ::Docker::Image.save([input[:image_name]], tmp_path)
+          connection = ::Docker::Connection.new(input[:url], {})
+          ::Docker::Image.save([input[:image_name]], tmp_path, connection)
           output[:path] = tmp_path
         end
 

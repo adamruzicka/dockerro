@@ -23,13 +23,12 @@ module Actions
         end
 
         def done?
-          task_container.state == 'Stopped'
+          task_container.stopped?
         end
 
         def on_finish
-          output[:error_code] = ::Docker::Container.get(task_container.id).json["State"]["ExitCode"]
-          logs = get_logs
-          [:stdout, :stderr].each { |key| output[:task][key] = logs[key].join().split("\n") }
+          output[:error_code] = task_container.state_exit_code
+          output.update get_logs
           fail "Build container exited with return code #{output[:error_code]}" if output[:error_code] != 0
         end
 
@@ -40,24 +39,18 @@ module Actions
         end
 
         def get_logs
-          container = Docker::Container.get(input[:container_uuid])
-          tmp = { :stdout => [], :stderr => [] }
-          container.streaming_logs(stdout: true, stderr: true) do |stream, chunk|
-            tmp[stream.to_sym] << chunk
-          end
-          tmp
-        end
-
-        def poll_external_task
-          tmp = get_logs
           {
-            :stdout => tmp[:stdout].join().split("\n"),
-            :stderr => tmp[:stderr].join().split("\n")
+            :stdout => task_container.logs(:stdout => true).split("\n"),
+            :stderr => task_container.logs(:stderr => true).split("\n")
           }
         end
 
+        def poll_external_task
+          get_logs
+        end
+
         def cancel!
-          task_container.stop if task_container.state != 'Stopped'
+          task_container.stop if task_container.stopped?
         end
 
         def humanized_name

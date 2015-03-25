@@ -19,14 +19,9 @@ module Actions
         end
 
         def run
-          find_container(input[:container_id]).remove
+          ::Container.find(input[:container_id]).in_fog.destroy
         end
 
-        private
-
-        def find_container(container_id)
-          ::Docker::Container.get(::Container.find(container_id).uuid)
-        end
       end
     end
   end

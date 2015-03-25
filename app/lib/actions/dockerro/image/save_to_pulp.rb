@@ -18,9 +18,9 @@ module Actions
           :path
         end
 
-        def plan(image, repository)
+        def plan(image, repository, compute_resource)
           sequence do
-            tar = plan_action(::Actions::Dockerro::Image::Save, :image_name => image)
+            tar = plan_action(::Actions::Dockerro::Image::Save, :image_name => image, :url => compute_resource.url)
             upload_request = plan_action(Pulp::Repository::CreateUploadRequest)
             plan_action(Pulp::Repository::UploadFile,
                         upload_id: upload_request.output[:upload_id],

@@ -31,7 +31,8 @@ module Actions
               # save package list into pulp
               plan_action(::Actions::Dockerro::Image::SaveToPulp,
                           build_config.image_name,
-                          build_config.repository)
+                          build_config.repository,
+                          compute_resource)
 
               # [delete container]
               plan_action(::Actions::Dockerro::Container::Destroy,
