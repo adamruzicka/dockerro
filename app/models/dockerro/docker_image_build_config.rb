@@ -147,7 +147,7 @@ module Dockerro
     end
 
     def find_activation_key
-      fail "Cannot build from template Build Config" if template?
+      raise "Cannot build from template Build Config" if template?
       key_name       = "#{activation_key_prefix}-#{content_view.name}-#{environment.name}"
       matching_keys  = ::Katello::ActivationKey.where(:name => key_name)
       activation_key = nil
