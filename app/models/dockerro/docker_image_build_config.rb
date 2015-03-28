@@ -75,23 +75,24 @@ module Dockerro
     end
 
     def tag
+      fail "Cannot generate tag for template config" if template?
       "#{content_view.name}-#{environment.name}"
     end
 
-    def generate_build_options(hostname, base_image)
+    def generate_build_options(hostname, base_tag)
       {
           :git_url           => git_url,
           :git_commit        => git_commit,
           :tag               => tag,
           :image             => image_name,
-          :prebuild_plugins  => prebuild_plugins(hostname, base_image),
+          :prebuild_plugins  => prebuild_plugins(hostname, base_tag),
           :postbuild_plugins => postbuild_plugins
       }
     end
 
-    def generate_environment_variables(compute_resource, hostname, base_image)
+    def generate_environment_variables(compute_resource, hostname, base_tag)
       {
-          'BUILD_JSON'        => JSON.dump(generate_build_options(hostname, base_image)),
+          'BUILD_JSON'        => JSON.dump(generate_build_options(hostname, base_tag)),
           'DOCKER_CONNECTION' => compute_resource.url
       }
     end
@@ -164,11 +165,11 @@ module Dockerro
       activation_key
     end
 
-    def prebuild_plugins(hostname, base_image)
+    def prebuild_plugins(hostname, base_tag)
       plugins           = []
       register_commands = "yum localinstall -y http://#{hostname}/pub/katello-ca-consumer-latest.noarch.rpm && " +
           "subscription-manager register --org='#{organization.name}' --activationkey='#{activation_key.name}' || true && subscription-manager repos"
-      plugins << plugin('change_from_in_dockerfile', 'base_image' => "#{hostname}:5000/#{base_image.repository.relative_path}:#{base_image.name}") unless base_image.nil?
+      plugins << plugin('change_from_in_dockerfile', 'base_tag' => "#{hostname}:5000/#{base_image.repository.relative_path}:#{base_image.name}") unless base_image.nil?
       plugins << plugin('run_cmd_in_container',
                         'cmd' => register_commands)
       plugins
