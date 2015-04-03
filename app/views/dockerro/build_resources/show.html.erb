@@ -1,0 +1,9 @@
+<%= javascript 'build_resource', 'lookup_keys'%>
+<% title @build_resource.name %>
+
+<% title_actions link_to_if_authorized(_('Edit'), hash_for_edit_build_resource_path(@build_resource).merge(:auth_object => @build_resource), :class => "btn btn-default")  %>
+
+<%= render 'form' %>
+
+
+

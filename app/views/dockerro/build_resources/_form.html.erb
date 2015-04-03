@@ -1,0 +1,29 @@
+<%= javascript "build_resource" %>
+<%= form_for @build_resource, :html => {:data => {:id => @build_resource.try(:id)}} do |f| %>
+  <%= base_errors_for @build_resource %>
+
+  <% if show_taxonomy_tabs? %>
+    <ul class="nav nav-tabs" data-tabs="tabs">
+      <li class="active"><a href="#primary" data-toggle="tab"><%= _("build Resource") %></a></li>
+      <% if show_location_tab? %>
+        <li><a href="#locations" data-toggle="tab"><%= _("Locations") %></a></li>
+      <% end %>
+      <% if show_organization_tab? %>
+        <li><a href="#organizations" data-toggle="tab"><%= _("Organizations") %></a></li>
+      <% end %>
+    </ul>
+
+    <div class="tab-content">
+      <div class="tab-pane active" id="primary">
+  <% end %>
+        <%= text_f f, :name %>
+    <%= selectable_f f, :compute_resource_id, ComputeResource.where(:type => "ForemanDocker::Docker").map { |cr| [cr.name, cr.id] }, { :include_blank => _("Choose a compute resource")},
+                     {:label => _("Compute resource"), :disabled=> !f.object.new_record? } %>
+    <% if show_taxonomy_tabs? %>
+      </div>
+      <%= render 'taxonomies/loc_org_tabs', :f => f, :obj => @build_resource, :test => binding.pry %>
+    </div>
+  <% end %>
+
+  <%= submit_or_cancel f %>
+<% end %>

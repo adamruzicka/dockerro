@@ -25,7 +25,7 @@ module Dockerro
                     :activation_key_prefix, :content_view_id,
                     :parent_config_id, :base_image_id,
                     :content_view_version_id,
-                    :repository_id
+                    :repository_id, :automatic
 
     belongs_to :content_view_version,
                :class_name => "::Katello::ContentViewVersion",
@@ -39,22 +39,25 @@ module Dockerro
                :class_name => "::Katello::ContentView",
                :inverse_of => :docker_image_build_configs
 
+    belongs_to :compute_reource,
+               :class_name => "::ComputeResource"
+
     has_one :organization,
             :class_name => "::Organization",
-            :through => :content_view
+            :through    => :content_view
 
     belongs_to :base_image,
                :class_name => "::Katello::DockerImage",
                :inverse_of => :docker_image_build_config
 
     belongs_to :parent_config,
-               :class_name => "::Dockerro::DockerImageBuildConfig",
-               :inverse_of => :child_configs,
+               :class_name  => "::Dockerro::DockerImageBuildConfig",
+               :inverse_of  => :child_configs,
                :foreign_key => :parent_config_id
 
     has_many :child_configs,
-             :class_name => "::Dockerro::DockerImageBuildConfig",
-             :inverse_of => :parent_config,
+             :class_name  => "::Dockerro::DockerImageBuildConfig",
+             :inverse_of  => :parent_config,
              :foreign_key => :parent_config_id
 
     has_one :built_image,
@@ -71,7 +74,11 @@ module Dockerro
     end
 
     def name
-      repository.docker_upstream_name || repository.label
+      repository.docker_upstream_name.blank? ? repository.label : repository.docker_upstream_name
+    end
+
+    def automatic?
+      automatic
     end
 
     def tag
@@ -105,7 +112,9 @@ module Dockerro
                                                         :content_view_version_id,
                                                         :content_view_id,
                                                         :activation_key_prefix,
-                                                        :parent_config_id)
+                                                        :parent_config_id,
+                                                        :compute_resource_id,
+                                                        :automatic)
     end
 
     def build_container_options(compute_resource)
@@ -118,9 +127,9 @@ module Dockerro
     end
 
     def clone_for_latest_version
-      new_config = self.dup
+      new_config                      = self.dup
       new_config.content_view_version = content_view.versions.last
-      new_config.parent_config = self
+      new_config.parent_config        = self
       unless new_config.valid?
         new_config = child_configs.
             select { |config| config.content_view_version_id == new_config.content_view_version_id }.first
@@ -149,7 +158,8 @@ module Dockerro
     def find_activation_key
       fail "Cannot build from template Build Config" if template?
       key_name       = "#{activation_key_prefix}-#{content_view.name}-#{environment.name}"
-      matching_keys  = ::Katello::ActivationKey.where(:name => key_name)
+      matching_keys  = ::Katello::ActivationKey.where(:name            => key_name,
+                                                      :content_view_id => content_view.id)
       activation_key = nil
       if matching_keys.empty?
         activation_key              = ::Katello::ActivationKey.new
@@ -176,8 +186,8 @@ module Dockerro
 
     def postbuild_plugins
       [
-          plugin('all_rpm_packages', 'image_id' => image_name),
-          plugin('store_logs_to_file', 'file_path' => '/var/rpms')
+          # plugin('all_rpm_packages', 'image_id' => image_name),
+          # plugin('store_logs_to_file', 'file_path' => '/var/rpms')
       ]
     end
 

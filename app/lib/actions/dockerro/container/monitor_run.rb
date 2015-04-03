@@ -28,7 +28,7 @@ module Actions
 
         def on_finish
           output[:error_code] = task_container.state_exit_code
-          output.update get_logs
+          output.update :task => get_logs
           fail "Build container exited with return code #{output[:error_code]}" if output[:error_code] != 0
         end
 

@@ -100,6 +100,7 @@ module Dockerro
       ::Katello::ContentViewVersion.send :include, Dockerro::Concerns::ContentViewVersionExtensions
       ::Katello::DockerImage.send :include, Dockerro::Concerns::DockerImageExtensions
       ::Katello::Repository.send :include, Dockerro::Concerns::RepositoryExtensions
+      ::Taxonomy.send :include, Dockerro::Concerns::TaxonomyExtensions
     end
   end
 end

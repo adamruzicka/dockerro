@@ -36,7 +36,8 @@ angular.module('Dockerro.docker-image-build-configs').controller('DockerImageBui
             'search':           $location.search().search || "",
             'sort_by':          'name',
             'sort_order':       'ASC',
-            'paged':            true
+            'paged':            true,
+            'with_versions':    false
         };
 
         var nutupane = new Nutupane(DockerImageBuildConfig, params);

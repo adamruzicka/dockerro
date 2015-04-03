@@ -99,6 +99,14 @@
         </span>
         </div>
 
+        <div bst-form-group label="{{ 'Automatic builds on publish' | translate}}">
+            <input type="checkbox"
+                   id="automatic"
+                   name="automatic"
+                   ng-model="dockerImageBuildConfig.automatic"
+                   autofocus/>
+        </div>
+
         <div bst-form-buttons
              on-cancel="transitionTo('docker-image-build-configs.index')"
              on-save="save(dockerImageBuildConfig)"

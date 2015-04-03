@@ -24,10 +24,10 @@ module Dockerro
 
     def create
       fail "TODO: this doesn't work yet" if @compute_resource.url[/^unix:\/\//]
+      require 'pry'; binding.pry
       if @build_config.activation_key.new_record?
         sync_task(::Actions::Katello::ActivationKey::Create, @build_config.activation_key)
-        @build_config.activation_key.reload
-        @build_config.activation_key.available_subscriptions.each { |subscription| @build_config.activation_key.subscribe subscription.cp_id }
+        subscribe_activation_key(@build_config.activation_key)
       end
       task = async_task(::Actions::Dockerro::Image::Create, @build_config, @base_image, @compute_resource, request.host)
       respond_for_async(:resource => task)
@@ -47,6 +47,11 @@ module Dockerro
     end
 
     private
+
+    def subscribe_activation_key(activation_key)
+      activation_key.reload
+      activation_key.available_subscriptions.each { |subscription| @build_config.activation_key.subscribe subscription.cp_id }
+    end
 
     def find_content_view
       @content_view = ::Katello::ContentView.find(params[:content_view_id]) if params.key? :content_view_id

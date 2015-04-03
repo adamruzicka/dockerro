@@ -1,0 +1,22 @@
+<% title _("Build Resources") %>
+<% title_actions display_link_if_authorized(_("New Build Resource"), hash_for_new_build_resource_path),
+                 documentation_button('5.2BuildResources') %>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th><%= sort :name, :as => s_("BuildResource|Name") %></th>
+      <th><%= sort :type, :as => _("Assigned compute resource") %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @build_resources.each do |build| %>
+      <tr>
+        <td><%= link_to build.name, build %></td>
+        <td><%= build.compute_resource.name %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= will_paginate_with_info @build_resources %>

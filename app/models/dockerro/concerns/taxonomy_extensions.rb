@@ -10,26 +10,13 @@
 # have received a copy of GPLv2 along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
-module Actions
-  module Dockerro
-    module DockerImageBuildConfig
-      class Create < Actions::EntryAction
+module Dockerro
+  module Concerns
+    module TaxonomyExtensions
+      extend ActiveSupport::Concern
 
-        def plan(build_config)
-          require 'pry'; binding.pry
-          build_config.save!
-          require 'pry'; binding.pry
-          plan_self :build_config_id => build_config.id
-        end
-
-        def run
-          output[:build_config_id] = input[:build_config_id]
-        end
-
-        def humanized_name
-          _("Create Build Config")
-        end
-
+      included do
+        has_many :build_resources, :through => :taxable_taxonomies, :source => :taxable, :source_type => "Dockerro::BuildResource"
       end
     end
   end

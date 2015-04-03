@@ -15,6 +15,8 @@ module Actions
     module DockerImageBuildConfig
       class Build < Actions::EntryAction
 
+        middleware.use Actions::Middleware::KeepCurrentUser
+
         def plan(build_config, compute_resource_id, hostname)
           compute_resource = ::ComputeResource.find(compute_resource_id)
           config           = build_config
@@ -24,6 +26,7 @@ module Actions
               created_config = plan_action(::Actions::Dockerro::DockerImageBuildConfig::Create, config) if config.new_record?
             end
             config.reload
+            plan_action(::Actions::Dockerro::DockerImageBuildConfig::CreateAndAttachActivationKey, config.activation_key) if config.activation_key.new_record?
             action_subject(config)
             plan_action ::Actions::Dockerro::Image::Create,
                         config,
@@ -32,7 +35,6 @@ module Actions
                         hostname
 
             config_id = created_config.nil? ? config.id : created_config.output[:build_config_id]
-
             plan_action ::Actions::Dockerro::DockerImageBuildConfig::AssociateImage,
                         :build_config_id => config_id
           end
