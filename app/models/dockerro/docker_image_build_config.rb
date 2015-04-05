@@ -176,12 +176,28 @@ module Dockerro
 
     def prebuild_plugins(hostname, base_image)
       plugins           = []
-      register_commands = "yum localinstall -y http://#{hostname}/pub/katello-ca-consumer-latest.noarch.rpm && " +
-          "subscription-manager register --org='#{organization.name}' --activationkey='#{activation_key.name}' || true && subscription-manager repos"
+      register_commands = <<-END.gsub(/^.*?\| /, '')
+        | yum localinstall -y http://#{hostname}/#{katello_ca_cert_path} &&
+        | subscription-manager register --org='#{organization.name}' --activationkey='#{activation_key.name}' ||
+        | true &&
+        | subscription-manager repos &&
+        | echo "#{JSON.dump(image_identification)}" > /etc/rhsm/docker_identification.facts
+        END
       plugins << plugin('change_from_in_dockerfile', 'base_image' => "#{hostname}:5000/#{base_image.repository.relative_path}:#{base_image.name}") unless base_image.nil?
       plugins << plugin('run_cmd_in_container',
                         'cmd' => register_commands)
       plugins
+    end
+
+    def katello_ca_cert_path
+      "pub/katello-ca-consumer-latest.noarch.rpm"
+    end
+
+    def image_identifiaction
+      {
+        :represents_docker_image => true,
+        :build_config_id => id
+      }
     end
 
     def postbuild_plugins

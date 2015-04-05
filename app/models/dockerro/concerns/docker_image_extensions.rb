@@ -27,6 +27,11 @@ module Dockerro
         has_many :successor_images,
                  :class_name => "::Katello::DockerImage",
                  :inverse_of => :prior
+
+        belongs_to :content_host,
+                   :class_name => "::Katello::ContentHost",
+                   :inverse_of => :docker_image
+
       end
     end
   end
