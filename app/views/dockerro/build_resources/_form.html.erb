@@ -21,7 +21,7 @@
                      {:label => _("Compute resource"), :disabled=> !f.object.new_record? } %>
     <% if show_taxonomy_tabs? %>
       </div>
-      <%= render 'taxonomies/loc_org_tabs', :f => f, :obj => @build_resource, :test => binding.pry %>
+      <%= render 'taxonomies/loc_org_tabs', :f => f, :obj => @build_resource %>
     </div>
   <% end %>
 

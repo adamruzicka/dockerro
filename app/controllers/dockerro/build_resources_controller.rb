@@ -28,7 +28,14 @@ module Dockerro
     end
 
     def edit
-      require 'pry'; binding.pry
+    end
+
+    def update
+      if @build_resource.update_attributes(params[:build_resource])
+        process_success :success_redirect => build_resources_path
+      else
+        process_error
+      end
     end
 
     private

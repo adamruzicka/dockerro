@@ -64,6 +64,15 @@ module Dockerro
                :engine => Dockerro::Engine,
                :parent => :containers_menu,
                :turbolinks => false
+          divider :top_menu, :parent => :infrastructure_menu
+            menu :top_menu, :build_resource,
+                :caption => N_('Build resources'),
+                :url => '/build_resources',
+                :url_hash => { :controller => 'dockerro/build_resources',
+                                :action => 'index' },
+                :engine => Dockerro::Engine,
+                :parent => :infrastructure_menu,
+                :turbolinks => false
 
         security_block :docker_images do
           permission :create_docker_images,

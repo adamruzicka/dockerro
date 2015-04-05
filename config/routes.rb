@@ -5,7 +5,7 @@ end
 
 Dockerro::Engine.routes.draw do
 
-  resources :build_resources, :only => [:index, :create, :destroy, :show, :new, :edit]
+  resources :build_resources, :only => [:index, :create, :destroy, :show, :new, :edit, :update]
 
   scope :dockerro, :path => '/dockerro' do
 
