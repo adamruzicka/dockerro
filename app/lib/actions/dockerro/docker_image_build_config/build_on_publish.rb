@@ -23,9 +23,7 @@ module Actions
 
         def plan(content_view, _)
           # Select applicable build configs, eg templates with automatic flag set
-          #build_configs = content_view.docker_image_build_configs.select(&:template?).select(&:automatic?)
-          build_configs = content_view.docker_image_build_configs.select(&:template?)
-          require 'pry'; binding.pry
+          build_configs = content_view.docker_image_build_configs.select(&:template?).select(&:automatic?)
           compute_resource = ::Dockerro::BuildResource.scoped.first.compute_resource
 
           plan_self :build_config_ids => build_configs.map(&:id),
@@ -39,7 +37,6 @@ module Actions
 
         def finalize
           build_configs = input[:build_config_ids].map { |id| ::Dockerro::DockerImageBuildConfig.find(id) }
-          require 'pry'; binding.pry
           world.trigger(::Actions::BulkAction,
                         ::Actions::Dockerro::DockerImageBuildConfig::Build,
                         build_configs,

@@ -12,28 +12,22 @@
 
 module Dockerro
   module Concerns
-    module DockerImageExtensions
+    module SystemExtensions
       extend ActiveSupport::Concern
 
       included do
-        belongs_to :docker_image_build_config,
-                :class_name => "::Dockerro::DockerImageBuildConfig",
-                :inverse_of => :base_image
+        has_one :docker_image,
+                :class_name => "::Katello::DockerImage",
+                :dependent  => :destroy,
+                :inverse_of => :content_host,
+                :foreign_key => :conetnt_host_id
 
-        belongs_to :prior,
-                   :class_name => "::Katello::DockerImage",
-                   :inverse_of => :successor_images
-
-        has_many :successor_images,
-                 :class_name => "::Katello::DockerImage",
-                 :inverse_of => :prior
-
-        belongs_to :content_host,
-                   :class_name => "::Katello::System",
-                   :inverse_of => :docker_image
+        def represents_docker_image?
+          facts.fetch('dockerro.represents', false)
+        end
 
       end
+
     end
   end
 end
-

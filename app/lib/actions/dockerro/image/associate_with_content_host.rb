@@ -12,8 +12,10 @@
 
 module Actions
   module Dockerro
-    module DockerImageBuildConfig
+    module Image
       class AssociateWithContentHost < Actions::EntryAction
+
+        middleware.use Actions::Middleware::KeepCurrentUser
 
         input_format do
           param :build_config_id
@@ -21,12 +23,12 @@ module Actions
         end
 
         def finalize
-          activation_key = ::Katello::ActivationKey.find(input[:activation_key_id])
-          build_config = ::Dockerro::DockerImageBuildConfig.find(input[:docker_image_build_config_id])
+          build_config = ::Dockerro::DockerImageBuildConfig.find(input[:build_config_id])
+          activation_key = build_config.activation_key
           image = build_config.built_image
-          system = activation_key.systems.select(&:represents_docker_image?).select do |system|
-            system.facts[:build_config_id] == build_config.id
-          end
+          system = activation_key.systems.select do |system|
+            system.represents_docker_image? && system.facts['dockerro.build_config_id'] == build_config.id
+          end.first
           image.content_host = system
           image.save!
         end

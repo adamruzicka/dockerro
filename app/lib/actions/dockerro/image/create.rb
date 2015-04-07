@@ -39,11 +39,11 @@ module Actions
                           :container_id => container.output[:id])
             end
 
-            plan_self(:build_options         => build_options,
-                      :environment_variables => environment_variables,
-                      :repository_id         => build_config.repository.id,
-                      :tag                   => build_config.tag,
-                      :prior_id              => build_config.base_image.id)
+            built_image = plan_self(:build_options         => build_options,
+                                    :environment_variables => environment_variables,
+                                    :repository_id         => build_config.repository.id,
+                                    :tag                   => build_config.tag,
+                                    :prior_id              => build_config.base_image.id)
           end
         end
 

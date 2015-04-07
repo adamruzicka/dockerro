@@ -14,15 +14,15 @@ module Dockerro
 
     initializer 'dockerro.load_app_instance_data' do |app|
       app.config.paths['db/migrate'] += Dockerro::Engine.paths['db/migrate'].existent
+      app.config.autoload_paths += Dir["#{config.root}/app/lib"]
     end
 
     initializer 'dockerro.load_default_settings', :before => :load_config_initializers do
       require_dependency File.expand_path('../../../app/models/setting/dockerro.rb', __FILE__) if (Setting.table_exists? rescue(false))
     end
 
-    initializer "dockerro.register_actions", :before => 'foreman-tasks.initialize_dynflow' do |_app|
+    initializer "dockerro.register_actions", :before => 'foreman_tasks.initialize_dynflow' do |_app|
       ForemanTasks.dynflow.require!
-            ForemanTasks.dynflow.config.eager_load_paths.concat(%W[#{ForemanTasks::Engine.root}/app/lib/actions])
       action_paths = %W(#{Dockerro::Engine.root}/app/lib/actions)
       ForemanTasks.dynflow.config.eager_load_paths.concat(action_paths)
     end
@@ -109,7 +109,7 @@ module Dockerro
       ::Katello::ContentViewVersion.send :include, Dockerro::Concerns::ContentViewVersionExtensions
       ::Katello::DockerImage.send :include, Dockerro::Concerns::DockerImageExtensions
       ::Katello::Repository.send :include, Dockerro::Concerns::RepositoryExtensions
-      ::Katello::ContentHost.send :include, Dockerro::Concerns::ContentHostExtensions
+      ::Katello::System.send :include, Dockerro::Concerns::SystemExtensions
       ::Taxonomy.send :include, Dockerro::Concerns::TaxonomyExtensions
     end
   end

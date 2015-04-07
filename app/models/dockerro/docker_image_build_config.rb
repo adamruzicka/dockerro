@@ -176,12 +176,14 @@ module Dockerro
 
     def prebuild_plugins(hostname, base_image)
       plugins           = []
-      register_commands = <<-END.gsub(/^.*?\| /, '')
-        | yum localinstall -y http://#{hostname}/#{katello_ca_cert_path} &&
-        | subscription-manager register --org='#{organization.name}' --activationkey='#{activation_key.name}' ||
-        | true &&
-        | subscription-manager repos &&
-        | echo "#{JSON.dump(image_identification)}" > /etc/rhsm/docker_identification.facts
+      # TODO: Move image identification facts to postbuild plugin
+      register_commands = <<-END.gsub(/^\s*\| /, '')
+        | yum localinstall -y http://#{hostname}/#{katello_ca_cert_path} && \\
+        | mkdir -p /etc/rhsm/facts && \\
+        | echo '#{MultiJson.dump(image_identification)}' > /etc/rhsm/facts/docker_identification.facts && \\
+        | subscription-manager register --org='#{organization.name}' --activationkey='#{activation_key.name}' || \\
+        | true && \\
+        | subscription-manager repos
         END
       plugins << plugin('change_from_in_dockerfile', 'base_image' => "#{hostname}:5000/#{base_image.repository.relative_path}:#{base_image.name}") unless base_image.nil?
       plugins << plugin('run_cmd_in_container',
@@ -193,10 +195,10 @@ module Dockerro
       "pub/katello-ca-consumer-latest.noarch.rpm"
     end
 
-    def image_identifiaction
+    def image_identification
       {
-        :represents_docker_image => true,
-        :build_config_id => id
+        "dockerro.represents" => true,
+        "dockerro.build_config_id" => id
       }
     end
 
