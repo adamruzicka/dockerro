@@ -20,7 +20,7 @@ module Dockerro
                 :class_name => "::Katello::DockerImage",
                 :dependent  => :destroy,
                 :inverse_of => :content_host,
-                :foreign_key => :conetnt_host_id
+                :foreign_key => :content_host_id
 
         def represents_docker_image?
           facts.fetch('dockerro.represents', false)

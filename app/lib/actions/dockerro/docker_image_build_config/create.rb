@@ -16,9 +16,7 @@ module Actions
       class Create < Actions::EntryAction
 
         def plan(build_config)
-          require 'pry'; binding.pry
           build_config.save!
-          require 'pry'; binding.pry
           plan_self :build_config_id => build_config.id
         end
 

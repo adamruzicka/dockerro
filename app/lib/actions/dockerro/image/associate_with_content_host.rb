@@ -29,6 +29,7 @@ module Actions
           system = activation_key.systems.select do |system|
             system.represents_docker_image? && system.facts['dockerro.build_config_id'] == build_config.id
           end.first
+          require 'pry'; binding.pry
           image.content_host = system
           image.save!
         end

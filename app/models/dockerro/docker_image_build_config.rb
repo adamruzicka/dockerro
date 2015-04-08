@@ -160,7 +160,6 @@ module Dockerro
       key_name       = "#{activation_key_prefix}-#{content_view.name}-#{environment.name}"
       matching_keys  = ::Katello::ActivationKey.where(:name            => key_name,
                                                       :content_view_id => content_view.id)
-      activation_key = nil
       if matching_keys.empty?
         activation_key              = ::Katello::ActivationKey.new
         activation_key.name         = key_name
@@ -203,10 +202,12 @@ module Dockerro
     end
 
     def postbuild_plugins
-      [
-          # plugin('all_rpm_packages', 'image_id' => image_name),
-          # plugin('store_logs_to_file', 'file_path' => '/var/rpms')
-      ]
+      plugins = []
+      command = <<-END.gsub(/\s*\| /, '')
+        | subscription-manager repos
+      END
+      plugins << plugin('post_run_cmd', 'cmd' => command, 'image_id' => image_name)
+      plugins
     end
 
     def plugin(name, args = {})

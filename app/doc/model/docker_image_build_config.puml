@@ -24,4 +24,6 @@ set namespaceseparator ::
 ::Katello::DockerImage "*" --> "0..1" ::Katello::DockerImage : is built from >
 ::Katello::DockerTag "*" --> "1" ::Katello::DockerImage : tags >
 
+::Katello::DockerImage "0..1" -left-> "0..1" ::Katello::System : represented by >
+
 @enduml
