@@ -33,6 +33,11 @@ angular.module('Dockerro.docker-images').controller('NewDockerImageController',
             $scope.successMessages = [];
             $scope.errorMessages = [];
 
+            $scope.baseImageSelector = {
+                environments: [],
+                baseImagesLoaded: true,
+                environments: Organization.readableEnvironments({id: CurrentOrganization})
+            };
             $scope.dockerImage = $scope.dockerImage || new DockerImage();
             $scope.panel = { 'loading': true };
             $scope.form = { 'environment': undefined };
@@ -43,7 +48,7 @@ angular.module('Dockerro.docker-images').controller('NewDockerImageController',
             $scope.baseImages = [];
             $scope.cvloaded = true;
             $scope.dockerImage.default_key = true;
-            $q.all([fetchPulpRepositories().$promise, fetchComputeResources().$promise, fetchBaseImages().$promise]).finally(function () {
+            $q.all([fetchPulpRepositories().$promise, fetchComputeResources().$promise]).finally(function () {
                 $scope.panel.loading = false;
             });
 
@@ -62,25 +67,19 @@ angular.module('Dockerro.docker-images').controller('NewDockerImageController',
                 });
             }
 
-            function fetchBaseImages() {
-                return DockerTag.queryUnpaged({ 'organization_id': CurrentOrganization }, function (tags) {
-                    $scope.baseImages = tags.results;
-                })
-            }
-
             $scope.environments = Organization.readableEnvironments({id: CurrentOrganization});
 
-            $scope.$watch('dockerImage.default_key', function(default_key) {
-                if(!default_key) {
-                    $scope.keyloaded = false;
-                    ActivationKey.queryUnpaged({ 'organization_id': CurrentOrganization }, function(response) {
-                        $scope.activationKeys = response.results;
-                        $scope.keyloaded = true;
-                    })
-                } else {
-                    $scope.activationKeys = [];
-                }
-            })
+            //$scope.$watch('dockerImage.default_key', function(default_key) {
+            //    if(!default_key) {
+            //        $scope.keyloaded = false;
+            //        ActivationKey.queryUnpaged({ 'organization_id': CurrentOrganization }, function(response) {
+            //            $scope.activationKeys = response.results;
+            //            $scope.keyloaded = true;
+            //        })
+            //    } else {
+            //        $scope.activationKeys = [];
+            //    }
+            //})
 
             $scope.$watch('dockerImage.environment', function (environment) {
                 if (environment) {
@@ -91,6 +90,20 @@ angular.module('Dockerro.docker-images').controller('NewDockerImageController',
                     });
                 } else {
                     $scope.contentViews = [];
+                }
+            });
+
+            $scope.$watch('baseImageSelector.environment', function(environment) {
+                $scope.baseImages = [];
+                if(environment) {
+                    $scope.baseImagesLoaded = false;
+                    DockerTag.queryUnpaged({
+                        // 'organization_id': CurrentOrganization,
+                        'environment_id': environment.id
+                    }, function (tags) {
+                        $scope.baseImages = tags.results;
+                        $scope.baseImagesLoaded = true;
+                    })
                 }
             });
 

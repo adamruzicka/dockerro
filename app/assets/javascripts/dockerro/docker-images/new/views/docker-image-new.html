@@ -35,8 +35,23 @@
                 />
     </div>
 
+
+  <span bst-feature-flag="lifecycle_environments">
+    <div class="form-group">
+        <label class="control-label col-sm-2" translate>Base Image Environment</label>
+
+        <div class="col-sm-5 input">
+        <span path-selector="baseImageSelector.environments"
+              ng-model="baseImageSelector.environment"
+              mode="singleSelect">
+        </span>
+        </div>
+    </div>
+
+  </span>
+
     <div bst-form-group label="{{ 'Base Image' | translate }}">
-        <select ng-hide="baseImages.length === 0"
+        <select ng-hide="baseImages.length === 0 || baseImageSelector.environment === undefined"
                 id="base_image"
                 name="base_image"
                 ng-model="dockerImage.base_image_id"
@@ -45,8 +60,8 @@
                 autofocus
                 single>
         </select>
-        <span class="help-block" ng-show="baseImages.length === 0" translate>
-            You have no Docker Images in Pulp repositories.
+        <span class="help-block" ng-show="baseImages.length === 0 && baseImageSelector.baseImagesLoaded" translate>
+            You have no Docker Images in Pulp repositories in this Environment.
         </span>
     </div>
 

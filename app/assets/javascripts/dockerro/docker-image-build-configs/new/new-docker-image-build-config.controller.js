@@ -39,7 +39,14 @@ angular.module('Dockerro.docker-image-build-configs').controller('NewDockerImage
             $scope.pulpRepositories = [];
             $scope.baseImages = [];
             $scope.cvloaded = true;
-            $q.all([fetchPulpRepositories().$promise, fetchContentViews().$promise, fetchBaseImages().$promise]).finally(function () {
+
+            $scope.baseImageSelector = {
+                environments: [],
+                baseImagesLoaded: true,
+                environments: Organization.readableEnvironments({id: CurrentOrganization})
+            };
+
+            $q.all([fetchPulpRepositories().$promise, fetchContentViews().$promise]).finally(function () {
                 $scope.panel.loading = false;
             });
 
@@ -49,12 +56,6 @@ angular.module('Dockerro.docker-image-build-configs').controller('NewDockerImage
                 });
             }
 
-            function fetchBaseImages() {
-                return DockerTag.queryUnpaged({ 'organization_id': CurrentOrganization }, function (tags) {
-                    $scope.baseImages = tags.results;
-                })
-            }
-
             function fetchContentViews() {
                 $scope.cvloaded = false;
                 return ContentView.queryUnpaged({ 'library': true }, function (response) {
@@ -62,6 +63,22 @@ angular.module('Dockerro.docker-image-build-configs').controller('NewDockerImage
                     $scope.cvloaded = true;
                 });
             }
+
+            $scope.$watch('baseImageSelector.environment', function(environment) {
+                $scope.baseImagesLoaded = false;
+                if(environment) {
+                    DockerTag.queryUnpaged({
+                        // 'organization_id': CurrentOrganization,
+                        'environment_id': environment.id
+                    }, function (tags) {
+                        $scope.baseImages = tags.results;
+                        $scope.baseImagesLoaded = true;
+                    })
+                } else {
+                    $scope.baseImages = [];
+                    $scope.baseImagesLoaded = true;
+                }
+            });
 
             $scope.save = function (dockerImageBuildConfig) {
                 dockerImageBuildConfig.organization_id = CurrentOrganization;

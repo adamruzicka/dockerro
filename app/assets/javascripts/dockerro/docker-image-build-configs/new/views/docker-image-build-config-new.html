@@ -50,39 +50,59 @@
                     />
         </div>
 
+
+  <span bst-feature-flag="lifecycle_environments">
+    <div class="form-group">
+        <label class="control-label col-sm-2" translate>Base Image Environment</label>
+
+        <div class="col-sm-5 input">
+        <span path-selector="baseImageSelector.environments"
+              ng-model="baseImageSelector.environment"
+              mode="singleSelect">
+        </span>
+        </div>
+    </div>
+
+  </span>
+
         <div bst-form-group label="{{ 'Base Image' | translate }}">
-            <select ng-hide="baseImages.length === 0"
+            <select ng-hide="baseImages.length === 0 || baseImageSelector.environment === undefined"
                     id="base_image"
                     name="base_image"
-                    ng-model="dockerImageBuildConfig.base_image_id"
+                    ng-model="dockerImage.base_image_id"
                     ng-options="baseImage.id as baseImage.full_name for baseImage in baseImages"
                     tabindex="4"
                     autofocus
-                    single
-                    required>
+                    single>
             </select>
-        <span class="help-block" ng-show="baseImages.length === 0" translate>
-            You have no Docker Images in Pulp repositories.
-        </span>
+            <span class="help-block" ng-show="baseImageSelector.environment === undefined" translate>
+                Please select an Environment.
+            </span>
+            <i class="fa fa-spinner fa-spin" ng-hide="baseImageSelector.baseImagesLoaded"></i>
+            <span class="help-block"
+                  ng-show="baseImages.length === 0 && baseImageSelector.environment !== undefined && baseImageSelector.baseImagesLoaded"
+                  translate>
+                You have no Docker Images in Pulp repositories in this Environment.
+            </span>
         </div>
 
-    <div bst-form-group label="{{ 'Content View' | translate }}">
-        <select ng-hide="contentViews.length === 0"
-                id="content_view_id"
-                name="content_view_id"
-                ng-model="dockerImageBuildConfig.content_view_id"
-                ng-options="contentView.id as contentView.name for contentView in contentViews"
-                tabindex="4"
-                autofocus
-                required>
-        </select>
-      <span class="help-block"
-            ng-show="cvloaded && contentViews.length === 0"
-            translate>
-        The selected environment contains no Content Views, please select a different environment.
-      </span>
-        <i class="fa fa-spinner fa-spin" ng-hide="cvloaded"></i>
-    </div>
+        <div bst-form-group label="{{ 'Content View' | translate }}">
+            <select ng-hide="contentViews.length === 0"
+                    id="content_view_id"
+                    name="content_view_id"
+                    ng-model="dockerImageBuildConfig.content_view_id"
+                    ng-options="contentView.id as contentView.name for contentView in contentViews"
+                    tabindex="4"
+                    autofocus
+                    required>
+            </select>
+            <span class="help-block"
+                  ng-show="cvloaded && contentViews.length === 0"
+                  translate>
+              The selected environment contains no Content Views, please select a different environment.
+            </span>
+            <i class="fa fa-spinner fa-spin" ng-hide="cvloaded"></i>
+        </div>
 
         <div bst-form-group label="{{ 'Target Pulp Repository' | translate }}">
             <select ng-hide="pulpRepositories.length === 0"
