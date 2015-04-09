@@ -24,7 +24,6 @@ module Dockerro
 
     def create
       fail "TODO: this doesn't work yet" if @compute_resource.url[/^unix:\/\//]
-      require 'pry'; binding.pry
       if @build_config.activation_key.new_record?
         sync_task(::Actions::Katello::ActivationKey::Create, @build_config.activation_key)
         subscribe_activation_key(@build_config.activation_key)

@@ -41,7 +41,6 @@ module Dockerro
     #   content_view_version_id
     # r repository_id
     def create
-      require 'pry'; binding.pry
       sync_task(::Actions::Dockerro::DockerImageBuildConfig::Create, @build_config)
       @build_config.reload
       respond_for_show(:resource => @build_config)
