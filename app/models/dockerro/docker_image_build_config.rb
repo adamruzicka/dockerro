@@ -145,6 +145,10 @@ module Dockerro
       content_view_version.nil?
     end
 
+    def base_image_path(hostname, base_image)
+      "#{hostname}:5000/#{base_image.repository.relative_path}"
+    end
+
     private
 
     def environment
@@ -185,10 +189,14 @@ module Dockerro
         | true && \\
         | subscription-manager repos
         END
-      plugins << plugin('change_from_in_dockerfile', 'base_image' => "#{hostname}:5000/#{base_image.repository.relative_path}:#{base_image.name}") unless base_image.nil?
+      plugins << plugin('change_from_in_dockerfile', 'base_image' => "#{base_image_path(hostname, base_image)}:#{base_image.name}") unless base_image.nil?
       plugins << plugin('run_cmd_in_container',
                         'cmd' => register_commands)
       plugins
+    end
+
+    def base_image_tag(base_image)
+      base_image.name
     end
 
     def katello_ca_cert_path

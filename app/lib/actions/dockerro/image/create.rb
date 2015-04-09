@@ -21,6 +21,16 @@ module Actions
           environment_variables = build_config.generate_environment_variables compute_resource, hostname, base_image
 
           sequence do
+            unless base_image.nil?
+              pull_options = build_options.merge :repository_name => build_config.base_image_path(hostname, base_image),
+                                                 :tag             => base_image.name
+              pull_container = plan_action(::Actions::Dockerro::Container::Create, pull_options)
+              plan_action(::Actions::Dockerro::Container::Destroy,
+                          :container_id => pull_container.output[:id])
+             #  pull_container = ::ForemanDocker::Service::Containers::Container.new(pull_options)
+             #  pull_container.save!
+             #  plan_action(::ForemanDocker::Service::Actions::Container::Pull, pull_container)
+            end
             container = plan_action(::Actions::Dockerro::Container::Create, build_options, environment_variables)
 
             # run it and wait for it to finish
@@ -43,11 +53,13 @@ module Actions
                                     :environment_variables => environment_variables,
                                     :repository_id         => build_config.repository.id,
                                     :tag                   => build_config.tag,
-                                    :prior_id              => build_config.base_image.id)
+                                    :prior_id              => build_config.base_image.id,
+                                    :pull_container_id     => pull_container ? pull_container.id : nil)
           end
         end
 
         def run
+          require 'pry'; binding.pry
           repository        = ::Katello::Repository.find(input[:repository_id])
           built_image       = repository.docker_tags.select { |docker_tag| docker_tag.name == input[:tag] }.first.docker_image
           base_image        = ::Katello::DockerImage.find(input[:prior_id])

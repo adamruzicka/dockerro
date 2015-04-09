@@ -23,5 +23,15 @@
       </span>
       </div>
 
+      <div class="detail">
+          <span class="info-label" translate>Automatic builds on publish</span>
+          <input type="checkbox"
+                 id="automatic"
+                 name="automatic"
+                 ng-model="dockerImageBuildConfig.automatic"
+                 on-save="save(dockerImageBuildConfig)"
+                 />
+      </div>
+
   </section>
 </div>
