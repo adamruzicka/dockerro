@@ -180,6 +180,7 @@ module Dockerro
         | yum localinstall -y http://#{hostname}/#{katello_ca_cert_path} && \\
         | mkdir -p /etc/rhsm/facts && \\
         | echo '#{MultiJson.dump(image_identification)}' > /etc/rhsm/facts/docker_identification.facts && \\
+        | rm -rf /etc/pki/consumer /etc/pki/entitlement /etc/pki/product && \\
         | subscription-manager register --org='#{organization.name}' --activationkey='#{activation_key.name}' || \\
         | true && \\
         | subscription-manager repos
