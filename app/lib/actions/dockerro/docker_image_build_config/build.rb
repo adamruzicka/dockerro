@@ -37,8 +37,7 @@ module Actions
             config_id = created_config.nil? ? config.id : created_config.output[:build_config_id]
             plan_action ::Actions::Dockerro::DockerImageBuildConfig::AssociateImage,
                         :build_config_id => config_id
-            plan_action(::Actions::Dockerro::Image::AssociateWithContentHost,
-                        :build_config_id => config_id)
+
           end
         end
 

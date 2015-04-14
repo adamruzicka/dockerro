@@ -17,6 +17,8 @@ module Actions
 
         def plan(build_config, base_image, compute_resource, hostname)
           # create container
+          build_uuid = UUIDTools::UUID.random_create.hexdigest
+          build_config.build_uuid = build_uuid
           build_options         = build_config.build_container_options compute_resource
           environment_variables = build_config.generate_environment_variables compute_resource, hostname, base_image
 
@@ -27,9 +29,6 @@ module Actions
               pull_container = plan_action(::Actions::Dockerro::Container::Create, pull_options)
               plan_action(::Actions::Dockerro::Container::Destroy,
                           :container_id => pull_container.output[:id])
-             #  pull_container = ::ForemanDocker::Service::Containers::Container.new(pull_options)
-             #  pull_container.save!
-             #  plan_action(::ForemanDocker::Service::Actions::Container::Pull, pull_container)
             end
             container = plan_action(::Actions::Dockerro::Container::Create, build_options, environment_variables)
 
@@ -53,18 +52,24 @@ module Actions
                                     :environment_variables => environment_variables,
                                     :repository_id         => build_config.repository.id,
                                     :tag                   => build_config.tag,
-                                    :prior_id              => build_config.base_image.id,
+                                    :prior_id              => build_config.base_image_id,
                                     :pull_container_id     => pull_container ? pull_container.id : nil)
+
+            plan_action(::Actions::Dockerro::Image::AssociateWithContentHost,
+                        :image_id => built_image.output[:image_id],
+                        :activation_key_id => build_config.activation_key.id,
+                        :build_uuid => build_uuid)
           end
         end
 
         def run
-          require 'pry'; binding.pry
           repository        = ::Katello::Repository.find(input[:repository_id])
           built_image       = repository.docker_tags.select { |docker_tag| docker_tag.name == input[:tag] }.first.docker_image
-          base_image        = ::Katello::DockerImage.find(input[:prior_id])
-          built_image.prior = base_image
-          built_image.save!
+          unless input[:prior_id].nil?
+            base_image        = ::Katello::DockerImage.find(input[:prior_id])
+            built_image.base_image = base_image
+            built_image.save!
+          end
           output[:image_id] = built_image.id
         end
 

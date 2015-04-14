@@ -11,9 +11,10 @@ Dockerro::Engine.routes.draw do
 
     namespace :api do
       scope "(:api_version)", :module => :v2, :defaults => {:api_version => 'v2'}, :api_version => /v2/, :constraints => ApiConstraints.new(:version => 2, :default => true) do
-        api_resources :docker_images, :only => [:create] do
+        api_resources :docker_images, :only => [:create, :index] do
           collection do
             post :bulk_build
+            post :bulk_update
           end
         end
         api_resources :docker_image_build_configs, :only => [:create, :index, :show, :update, :destroy] do

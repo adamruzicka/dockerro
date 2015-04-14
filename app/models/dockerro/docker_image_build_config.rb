@@ -20,6 +20,7 @@ module Dockerro
     include ForemanTasks::Concerns::ActionSubject
 
     attr_writer :environment
+    attr_accessor :build_uuid
 
     attr_accessible :git_url, :git_commit, :base_image_tag,
                     :activation_key_prefix, :content_view_id,
@@ -206,7 +207,8 @@ module Dockerro
     def image_identification
       {
         "dockerro.represents" => true,
-        "dockerro.build_config_id" => id
+        "dockerro.build_config_id" => id,
+        "dockerro.build_uuid" => build_uuid
       }
     end
 

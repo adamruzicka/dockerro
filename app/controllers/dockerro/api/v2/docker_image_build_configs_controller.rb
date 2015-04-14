@@ -2,6 +2,8 @@ module Dockerro
   class Api::V2::DockerImageBuildConfigsController < ::Katello::Api::V2::ApiController
     respond_to :json
 
+    include Api::V2::Rendering
+
     before_filter :find_build_config, :only => [:show, :destroy]
     before_filter :find_organization, :only => [:index, :create]
     before_filter :find_base_image, :only => [:create]
@@ -71,16 +73,6 @@ module Dockerro
 
     def find_organization
       @organization = ::Organization.find(params.fetch(:organization_id))
-    end
-
-    def respond_with_template(action, resource_name, options = {}, &block)
-      yield if block_given?
-      status = options[:status] || 200
-      render :template => "dockerro/api/v2/#{resource_name}/#{action}",
-             :status => status,
-             :locals => { :object_name => options[:object_name],
-                          :root_name => options[:root_name] },
-             :layout => "katello/api/v2/layouts/#{options[:layout]}"
     end
 
   end

@@ -18,16 +18,16 @@ module Actions
         middleware.use Actions::Middleware::KeepCurrentUser
 
         input_format do
-          param :build_config_id
           param :activation_key_id
+          param :build_uuid
+          param :image_id
         end
 
         def finalize
-          build_config = ::Dockerro::DockerImageBuildConfig.find(input[:build_config_id])
-          activation_key = build_config.activation_key
-          image = build_config.built_image
+          activation_key = ::Katello::ActivationKey.find(input[:activation_key_id])
+          image = ::Katello::DockerImage.find(input[:image_id])
           system = activation_key.systems.select do |system|
-            system.represents_docker_image? && system.facts['dockerro.build_config_id'] == build_config.id
+            system.represents_docker_image? && system.facts['dockerro.build_uuid'] == input[:build_uuid]
           end.first
           image.content_host = system
           image.save!

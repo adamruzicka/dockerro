@@ -1,10 +1,13 @@
 module Dockerro
   class Api::V2::DockerImagesController < ::Katello::Api::V2::ApiController
     before_filter :find_content_view, :only => [:create]
-    before_filter :find_compute_resource, :only => [:create, :bulk_build]
+    before_filter :find_compute_resource, :only => [:create, :bulk_build, :bulk_update]
     before_filter :find_repository, :only => [:create]
     before_filter :find_base_image, :only => [:create]
+    before_filter :find_image, :only => [:show]
     before_filter :create_build_config, :only => [:create]
+
+    include Api::V2::Rendering
 
     respond_to :json
 
@@ -45,6 +48,40 @@ module Dockerro
       respond_for_async(:resource => task)
     end
 
+    api :POST, '/docker_images/bulk_update'
+    param :compute_resource_id, :identifier
+    param :ids, Array
+    def bulk_update
+      require 'pry'; binding.pry
+      task = async_task ::Actions::Dockerro::Image::Update, params[:ids], @compute_resource, request.host
+      respond_for_async(:resource => task)
+    end
+
+    api :GET, '/docker_images'
+    param :organization_id, :identifier
+    param :with_updates_only, :bool
+    def index
+      images = ::Katello::DockerImage.where("katello_docker_images.content_host_id IS NOT NULL")
+      images.select do |image|
+        image.repositories.any? { |repo| repo.organization == @organization }
+      end
+      images.select! { |image| image.all_available_updates.count > 0 } if params.fetch(:with_updates_only, false)
+      results = {
+          :results => images,
+          :subtotal => images.count,
+          :total => images.count,
+          :page => 1,
+          :per_page => images.count
+      }
+      respond_for_index(:collection => results)
+    end
+
+    api :GET, '/docker_images'
+    param :id, :identifier, :required => true
+    def show
+      respond_for_show(:resource => @docker_image)
+    end
+
     private
 
     def subscribe_activation_key(activation_key)
@@ -61,12 +98,20 @@ module Dockerro
       @base_image = ::Katello::DockerTag.find(params[:base_image_id]) if params.key? :base_image_id
     end
 
+    def find_image
+      @docker_image = ::Katello::DockerImage.find(params[:id])
+    end
+
     def find_repository
       @repository = ::Katello::Repository.find(params[:repository_id]) if params.key? :repository_id
     end
 
     def find_compute_resource
       @compute_resource = ::ComputeResource.find(params[:compute_resource_id])
+    end
+
+    def find_organization
+      @organization = ::Organization.find(params[:organization_id])
     end
 
     def create_build_config
@@ -76,8 +121,8 @@ module Dockerro
       @build_config.content_view_version = @content_view.version(@environment)
       @build_config.content_view = @content_view
       @build_config.repository = @repository
-      @build_config.base_image_tag = @base_image.name
-      @build_config.base_image = @base_image.docker_image
+      @build_config.base_image_tag = @base_image.name unless @base_image.nil?
+      @build_config.base_image = @base_image.docker_image unless @base_image.nil?
       @build_config.activation_key_prefix = params[:activation_key_prefix] || 'dockerro'
       @build_config.environment = @environment
     end
