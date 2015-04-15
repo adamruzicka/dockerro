@@ -16,25 +16,28 @@ module Actions
       class Update < Actions::EntryAction
 
         def plan(ids, compute_resource, hostname)
+          skipped = []
           # Find dependencies among the images
           chain = ids.map { |id| ancestor_chain(id).invert.to_a }.flatten(1).uniq
           tree = subtree(chain)
           # Collect levels of equal depth from the tree
           # Select only the input ids
-          levels = tree_levels(tree).map { |level| level.select { |id| ids.include? id } }
+          levels = tree_levels(tree).map { |level| level.select { |id| ids.include? id } }.reject(&:empty?)
           sequence do
             # Plan bulk build for each level
             levels.each do |level|
               build_config_ids = ::Katello::DockerImage.where(:id => level).pluck(:docker_image_build_config_id)
-              build_configs = build_config_ids.map { |id| ::Dockerro::DockerImageBuildConfig.find(id) }
+              require 'pry'; binding.pry
+              level.zip(build_config_ids).select { |_, v| v.nil? }.each { |id, _| skipped << "No build config associated with #{id}, skipping." }
+              build_configs = build_config_ids.compact.map { |id| ::Dockerro::DockerImageBuildConfig.find(id) }
               plan_action(::Actions::BulkAction,
                           ::Actions::Dockerro::DockerImageBuildConfig::Build,
                           build_configs,
                           compute_resource.id,
-                          hostname)
+                          hostname) unless build_configs.empty?
             end
           end
-
+          skipped
         end
 
         def humanized_name

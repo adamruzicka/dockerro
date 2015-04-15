@@ -23,8 +23,8 @@
  *   A controller for providing bulk sync functionality for products..
  */
 angular.module('Dockerro.docker-image-build-configs').controller('DockerImageBuildConfigsBulkActionBuildController',
-    ['$scope', '$q', '$state', 'translate', 'DockerImageBuildConfigBulkAction', 'BastionResource', 'CurrentOrganization',
-     function ($scope, $q, $state, translate, DockerImageBuildConfigBulkAction, BastionResource, CurrentOrganization) {
+    ['$scope', '$q', '$state', 'translate', 'DockerImageBulkAction', 'BastionResource', 'CurrentOrganization',
+     function ($scope, $q, $state, translate, DockerImageBulkAction, BastionResource, CurrentOrganization) {
          $scope.computeResources = [];
 
          $q.all([fetchComputeResources().$promise]).finally(function () {
@@ -44,7 +44,7 @@ angular.module('Dockerro.docker-image-build-configs').controller('DockerImageBui
              $scope.actionParams.ids = $scope.getSelectedDockerImageBuildConfigIds();
              $scope.actionParams.compute_resource_id = $scope.compute_resource.id;
 
-             DockerImageBuildConfigBulkAction.bulkBuild($scope.actionParams, function (task) {
+             DockerImageBulkAction.bulkBuild($scope.actionParams, function (task) {
                  $state.go('task', {taskId: task.id});
              });
          }

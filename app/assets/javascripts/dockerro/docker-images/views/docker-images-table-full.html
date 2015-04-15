@@ -1,0 +1,30 @@
+<!--<p bst-alert="info" ng-show="table.rows.length === 0">-->
+  <!--<span translate>-->
+    <!--You currently don't have any Docker Image Build Configs, you can add Docker Image Build Configs using the button on the right.-->
+  <!--</span>-->
+<!--</p>-->
+
+<table class="table table-striped" ng-class="{'table-mask': table.working}" ng-hide="table.rows.length === 0">
+    <thead>
+    <tr bst-table-head row-select>
+        <th bst-table-column="image_id" sortable><span translate>Image ID</span></th>
+        <th bst-table-column="name" sortable><span translate>Tags</span></th>
+        <th bst-table-column="available_updates"><span translate>Available Updates</span></th>
+        <th bst-table-column="based_on"><span translate>Based on</span></th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr bst-table-row ng-repeat="dockerImage in table.rows" row-select="dockerImage">
+        <td bst-table-cell>
+            <a ui-sref="docker-images.details.info({dockerImageTagId: dockerImage.id})">
+                {{ dockerImage.docker_image.image_id }}
+            </a>
+            <i class="fa fa-chevron-right selected-icon" ng-show="dockerImage.selected"></i>
+        </td>
+        <td bst-table-cell>{{ dockerImage.name }}</td>
+        <td bst-table-cell>{{ dockerImage.docker_image.available_updates.length }} ({{ dockerImage.docker_image.inherited_available_updates.length }})</td>
+        <td bst-table-cell>{{ dockerImage.based_on }}</td>
+    </tr>
+    </tbody>
+</table>

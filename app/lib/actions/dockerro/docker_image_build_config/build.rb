@@ -28,9 +28,12 @@ module Actions
             config.reload
             plan_action(::Actions::Dockerro::DockerImageBuildConfig::CreateAndAttachActivationKey, config.activation_key) if config.activation_key.new_record?
             action_subject(config)
+            require 'pry'; binding.pry
             plan_action ::Actions::Dockerro::Image::Create,
                         config,
+                        # TODO: vvvvvv this finds bad tag vvvvvv
                         config.base_image.docker_tags.where(:name => config.base_image_tag).first,
+                        # TODO: ^^^^^                    ^^^^^
                         compute_resource,
                         hostname
 
@@ -46,7 +49,7 @@ module Actions
         end
 
         def humanized_name
-          _("Create Build Config")
+          _("Build Build Config")
         end
 
       end

@@ -17,8 +17,6 @@ module Dockerro
 
       included do
 
-        include Glue::ElasticSearch::DockerImageBuildConfig
-
         belongs_to :docker_image_build_config,
                 :class_name => "::Dockerro::DockerImageBuildConfig",
                 :inverse_of => :base_image
@@ -48,6 +46,10 @@ module Dockerro
           @inherited_available_updates ||= calculate_parent_image_available_updates
         end
 
+        def packages
+          content_host.nil? ? [] : content_host.simple_packages
+        end
+
         private
 
         def calculate_available_updates
@@ -55,15 +57,15 @@ module Dockerro
           # Get packages from content host and from content view version
           # In format { 'package_name' => package }
           fmt = lambda { |acc, cur| acc.update cur.name => cur }
-          packages = content_host.simple_packages.reduce({}, &fmt)
+          present_packages = packages.reduce({}, &fmt)
           available = content_host.activation_keys.map do |key|
             key.content_view.version(key.environment).packages
           end.flatten.reduce({}, &fmt)
-          # Select packages which have different version &| release than the ones from the content view version
+          # Select present_packages which have different version &| release than the ones from the content view version
           with_updates = available.select do |name, pkg|
-            packages[name] &&
-                (packages[name].version != pkg.version ||
-                    packages[name].release != pkg.release)
+            present_packages[name] &&
+                (present_packages[name].version != pkg.version ||
+                    present_packages[name].release != pkg.release)
           end.values
           with_updates - inherited_available_updates
         end

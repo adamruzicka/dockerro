@@ -18,7 +18,7 @@ module Dockerro
       included do
         has_many :docker_image_build_configs,
                  :class_name => "::Dockerro::DockerImageBuildConfig",
-                 :dependent  => :nullify,
+                 :dependent  => :destroy,
                  :inverse_of => :repository
       end
     end

@@ -28,8 +28,8 @@
  *   within the table.
  */
 angular.module('Dockerro.docker-images').controller('DockerImagesController',
-    ['$scope', '$location', 'translate', 'Nutupane', 'DockerImage', 'CurrentOrganization',
-    function ($scope, $location, translate, Nutupane, DockerImage, CurrentOrganization) {
+    ['$scope', '$location', 'translate', 'Nutupane', 'DDockerImage', 'CurrentOrganization',
+    function ($scope, $location, translate, Nutupane, DDockerImage, CurrentOrganization) {
 
         var params = {
             'organization_id':  CurrentOrganization,
@@ -39,13 +39,13 @@ angular.module('Dockerro.docker-images').controller('DockerImagesController',
             'paged':            true
         };
 
-        // var nutupane = new Nutupane(null, params);
-        // $scope.table = nutupane.table;
-        // $scope.removeRow = nutupane.removeRow;
+        var nutupane = new Nutupane(DDockerImage, params);
+        $scope.table = nutupane.table;
+        $scope.removeRow = nutupane.removeRow;
 
-        // $scope.table.closeItem = function () {
-        //     $scope.transitionTo('docker-images.index');
-        // };
+        $scope.table.closeItem = function () {
+             $scope.transitionTo('docker-images.index');
+        };
 
     }]
 );

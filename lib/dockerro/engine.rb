@@ -49,10 +49,10 @@ module Dockerro
         requires_foreman '> 1.3'
         divider :top_menu, :parent => :containers_menu
           menu :top_menu, :new_image,
-               :caption => N_('New image'),
-               :url => '/docker_images/new',
+               :caption => N_('Docker images'),
+               :url => '/docker_images',
                :url_hash => {:controller => 'dockerro/api/v2/docker_images',
-                             :action => 'new'},
+                             :action => 'index'},
                :engine => Dockerro::Engine,
                :parent => :containers_menu,
                :turbolinks => false

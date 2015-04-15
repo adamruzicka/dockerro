@@ -1,11 +1,12 @@
 module Dockerro
   class Api::V2::DockerImagesController < ::Katello::Api::V2::ApiController
     before_filter :find_content_view, :only => [:create]
-    before_filter :find_compute_resource, :only => [:create, :bulk_build, :bulk_update]
+    before_filter :find_compute_resource, :only => [:create, :bulk_build]
     before_filter :find_repository, :only => [:create]
     before_filter :find_base_image, :only => [:create]
     before_filter :find_image, :only => [:show]
     before_filter :create_build_config, :only => [:create]
+    before_filter :find_build_resource, :only => [:bulk_update]
 
     include Api::V2::Rendering
 
@@ -53,7 +54,8 @@ module Dockerro
     param :ids, Array
     def bulk_update
       require 'pry'; binding.pry
-      task = async_task ::Actions::Dockerro::Image::Update, params[:ids], @compute_resource, request.host
+      image_ids = ::Katello::DockerTag.where(:id => params[:ids]).pluck(:docker_image_id)
+      task = async_task ::Actions::Dockerro::Image::Update, image_ids, @build_resource.compute_resource, request.host
       respond_for_async(:resource => task)
     end
 
@@ -61,17 +63,16 @@ module Dockerro
     param :organization_id, :identifier
     param :with_updates_only, :bool
     def index
-      images = ::Katello::DockerImage.where("katello_docker_images.content_host_id IS NOT NULL")
-      images.select do |image|
-        image.repositories.any? { |repo| repo.organization == @organization }
-      end
-      images.select! { |image| image.all_available_updates.count > 0 } if params.fetch(:with_updates_only, false)
+      # We don't care about images without tag since we cannot use them anyway
+      tags = ::Katello::DockerTag.joins(:docker_image)
+                    .where("content_host_id IS NOT NULL")
+      tags.select! { |tag| tag.docker_image.all_available_updates > 0} if params.fetch(:with_updates_only, false)
       results = {
-          :results => images,
-          :subtotal => images.count,
-          :total => images.count,
+          :results => tags,
+          :subtotal => tags.count,
+          :total => tags.count,
           :page => 1,
-          :per_page => images.count
+          :per_page => tags.count
       }
       respond_for_index(:collection => results)
     end
@@ -98,8 +99,12 @@ module Dockerro
       @base_image = ::Katello::DockerTag.find(params[:base_image_id]) if params.key? :base_image_id
     end
 
+    def find_build_resource
+      @build_resource = ::Dockerro::BuildResource.scoped.first
+    end
+
     def find_image
-      @docker_image = ::Katello::DockerImage.find(params[:id])
+      @docker_image = ::Katello::DockerTag.find(params[:id])
     end
 
     def find_repository

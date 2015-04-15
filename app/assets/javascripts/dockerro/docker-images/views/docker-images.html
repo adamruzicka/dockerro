@@ -1,0 +1,28 @@
+<span page-title>{{ 'Docker Images ' | translate }}</span>
+
+<div data-extend-template="layouts/nutupane.html">
+
+    <div data-block="messages">
+        <div bst-alerts success-messages="successMessages" error-messages="errorMessages"></div>
+    </div>
+
+    <div data-block="header">
+        {{ 'Docker Images ' | translate }}
+    </div>
+
+    <div data-block="actions">
+        <!-- TODO: permission -->
+        <button class="btn btn-default"
+                ng-show="permitted('edit_products') || permitted('destroy_products')"
+                ui-sref="docker-images.bulk-actions.update">
+            <i class="fa fa-group leading-icon"></i>
+            {{ "Bulk Update" | translate }}
+        </button>
+        <!-- TODO: permission -->
+        <button class="btn btn-primary" ui-sref="docker-images.new" ng-hide="denied('create_docker_images')">
+            <i class="fa fa-plus"></i>
+            {{ "New Docker Image" | translate }}
+        </button>
+    </div>
+
+</div>

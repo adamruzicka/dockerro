@@ -67,9 +67,9 @@
 
         <div bst-form-group label="{{ 'Base Image' | translate }}">
             <select ng-hide="baseImages.length === 0 || baseImageSelector.environment === undefined"
-                    id="base_image"
-                    name="base_image"
-                    ng-model="dockerImage.base_image_id"
+                    id="base_image_id"
+                    name="base_image_id"
+                    ng-model="dockerImageBuildConfig.base_image_id"
                     ng-options="baseImage.id as baseImage.full_name for baseImage in baseImages"
                     tabindex="4"
                     autofocus

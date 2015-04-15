@@ -39,6 +39,7 @@ angular.module('Dockerro.docker-image-build-configs').controller('NewDockerImage
             $scope.pulpRepositories = [];
             $scope.baseImages = [];
             $scope.cvloaded = true;
+            $scope.errorMessages = [];
 
             $scope.baseImageSelector = {
                 environments: [],

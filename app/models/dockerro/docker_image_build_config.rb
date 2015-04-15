@@ -156,12 +156,13 @@ module Dockerro
       if template?
         nil
       else
-        @environment ||= content_view_version.environments.select(&:library?).first
+        @environment ||= content_view.environments.select(&:library?).first
       end
     end
 
     def find_activation_key
       fail "Cannot build from template Build Config" if template?
+      require 'pry'; binding.pry
       key_name       = "#{activation_key_prefix}-#{content_view.name}-#{environment.name}"
       matching_keys  = ::Katello::ActivationKey.where(:name            => key_name,
                                                       :content_view_id => content_view.id)
@@ -194,10 +195,6 @@ module Dockerro
       plugins << plugin('run_cmd_in_container',
                         'cmd' => register_commands)
       plugins
-    end
-
-    def base_image_tag(base_image)
-      base_image.name
     end
 
     def katello_ca_cert_path
