@@ -8,12 +8,18 @@ set namespaceseparator ::
 "::Dockerro::DockerImageBuildConfig" : +string git_commit
 "::Dockerro::DockerImageBuildConfig" : +string base_image_tag
 "::Dockerro::DockerImageBuildConfig" : +string activation_key_prefix
+"::Dockerro::DockerImageBuildConfig" : +string base_image_name
+
+
+::Dockerro::DockerImageBuildConfig "*" --> "1" ::Katello::ContentView : uses base image from >
+::Dockerro::DockerImageBuildConfig "*" --> "1" ::Katello::Environment : uses base image from >
+
 
 ::Dockerro::DockerImageBuildConfig "*" --> "0..1" ::Dockerro::DockerImageBuildConfig : is cloned from
 
 ::Dockerro::DockerImageBuildConfig "*" --> "1" ::Katello::ContentViewVersion : uses content from >
 
-::Dockerro::DockerImageBuildConfig "1..*" --> "1" ::Katello::ContentView : belongs to >
+::Dockerro::DockerImageBuildConfig "1..*" --> "1" ::Katello::ContentView : takes content from >
 ::Katello::ContentView "1..*" --> "1" ::Organization : belongs to >
 
 ::Dockerro::DockerImageBuildConfig "*" --> "1" ::Katello::Repository : pushes to >

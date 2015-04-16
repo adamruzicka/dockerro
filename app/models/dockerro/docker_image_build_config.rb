@@ -22,7 +22,7 @@ module Dockerro
     attr_writer :environment
     attr_accessor :build_uuid
 
-    attr_accessible :git_url, :git_commit, :base_image_tag,
+    attr_accessible :git_url, :git_commit, :base_image_full_name,
                     :activation_key_prefix, :content_view_id,
                     :parent_config_id, :base_image_id,
                     :content_view_version_id,
@@ -42,6 +42,12 @@ module Dockerro
 
     belongs_to :compute_reource,
                :class_name => "::ComputeResource"
+
+    belongs_to :base_image_environment,
+               :class_name => "::Katello::KTEnvironment"
+
+    belongs_to :base_image_content_view,
+               :class_name => "::Katello::ContentView"
 
     has_one :organization,
             :class_name => "::Organization",
@@ -107,7 +113,7 @@ module Dockerro
     def self.docker_image_build_config_params(params)
       params.require(:docker_image_build_config).permit(:git_url,
                                                         :git_commit,
-                                                        :base_image_tag,
+                                                        :base_image_full_name,
                                                         :base_image_id,
                                                         :repository_id,
                                                         :content_view_version_id,
@@ -136,6 +142,14 @@ module Dockerro
             select { |config| config.content_view_version_id == new_config.content_view_version_id }.first
       end
       new_config
+    end
+
+    def base_image_tag
+      @base_image_tag ||= base_image_full_name.split(":").last
+    end
+
+    def based_on_old_image?
+      latest_base_tag.docker_image != base_image
     end
 
     def activation_key
@@ -177,6 +191,14 @@ module Dockerro
         activation_key = matching_keys.first
       end
       activation_key
+    end
+
+    def latest_base_tag
+      @found_base ||= ::Katello::DockerTag.where(:name => base_image_tag)
+        .joins(:repository)
+        .where('environment_id = %s' % base_image_environment.id)
+        .select { |tag| tag.repository.content_view.id == base_image_content_view.id }
+        .first
     end
 
     def prebuild_plugins(hostname, base_image)

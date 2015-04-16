@@ -13,7 +13,8 @@
     <div data-block="actions">
         <button class="btn btn-default"
                 ng-show="permitted('edit_products') || permitted('destroy_products')"
-                ui-sref="docker-image-build-configs.bulk-actions.build">
+                ui-sref="docker-image-build-configs.bulk-actions.build"
+                ng-class="{disabled: table.rows.length === 0}">
             <i class="fa fa-group leading-icon"></i>
             {{ "Bulk Build" | translate }}
         </button>
@@ -23,4 +24,7 @@
         </button>
     </div>
 
+  <span data-block="no-rows-message" translate>
+    You currently don't have any Docker Image Build Configs, you can create some using the button on the right.
+  </span>
 </div>

@@ -4,11 +4,12 @@ module Dockerro
 
     include Api::V2::Rendering
 
-    before_filter :find_build_config, :only => [:show, :destroy]
-    before_filter :find_organization, :only => [:index, :create]
+    before_filter :find_build_config, :only => [:show, :destroy, :build]
+    before_filter :find_organization, :only => [:index, :create, :build]
     before_filter :find_base_image, :only => [:create]
     before_filter :create_build_config, :only => [:create]
     before_filter :find_compute_resource, :only => [:bulk_create]
+    before_filter :find_build_resource, :only => [:build]
 
     resource_description do
       api_version 'v2'
@@ -49,6 +50,14 @@ module Dockerro
       # render :json => @build_config
     end
 
+    def build
+      task = async_task ::Actions::Dockerro::DockerImageBuildConfig::Build,
+                        @build_config,
+                        @build_resource.compute_resource.id,
+                        request.host
+      respond_for_async(:resource => task)
+    end
+
     # r id
     def destroy
       task = async_task(::Actions::Dockerro::DockerImageBuildConfig::Destroy, @build_config)
@@ -59,8 +68,12 @@ module Dockerro
 
     def create_build_config
       @build_config = ::Dockerro::DockerImageBuildConfig.new(::Dockerro::DockerImageBuildConfig.docker_image_build_config_params(params))
-      @build_config.base_image_tag = @base_image.name
-      @build_config.base_image = @base_image.docker_image
+      unless @base_image.nil?
+        @build_config.base_image_full_name = @base_image.full_name
+        @build_config.base_image = @base_image.docker_image
+        @build_config.base_image_content_view = @base_image.repository.content_view
+        @build_config.base_image_environment = @base_image.repository.environment
+      end
     end
 
     def find_base_image
@@ -73,6 +86,10 @@ module Dockerro
 
     def find_organization
       @organization = ::Organization.find(params.fetch(:organization_id))
+    end
+
+    def find_build_resource
+      @build_resource = ::Dockerro::BuildResource.scoped.first
     end
 
   end

@@ -26,14 +26,12 @@ module Actions
               created_config = plan_action(::Actions::Dockerro::DockerImageBuildConfig::Create, config) if config.new_record?
             end
             config.reload
-            plan_action(::Actions::Dockerro::DockerImageBuildConfig::CreateAndAttachActivationKey, config.activation_key) if config.activation_key.new_record?
             action_subject(config)
-            require 'pry'; binding.pry
             plan_action ::Actions::Dockerro::Image::Create,
                         config,
                         # TODO: vvvvvv this finds bad tag vvvvvv
                         config.base_image.docker_tags.where(:name => config.base_image_tag).first,
-                        # TODO: ^^^^^                    ^^^^^
+                        # TODO: ^^^^^^                    ^^^^^^
                         compute_resource,
                         hostname
 

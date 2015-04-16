@@ -2,50 +2,68 @@
 <div bst-alerts success-messages="successMessages" error-messages="errorMessages"></div>
 
 <div class="details fl">
-  <section>
-    <h4 translate>Basic Information</h4>
-
-    <div class="detail">
-      <span class="info-label" translate>Based on</span>
-      <span class="info-value">
-          {{ dockerImage.based_on }}
-      </span>
-    </div>
-  </section>
-
-    <div bst-alert="success" ng-show="dockerImage.docker_image.available_updates.length === 0 && dockerImage.docker_image.inherited_available_updates.length === 0">This image is up-to-date.</div>
-    <br/>
     <section>
-        <h4 translate>Available Package Updates</h4>
-    <table class="table table-striped" ng-hide="dockerImage.docker_image.available_updates.length === 0 && dockerImage.docker_image.inherited_available_updates.length === 0">
-        <thead>
-        <tr>
-            <th translate>Name</th>
-            <th translate>Version</th>
-            <th translate>Release</th>
-            <th translate>Inherited</th>
-        </tr>
-        </thead>
+        <h4 translate>Basic Information</h4>
 
-        <tbody>
-        <tr ng-repeat="package in dockerImage.docker_image.available_updates">
-            <td>{{ package.name }}</td>
-            <td>{{ package.version }}</td>
-            <td>{{ package.release }}</td>
-            <td>No</td>
-        </tr>
-        <tr ng-repeat="package in dockerImage.docker_image.inherited_available_updates">
-            <td>{{ package.name }}</td>
-            <td>{{ package.version }}</td>
-            <td>{{ package.release }}</td>
-            <td>Yes</td>
-        </tr>
-        </tbody>
-    </table>
+        <div class="detail">
+            <span class="info-label" translate>Based on</span>
+            <span class="info-value">
+                {{ dockerImage.based_on }}
+            </span>
+        </div>
+        <div class="detail">
+            <span class="info-label" translate>Built using</span>
+            <span class="info-value" ng-if="dockerImage.docker_image.docker_image_build_config === undefined">
+                <a ui-sref="docker-image-build-configs.details.info({dockerImageBuildConfigId: dockerImage.docker_image.docker_image_build_config.id})">
+                    {{ dockerImage.docker_image.docker_image_build_config.id }}
+                </a>
+            </span>
+            <span class="info-value" ng-if="dockerImage.docker_image.docker_image_build_config !== undefined">
+                None
+            </span>
+        </div>
     </section>
 
-    <section>
-        <h4>Image Content</h4>
+    <div bst-alert="success"
+         ng-show="dockerImage.docker_image.packages.length !== 0 && dockerImage.docker_image.available_updates.length === 0 && dockerImage.docker_image.inherited_available_updates.length === 0">
+        This image is up-to-date.
+    </div>
+    <div bst-alert="info" ng-show="dockerImage.docker_image.packages.length === 0">There is no package profile available
+        for this image.
+    </div>
+    <br/>
+    <section
+            ng-hide="dockerImage.docker_image.packages.length === 0 || (dockerImage.docker_image.available_updates.length === 0 && dockerImage.docker_image.inherited_available_updates.length !== 0)">
+        <h3 translate>Available Package Updates</h3>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th translate>Name</th>
+                <th translate>Version</th>
+                <th translate>Release</th>
+                <th translate>Inherited</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr ng-repeat="package in dockerImage.docker_image.available_updates">
+                <td>{{ package.name }}</td>
+                <td>{{ package.version }}</td>
+                <td>{{ package.release }}</td>
+                <td>No</td>
+            </tr>
+            <tr ng-repeat="package in dockerImage.docker_image.inherited_available_updates">
+                <td>{{ package.name }}</td>
+                <td>{{ package.version }}</td>
+                <td>{{ package.release }}</td>
+                <td>Yes</td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section ng-show="dockerImage.docker_image.packages.length !== 0">
+        <h3>Image Content</h3>
         <table class="table table-striped">
             <thead>
             <tr>

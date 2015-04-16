@@ -27,17 +27,17 @@
  *   Controls the creation of an empty DockerImage object for use by sub-controllers.
  */
 angular.module('Dockerro.docker-images').controller('NewDockerImageController',
-    ['$scope', '$q', '$location', 'FormUtils', 'DDockerImage', 'DockerTag', 'Organization', 'CurrentOrganization', 'ActivationKey', 'ContentView', 'Repository', 'BastionResource',
-        function ($scope, $q, $location, FormUtils, DockerImage, DockerTag, Organization, CurrentOrganization, ActivationKey, ContentView, Repository, BastionResource) {
+    ['$scope', '$q', '$location', 'FormUtils', 'DDockerImage', 'DockerTag', 'Organization', 'CurrentOrganization', 'ContentView', 'Repository', 'BastionResource',
+        function ($scope, $q, $location, FormUtils, DockerImage, DockerTag, Organization, CurrentOrganization, ContentView, Repository, BastionResource) {
 
             $scope.successMessages = [];
             $scope.errorMessages = [];
 
             $scope.baseImageSelector = {
-                environments: [],
                 baseImagesLoaded: true,
                 environments: Organization.readableEnvironments({id: CurrentOrganization})
             };
+            $scope.environments = Organization.readableEnvironments({id: CurrentOrganization})
             $scope.dockerImage = $scope.dockerImage || new DockerImage();
             $scope.panel = { 'loading': true };
             $scope.form = { 'environment': undefined };
@@ -48,9 +48,12 @@ angular.module('Dockerro.docker-images').controller('NewDockerImageController',
             $scope.baseImages = [];
             $scope.cvloaded = true;
             $scope.dockerImage.default_key = true;
+
             $q.all([fetchPulpRepositories().$promise, fetchComputeResources().$promise]).finally(function () {
                 $scope.panel.loading = false;
             });
+
+            $scope.environments = Organization.readableEnvironments({id: CurrentOrganization});
 
             function fetchPulpRepositories() {
                 return Repository.queryUnpaged({'content_type': 'docker'}, function (repos) {
@@ -66,20 +69,6 @@ angular.module('Dockerro.docker-images').controller('NewDockerImageController',
                     $scope.computeResources = resources.results.filter(function(x) { if(x.provider == 'Docker') return x;});
                 });
             }
-
-            $scope.environments = Organization.readableEnvironments({id: CurrentOrganization});
-
-            //$scope.$watch('dockerImage.default_key', function(default_key) {
-            //    if(!default_key) {
-            //        $scope.keyloaded = false;
-            //        ActivationKey.queryUnpaged({ 'organization_id': CurrentOrganization }, function(response) {
-            //            $scope.activationKeys = response.results;
-            //            $scope.keyloaded = true;
-            //        })
-            //    } else {
-            //        $scope.activationKeys = [];
-            //    }
-            //})
 
             $scope.$watch('dockerImage.environment', function (environment) {
                 if (environment) {
@@ -98,7 +87,6 @@ angular.module('Dockerro.docker-images').controller('NewDockerImageController',
                 if(environment) {
                     $scope.baseImagesLoaded = false;
                     DockerTag.queryUnpaged({
-                        // 'organization_id': CurrentOrganization,
                         'environment_id': environment.id
                     }, function (tags) {
                         $scope.baseImages = tags.results;
@@ -108,19 +96,18 @@ angular.module('Dockerro.docker-images').controller('NewDockerImageController',
             });
 
             $scope.save = function (dockerImage) {
-                dockerImage.katello_hostname = $location.host();
                 if(dockerImage.tag === undefined) { dockerImage.tag = "latest"; }
                 dockerImage.organization_id = CurrentOrganization;
                 dockerImage.$save(success, error);
             };
 
             function success(response) {
-                $scope.working = false
+                $scope.working = false;
                 $scope.transitionTo('task', {taskId: response.id});
             }
 
             function error(response) {
-                $scope.working = false
+                $scope.working = false;
                 $scope.errorMessages.push(response.data.displayMessage);
             }
 

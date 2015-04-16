@@ -16,6 +16,7 @@ module Actions
       class Create < Actions::EntryAction
 
         def plan(build_config, base_image, compute_resource, hostname)
+          plan_action(::Actions::Dockerro::DockerImageBuildConfig::CreateAndAttachActivationKey, build_config.activation_key) if build_config.activation_key.new_record?
           # create container
           build_uuid = UUIDTools::UUID.random_create.hexdigest
           build_config.build_uuid = build_uuid

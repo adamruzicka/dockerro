@@ -1,16 +1,17 @@
-<!--<p bst-alert="info" ng-show="table.rows.length === 0">-->
-  <!--<span translate>-->
-    <!--You currently don't have any Docker Image Build Configs, you can add Docker Image Build Configs using the button on the right.-->
-  <!--</span>-->
-<!--</p>-->
-
+<p bst-alert="info" ng-show="table.rows.length === 0">
+  <span translate>
+    You currently don't have any Docker Images, you can add Docker Images using the button on the right.
+  </span>
+</p>
 <table class="table table-striped" ng-class="{'table-mask': table.working}" ng-hide="table.rows.length === 0">
     <thead>
     <tr bst-table-head row-select>
         <th bst-table-column="image_id" sortable><span translate>Image ID</span></th>
-        <th bst-table-column="name" sortable><span translate>Tags</span></th>
-        <th bst-table-column="available_updates"><span translate>Available Updates</span></th>
-        <th bst-table-column="based_on"><span translate>Based on</span></th>
+        <th bst-table-column="name" sortable><span translate>Name</span></th>
+        <th bst-table-column="available_updates" sortable><span translate>Available Updates</span></th>
+        <th bst-table-column="based_on" sortable><span translate>Based on</span></th>
+        <th bst-table-column="based_on_outdated"><span translate>Based on outdated image</span></th>
+        <th bst-table-column="updateable"><span translate>Updateable</span></th>
     </tr>
     </thead>
 
@@ -25,6 +26,9 @@
         <td bst-table-cell>{{ dockerImage.name }}</td>
         <td bst-table-cell>{{ dockerImage.docker_image.available_updates.length }} ({{ dockerImage.docker_image.inherited_available_updates.length }})</td>
         <td bst-table-cell>{{ dockerImage.based_on }}</td>
+        <td bst-table-cell>{{ dockerImage.based_on_outdated }}</td>
+        <td bst-table-cell ng-if="dockerImage.docker_image.docker_image_build_config.id !== undefined">Yes</td>
+        <td bst-table-cell ng-if="dockerImage.docker_image.docker_image_build_config.id === undefined">No</td>
     </tr>
     </tbody>
 </table>

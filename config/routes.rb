@@ -19,7 +19,7 @@ Dockerro::Engine.routes.draw do
         end
         api_resources :docker_image_build_configs, :only => [:create, :index, :show, :update, :destroy] do
           member do
-            post :clone
+            post :build
           end
         end
       end

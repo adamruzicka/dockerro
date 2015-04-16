@@ -9,7 +9,14 @@ node(:based_on) do |tag|
     tags.select! { |t| t.name == tag.docker_image.docker_image_build_config.base_image_tag } if tag.docker_image.docker_image_build_config
     "#{tags.first.repository}:#{tags.first.name}"
   else
-    "-"
+    "Unknown"
+  end
+end
+node(:based_on_outdated) do |tag|
+  if tag.docker_image.docker_image_build_config
+   tag.docker_image.docker_image_build_config.based_on_old_image? ? "Yes" : "No"
+  else
+    "Unknown"
   end
 end
 

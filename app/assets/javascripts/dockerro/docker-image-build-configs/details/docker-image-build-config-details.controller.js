@@ -37,6 +37,16 @@ angular.module('Dockerro.docker-image-build-configs').controller('DockerImageBui
             $scope.panel.loading = false;
         });
 
+        $scope.build = function(buildConfig) {
+            $scope.actionParams = {
+                id: buildConfig.id,
+                organization_id: CurrentOrganization
+            }
+            DockerImageBuildConfig.build($scope.actionParams, function (task) {
+                $state.go('task', {taskId: task.id});
+            });
+        }
+
         $scope.removeDockerImageBuildConfig = function (buildConfig) {
             var id = buildConfig.id;
 

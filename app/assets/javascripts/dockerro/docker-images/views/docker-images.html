@@ -14,7 +14,8 @@
         <!-- TODO: permission -->
         <button class="btn btn-default"
                 ng-show="permitted('edit_products') || permitted('destroy_products')"
-                ui-sref="docker-images.bulk-actions.update">
+                ui-sref="docker-images.bulk-actions.update"
+                disabled="table.rows.length === 0">
             <i class="fa fa-group leading-icon"></i>
             {{ "Bulk Update" | translate }}
         </button>
@@ -24,5 +25,9 @@
             {{ "New Docker Image" | translate }}
         </button>
     </div>
+
+  <span data-block="no-rows-message" translate>
+    You currently don't have any Docker Images, you can add Docker Images using the button on the right.
+  </span>
 
 </div>

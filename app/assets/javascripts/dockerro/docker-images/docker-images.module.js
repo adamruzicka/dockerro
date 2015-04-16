@@ -30,7 +30,7 @@ angular.module('Dockerro.docker-images').config(['$stateProvider', function ($st
                     templateUrl: 'dockerro/docker-images/views/docker-images-table-collapsed.html'
                 },
                 'action-panel': {
-                    controller: 'NewDockerImageBuildConfigController',
+                    controller: 'NewDockerImageController',
                     templateUrl: 'dockerro/docker-images/new/views/docker-image-new.html'
                 }
             }

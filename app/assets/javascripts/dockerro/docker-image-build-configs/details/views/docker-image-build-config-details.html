@@ -17,7 +17,9 @@
         <div data-block="modal-body" translate>Are you sure you want to remove Docker Image Build Config "{{  dockerImageBuildConfig.repository.docker_upstream_name || dockerImageBuildConfig.repository.label }}"?</div>
       </div>
 
-        <button class="btn btn-default" ui-sref="dockerImageBuildConfigs.index" ng-class="{disabled: !dockerImageBuildConfig.content_view_version}">
+        <!-- TODO: permissions -->
+        <button class="btn btn-default"
+                ng-click="build(dockerImageBuildConfig)">
             <i class="fa fa-plus"></i>
             {{ "Build" | translate }}
         </button>

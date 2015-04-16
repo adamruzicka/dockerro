@@ -3,7 +3,7 @@ object @docker_image
 attributes :id, :image_id
 
 child :docker_image_build_config => :docker_image_build_config do
-    attributes :id
+    attributes :id, :name
 end
 
 child :available_updates => :available_updates do

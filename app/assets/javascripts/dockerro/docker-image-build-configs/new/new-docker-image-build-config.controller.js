@@ -69,7 +69,6 @@ angular.module('Dockerro.docker-image-build-configs').controller('NewDockerImage
                 $scope.baseImagesLoaded = false;
                 if(environment) {
                     DockerTag.queryUnpaged({
-                        // 'organization_id': CurrentOrganization,
                         'environment_id': environment.id
                     }, function (tags) {
                         $scope.baseImages = tags.results;
@@ -88,6 +87,7 @@ angular.module('Dockerro.docker-image-build-configs').controller('NewDockerImage
 
             function success(response) {
                 $scope.working = false;
+                $scope.table.addRow(response);
                 $scope.transitionTo('docker-image-build-configs.index');
             }
 

@@ -28,10 +28,10 @@ module Dockerro
 
     def create
       fail "TODO: this doesn't work yet" if @compute_resource.url[/^unix:\/\//]
-      if @build_config.activation_key.new_record?
-        sync_task(::Actions::Katello::ActivationKey::Create, @build_config.activation_key)
-        subscribe_activation_key(@build_config.activation_key)
-      end
+      # if @build_config.activation_key.new_record?
+      #   sync_task(::Actions::Katello::ActivationKey::Create, @build_config.activation_key)
+      #   subscribe_activation_key(@build_config.activation_key)
+      # end
       task = async_task(::Actions::Dockerro::Image::Create, @build_config, @base_image, @compute_resource, request.host)
       respond_for_async(:resource => task)
     end
@@ -53,7 +53,6 @@ module Dockerro
     param :compute_resource_id, :identifier
     param :ids, Array
     def bulk_update
-      require 'pry'; binding.pry
       image_ids = ::Katello::DockerTag.where(:id => params[:ids]).pluck(:docker_image_id)
       task = async_task ::Actions::Dockerro::Image::Update, image_ids, @build_resource.compute_resource, request.host
       respond_for_async(:resource => task)
@@ -64,9 +63,18 @@ module Dockerro
     param :with_updates_only, :bool
     def index
       # We don't care about images without tag since we cannot use them anyway
-      tags = ::Katello::DockerTag.joins(:docker_image)
-                    .where("content_host_id IS NOT NULL")
-      tags.select! { |tag| tag.docker_image.all_available_updates > 0} if params.fetch(:with_updates_only, false)
+      tags = []
+      joined = ::Katello::DockerTag.joins(:docker_image, :repository => :environment)
+                                   .where("organization_id = %s" % params[:organization_id])
+      if params.fetch(:with_updates_only, false)
+        tags.concat(joined.where("content_host_id IS NOT NULL")
+                          .select { |tag| tag.docker_image.all_available_updates > 0})
+        tags.concat(joined.where("docker_image_build_config_id IS NOT NULL")
+                          .select(&:based_on_old_image?))
+        tags.uniq!
+      else
+        tags = joined.all
+      end
       results = {
           :results => tags,
           :subtotal => tags.count,
@@ -126,7 +134,7 @@ module Dockerro
       @build_config.content_view_version = @content_view.version(@environment)
       @build_config.content_view = @content_view
       @build_config.repository = @repository
-      @build_config.base_image_tag = @base_image.name unless @base_image.nil?
+      @build_config.base_image_full_name = @base_image.full_name unless @base_image.nil?
       @build_config.base_image = @base_image.docker_image unless @base_image.nil?
       @build_config.activation_key_prefix = params[:activation_key_prefix] || 'dockerro'
       @build_config.environment = @environment
