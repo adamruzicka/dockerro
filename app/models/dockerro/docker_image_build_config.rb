@@ -89,7 +89,7 @@ module Dockerro
     end
 
     def tag
-      "#{content_view.name}-#{environment.name}"
+      "#{content_view.label}-#{environment.label}"
     end
 
     def generate_build_options(hostname, base_image)
@@ -177,7 +177,7 @@ module Dockerro
     def find_activation_key
       fail "Cannot build from template Build Config" if template?
       require 'pry'; binding.pry
-      key_name       = "#{activation_key_prefix}-#{content_view.name}-#{environment.name}"
+      key_name       = "#{activation_key_prefix}-#{content_view.label}-#{environment.label}"
       matching_keys  = ::Katello::ActivationKey.where(:name            => key_name,
                                                       :content_view_id => content_view.id)
       if matching_keys.empty?
