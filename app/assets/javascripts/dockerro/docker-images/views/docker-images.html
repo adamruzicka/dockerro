@@ -15,7 +15,7 @@
         <button class="btn btn-default"
                 ng-show="permitted('edit_products') || permitted('destroy_products')"
                 ui-sref="docker-images.bulk-actions.update"
-                disabled="table.rows.length === 0">
+                ng-class="{disabled: table.rows.length === 0">
             <i class="fa fa-group leading-icon"></i>
             {{ "Bulk Update" | translate }}
         </button>

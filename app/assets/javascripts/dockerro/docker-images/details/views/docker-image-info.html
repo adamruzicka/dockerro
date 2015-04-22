@@ -33,7 +33,7 @@
     </div>
     <br/>
     <section
-            ng-hide="dockerImage.docker_image.packages.length === 0 || (dockerImage.docker_image.available_updates.length === 0 && dockerImage.docker_image.inherited_available_updates.length !== 0)">
+            ng-hide="dockerImage.docker_image.packages.length === 0 || (dockerImage.docker_image.available_updates.length === 0 && dockerImage.docker_image.inherited_available_updates.length === 0)">
         <h3 translate>Available Package Updates</h3>
         <table class="table table-striped">
             <thead>
