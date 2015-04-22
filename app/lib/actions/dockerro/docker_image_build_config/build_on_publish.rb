@@ -24,15 +24,15 @@ module Actions
         def plan(content_view, _)
           # Select applicable build configs, eg templates with automatic flag set
           build_configs = content_view.docker_image_build_configs.select(&:template?).select(&:automatic?)
-          compute_resource = ::Dockerro::BuildResource.scoped.first.compute_resource
+          unless build_configs.empty?
+            # Get compute resource from build resource
+            compute_resource = ::Dockerro::BuildResource.scoped.first.compute_resource
 
-          plan_self :build_config_ids => build_configs.map(&:id),
-                    :compute_resource_id => compute_resource.id,
-                    :hostname => hostname unless build_configs.empty?
-          # Get compute resource from build resource
-
-          # Plan bulk actions for each group
-          nil
+            # Plan bulk build for found build configs
+            plan_self :build_config_ids => build_configs.map(&:id),
+                        :compute_resource_id => compute_resource.id,
+                        :hostname => hostname
+          end
         end
 
         def finalize
