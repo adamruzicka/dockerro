@@ -44,7 +44,7 @@ module Actions
                           build_config.repository,
                           compute_resource)
 
-              # [delete container]
+              # delete container
               plan_action(::Actions::Dockerro::Container::Destroy,
                           :container_id => container.output[:id])
             end
@@ -59,7 +59,8 @@ module Actions
             plan_action(::Actions::Dockerro::Image::AssociateWithContentHost,
                         :image_id => built_image.output[:image_id],
                         :activation_key_id => build_config.activation_key.id,
-                        :build_uuid => build_uuid)
+                        :build_uuid => build_uuid,
+                        :content_view_version_id => build_config.content_view_version.id)
           end
         end
 

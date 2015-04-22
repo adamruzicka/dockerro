@@ -21,16 +21,28 @@ module Actions
           param :activation_key_id
           param :build_uuid
           param :image_id
+          param :content_view_version_id
         end
 
         def finalize
           activation_key = ::Katello::ActivationKey.find(input[:activation_key_id])
           image = ::Katello::DockerImage.find(input[:image_id])
+          content_view_version = ::Katello::ContentViewVersion.find(input[:content_view_version_id])
           system = activation_key.systems.select do |system|
             system.represents_docker_image? && system.facts['dockerro.build_uuid'] == input[:build_uuid]
           end.first
+
+          bind_system_repositories(system, content_view_version)
+
           image.content_host = system
           image.save!
+        end
+
+        def bind_system_repositories(system, content_view_version)
+          system.bound_repositories = content_view_version.repos(system.environment)
+          system.save!
+          system.propagate_yum_repos
+          system.generate_applicability
         end
 
         def humanized_name
