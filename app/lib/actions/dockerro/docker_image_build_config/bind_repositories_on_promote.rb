@@ -13,41 +13,36 @@
 module Actions
   module Dockerro
     module DockerImageBuildConfig
-      class BindRepositoriesOnPublish < Actions::EntryAction
+      class BindRepositoriesOnPromote < Actions::EntryAction
 
         middleware.use Actions::Middleware::KeepCurrentUser
 
         def self.subscribe
-          ::Actions::Katello::ContentView::Publish
+          ::Actions::Katello::ContentView::Promote
         end
 
-        def plan(content_view, _)
-          # Select applicable build configs, eg templates with automatic flag set
-          build_configs = content_view.docker_image_build_configs.select(&:template?).select(&:automatic?)
-          unless build_configs.empty?
-            # Get compute resource from build resource
-            compute_resource = ::Dockerro::BuildResource.scoped.first.compute_resource
-
-            # Plan bulk build for found build configs
-            plan_self :build_config_ids => build_configs.map(&:id),
-                        :compute_resource_id => compute_resource.id,
-                        :hostname => hostname
+        def plan(version, environment, _)
+          content_view = version.content_view
+          repositories = content_view.repos(environment)
+          systems = ::Katello::System
+                    .where(:environment_id => environment.id)
+                    .where(:content_view_id => content_view.id)
+                    .select { |sys| !sys.docker_image.empty? }
+          unless systems.empty?
+            plan_self :repository_ids => repositories.map(&:id),
+                      :system_ids => systems.map(&:id)
+            plan_action ::Actions::Katello::System::GenerateApplicability, systems
           end
+
         end
 
-        def finalize
-          build_configs = input[:build_config_ids].map { |id| ::Dockerro::DockerImageBuildConfig.find(id) }
-          world.trigger(::Actions::BulkAction,
-                        ::Actions::Dockerro::DockerImageBuildConfig::Build,
-                        build_configs,
-                        input[:compute_resource_id],
-                        input[:hostname])
-          true
-        end
-
-        def hostname
-          @capsule ||= ::Katello::CapsuleContent.default_capsule.capsule
-          @capsule.hostname
+        def run
+          systems = input[:system_ids].map { |id| ::Katello::System.find id }
+          systems.each do |system|
+            system.bound_repository_ids = input[:repository_ids]
+            system.save!
+            system.propagate_yum_repos
+          end
         end
 
       end
