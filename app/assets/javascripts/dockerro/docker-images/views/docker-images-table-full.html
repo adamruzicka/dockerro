@@ -24,7 +24,16 @@
             <i class="fa fa-chevron-right selected-icon" ng-show="dockerImage.selected"></i>
         </td>
         <td bst-table-cell>{{ dockerImage.name }}</td>
-        <td bst-table-cell>{{ dockerImage.docker_image.available_updates.length }} ({{ dockerImage.docker_image.inherited_available_updates.length }})</td>
+        <td bst-table-cell>
+            <a ui-sref="content-hosts.details.errata.index({contentHostId: dockerImage.docker_image.content_host.uuid})"
+                    ng-if="dockerImage.docker_image.content_host !== undefined">
+                <span class="errata-count" errata-counts="dockerImage.docker_image.content_host.errata_counts"></span>
+            </a>
+            <span class="errata-count" errata-counts="dockerImage.docker_image.content_host.errata_counts"
+                    ng-if="dockerImage.docker_image.content_host === undefined"></span>
+            <br/>
+            {{ dockerImage.docker_image.available_updates.length }} ({{ dockerImage.docker_image.inherited_available_updates.length }})
+        </td>
         <td bst-table-cell>{{ dockerImage.based_on }}</td>
         <td bst-table-cell>{{ dockerImage.based_on_outdated }}</td>
         <td bst-table-cell ng-if="dockerImage.docker_image.docker_image_build_config.id !== undefined">Yes</td>

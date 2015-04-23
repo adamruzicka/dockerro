@@ -47,5 +47,12 @@ angular.module('Dockerro.docker-images').controller('DockerImagesController',
              $scope.transitionTo('docker-images.index');
         };
 
+        $scope.showUpdateable = false;
+
+        $scope.toggleUpdateable = function () {
+            nutupane.table.params['restrict_updateable'] = $scope.showUpdateable;
+            nutupane.refresh();
+        };
+
     }]
 );

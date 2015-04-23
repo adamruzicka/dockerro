@@ -22,6 +22,17 @@
                 None
             </span>
         </div>
+        <div class="detail">
+            <span class="info-label" translate>Installable errata</span>
+            <span class="info-value">
+                <a ui-sref="content-hosts.details.errata.index({contentHostId: dockerImage.docker_image.content_host.uuid})"
+                   ng-if="dockerImage.docker_image.content_host !== undefined">
+                    <span class="errata-count" errata-counts="dockerImage.docker_image.content_host.errata_counts"></span>
+                </a>
+                <span class="errata-count" errata-counts="dockerImage.docker_image.content_host.errata_counts"
+                      ng-if="dockerImage.docker_image.content_host === undefined"></span>
+            </span>
+        </div>
     </section>
 
     <div bst-alert="success"

@@ -66,12 +66,9 @@ module Dockerro
       tags = []
       joined = ::Katello::DockerTag.joins(:docker_image, :repository => :environment)
                                    .where("organization_id = %s" % params[:organization_id])
-      if params.fetch(:with_updates_only, false)
-        tags.concat(joined.where("content_host_id IS NOT NULL")
-                          .select { |tag| tag.docker_image.all_available_updates > 0})
-        tags.concat(joined.where("docker_image_build_config_id IS NOT NULL")
-                          .select(&:based_on_old_image?))
-        tags.uniq!
+      if params.fetch(:restrict_updateable, false)
+        # Filter out images withou build config because we dont know how to rebuild them
+        tags.concat(joined.where("docker_image_build_config_id IS NOT NULL"))
       else
         tags = joined.all
       end

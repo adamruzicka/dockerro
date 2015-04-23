@@ -15,7 +15,7 @@
         <button class="btn btn-default"
                 ng-show="permitted('edit_products') || permitted('destroy_products')"
                 ui-sref="docker-images.bulk-actions.update"
-                ng-class="{disabled: table.rows.length === 0">
+                ng-class="{disabled: table.rows.length === 0}">
             <i class="fa fa-group leading-icon"></i>
             {{ "Bulk Update" | translate }}
         </button>
@@ -24,6 +24,15 @@
             <i class="fa fa-plus"></i>
             {{ "New Docker Image" | translate }}
         </button>
+    </div>
+
+    <div data-block="search-filter">
+        <div class="col-sm-3">
+            <label class="checkbox-inline" title="{{ 'Only show Docker Images which are upateable' | translate }}">
+                <input type="checkbox" ng-model="showUpdateable" ng-change="toggleUpdateable()"/>
+                <span translate>Updateable</span>
+            </label>
+        </div>
     </div>
 
   <span data-block="no-rows-message" translate>
