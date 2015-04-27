@@ -1,3 +1,4 @@
+
 #
 # Copyright 2014 Red Hat, Inc.
 #
@@ -12,28 +13,22 @@
 
 module Actions
   module Dockerro
-    module DockerImageBuildConfig
-      class BindRepositoriesOnPromote < Actions::EntryAction
+    module System
+      class BindRepositories < Actions::EntryAction
 
         middleware.use Actions::Middleware::KeepCurrentUser
 
-        def self.subscribe
-          ::Actions::Katello::ContentView::Promote
+        def input_format
+          param :system_ids
+          param :repository_ids
         end
 
-        def plan(version, environment, _)
-          content_view = version.content_view
-          repositories = content_view.repos(environment)
-          systems = ::Katello::System
-                    .where(:environment_id => environment.id)
-                    .where(:content_view_id => content_view.id)
-                    .select { |sys| !sys.docker_image.empty? }
+        def plan(systems, repositories)
           unless systems.empty?
             plan_self :repository_ids => repositories.map(&:id),
                       :system_ids => systems.map(&:id)
             plan_action ::Actions::Katello::System::GenerateApplicability, systems
           end
-
         end
 
         def run

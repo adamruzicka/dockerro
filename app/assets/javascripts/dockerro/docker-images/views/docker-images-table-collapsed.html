@@ -1,21 +1,21 @@
 <table bst-table="table" class="table table-striped table-full" ng-class="{'table-mask': table.working}">
-    <thead>
+  <thead>
     <tr bst-table-head row-select>
-        <th bst-table-column sortable><span translate>Name</span></th>
-        <th bst-table-column sortable><span translate>Available updates</span></th>
+      <th bst-table-column sortable><span translate>Name</span></th>
+      <th bst-table-column sortable><span translate>Available updates</span></th>
     </tr>
-    </thead>
+  </thead>
 
-    <tbody>
+  <tbody>
     <tr bst-table-row row-select="dockerImage"
         ng-repeat="dockerImage in table.rows"
         active-row="stateIncludes('docker-images.details', {dockerImageTagId: dockerImage.id})">
-        <td bst-table-cell>
-            <a ui-sref="docker-images.details.info({dockerImageTagId: dockerImage.id})">
-                {{ dockerImage.name }}
-            </a>
-        </td>
-        <td bst-table-cell>{{ dockerImage.docker_image.available_updates.length }} ({{ dockerImage.docker_image.inherited_available_updates.length }})</td>
+      <td bst-table-cell>
+        <a ui-sref="docker-images.details.info({dockerImageTagId: dockerImage.id})">
+          {{ dockerImage.name }}
+        </a>
+      </td>
+      <td bst-table-cell>{{ dockerImage.docker_image.available_updates.length }} ({{ dockerImage.docker_image.inherited_available_updates.length }})</td>
     </tr>
-    </tbody>
+  </tbody>
 </table>

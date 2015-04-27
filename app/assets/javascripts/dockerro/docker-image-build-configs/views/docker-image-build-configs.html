@@ -1,28 +1,28 @@
 <span page-title>{{ 'Docker Image Build Configs' | translate }}</span>
 
 <div data-extend-template="layouts/nutupane.html">
+ 
+  <div data-block="messages">
+    <div bst-alerts success-messages="successMessages" error-messages="errorMessages"></div>
+  </div>
 
-    <div data-block="messages">
-        <div bst-alerts success-messages="successMessages" error-messages="errorMessages"></div>
-    </div>
+  <div data-block="header">
+    {{ 'Docker Image Build Configs' | translate }}
+  </div>
 
-    <div data-block="header">
-        {{ 'Docker Image Build Configs' | translate }}
-    </div>
-
-    <div data-block="actions">
-        <button class="btn btn-default"
-                ng-show="permitted('edit_products') || permitted('destroy_products')"
-                ui-sref="docker-image-build-configs.bulk-actions.build"
-                ng-class="{disabled: table.rows.length === 0}">
-            <i class="fa fa-group leading-icon"></i>
-            {{ "Bulk Build" | translate }}
-        </button>
-        <button class="btn btn-primary" ui-sref="docker-image-build-configs.new" ng-hide="denied('create_activation_keys')">
-            <i class="fa fa-plus"></i>
-            {{ "New Docker Image Build Config" | translate }}
-        </button>
-    </div>
+  <div data-block="actions">
+    <button class="btn btn-default"
+            ng-show="permitted('edit_products') || permitted('destroy_products')"
+            ui-sref="docker-image-build-configs.bulk-actions.build"
+            ng-class="{disabled: table.rows.length === 0}">
+      <i class="fa fa-group leading-icon"></i>
+      {{ "Bulk Build" | translate }}
+    </button>
+    <button class="btn btn-primary" ui-sref="docker-image-build-configs.new" ng-hide="denied('create_activation_keys')">
+      <i class="fa fa-plus"></i>
+      {{ "New Docker Image Build Config" | translate }}
+    </button>
+  </div>
 
   <span data-block="no-rows-message" translate>
     You currently don't have any Docker Image Build Configs, you can create some using the button on the right.

@@ -50,6 +50,7 @@ module Dockerro
       # render :json => @build_config
     end
 
+    # r build_config_id
     def build
       task = async_task ::Actions::Dockerro::DockerImageBuildConfig::Build,
                         @build_config,

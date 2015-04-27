@@ -2,31 +2,31 @@
 
 <div>
 
-    <header translate>Press 'Update Now' below to begin building the following docker image build config(s).</header>
+  <header translate>Press 'Update Now' below to begin building the following docker image build config(s).</header>
 
-    <table class="table table-striped">
-        <thead>
-        <tr>
-            <th translate>Name</th>
-            <th translate>Available updates</th>
-        </tr>
-        </thead>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th translate>Name</th>
+        <th translate>Available updates</th>
+      </tr>
+    </thead>
 
-        <tbody>
-        <tr ng-repeat="dockerImage in table.getSelected()">
-            <td>
-                <a ui-sref="docker-images.details.info({ dockerImageTagId: dockerImage.id })">{{ dockerImage.name }}</a>
-            </td>
-            <td>{{ dockerImage.docker_image.available_updates.length }} ({{ dockerImage.docker_image.inherited_available_updates.length }})</td>
-        </tr>
-        </tbody>
-    </table>
+    <tbody>
+      <tr ng-repeat="dockerImage in table.getSelected()">
+        <td>
+          <a ui-sref="docker-images.details.info({ dockerImageTagId: dockerImage.id })">{{ dockerImage.name }}</a>
+        </td>
+        <td>{{ dockerImage.docker_image.available_updates.length }} ({{ dockerImage.docker_image.inherited_available_updates.length }})</td>
+      </tr>
+    </tbody>
+  </table>
 
-    <!-- TODO: permission -->
-    <button class="btn btn-default"
-            ng-hide="denied('sync_products')"
-            ng-click="buildDockerImages()">
-        <i class="fa fa-refresh"></i>
-        <span translate>Update Now</span>
-    </button>
+  <!-- TODO: permission -->
+  <button class="btn btn-default"
+          ng-hide="denied('sync_products')"
+          ng-click="buildDockerImages()">
+    <i class="fa fa-refresh"></i>
+    <span translate>Update Now</span>
+  </button>
 </div>

@@ -31,29 +31,9 @@
     </div>
   </header>
 
-  <!--<nav class="details-navigation">-->
-    <!--<ul>-->
-      <!--<li>-->
-        <!--<a translate-->
-           <!--ui-sref="products.bulk-actions.sync"-->
-           <!--ng-class="{active: stateIncludes('products.bulk-actions.sync')}">-->
-          <!--Product Sync-->
-        <!--</a>-->
-      <!--</li>-->
-
-      <!--<li>-->
-        <!--<a translate-->
-           <!--ui-sref="products.bulk-actions.sync-plan"-->
-           <!--ng-class="{active: stateIncludes('products.bulk-actions.sync-plan')}">-->
-          <!--Alter Sync Plans-->
-        <!--</a>-->
-      <!--</li>-->
-    <!--</ul>-->
-  <!--</nav>-->
-
   <div>
     <div bst-alerts success-messages="successMessages" error-messages="errorMessages"></div>
-
+    
     <div class="alert warning alert-warning" ng-show="table.numSelected == 0">
       <i class="fa fa-exclamation-sign"></i>
       {{ 'At least one docker image build config needs to be selected in order to perform a bulk action.' | translate }}

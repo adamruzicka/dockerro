@@ -24,7 +24,7 @@ module Actions
           param :content_view_version_id
         end
 
-        def finalize
+        def run
           activation_key = ::Katello::ActivationKey.find(input[:activation_key_id])
           image = ::Katello::DockerImage.find(input[:image_id])
           content_view_version = ::Katello::ContentViewVersion.find(input[:content_view_version_id])
@@ -36,6 +36,7 @@ module Actions
 
           image.content_host = system
           image.save!
+          output[:system_id] = system.id
         end
 
         def bind_system_repositories(system, content_view_version)

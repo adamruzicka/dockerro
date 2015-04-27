@@ -1,25 +1,25 @@
 <table class="table table-striped" ng-class="{'table-mask': table.working}" ng-hide="table.rows.length === 0">
-    <thead>
+  <thead>
     <tr bst-table-head row-select>
-        <th bst-table-column="name" sortable><span translate>Name</span></th>
-        <th bst-table-column="contentView"><span translate>Content View</span></th>
-        <!--<th bst-table-column="contentViewVersion"><span translate>Content View Version</span></th>-->
-        <th bst-table-column="repository"><span translate>Repository</span></th>
-        <th bst-table-column="base_image"><span translate>Base image tag</span></th>
+      <th bst-table-column="name" sortable><span translate>Name</span></th>
+      <th bst-table-column="contentView"><span translate>Content View</span></th>
+      <!--<th bst-table-column="contentViewVersion"><span translate>Content View Version</span></th>-->
+      <th bst-table-column="repository"><span translate>Repository</span></th>
+      <th bst-table-column="base_image"><span translate>Base image tag</span></th>
     </tr>
-    </thead>
+  </thead>
 
-    <tbody>
+  <tbody>
     <tr bst-table-row ng-repeat="dockerImageBuildConfig in table.rows" row-select="dockerImageBuildConfig">
-        <td bst-table-cell>
-            <a ui-sref="docker-image-build-configs.details.info({dockerImageBuildConfigId: dockerImageBuildConfig.id})">
-                {{ dockerImageBuildConfig.repository.docker_upstream_name || dockerImageBuildConfig.repository.label }}
-            </a>
-            <i class="fa fa-chevron-right selected-icon" ng-show="dockerImageBuildConfig.selected"></i>
-        </td>
-        <td bst-table-cell>{{ dockerImageBuildConfig.content_view.name }}</td>
-        <td bst-table-cell>{{ dockerImageBuildConfig.repository.name }}</td>
-        <td bst-table-cell>{{ dockerImageBuildConfig.base_image_tag }}</td>
+      <td bst-table-cell>
+        <a ui-sref="docker-image-build-configs.details.info({dockerImageBuildConfigId: dockerImageBuildConfig.id})">
+          {{ dockerImageBuildConfig.repository.docker_upstream_name || dockerImageBuildConfig.repository.label }}
+        </a>
+        <i class="fa fa-chevron-right selected-icon" ng-show="dockerImageBuildConfig.selected"></i>
+      </td>
+      <td bst-table-cell>{{ dockerImageBuildConfig.content_view.name }}</td>
+      <td bst-table-cell>{{ dockerImageBuildConfig.repository.name }}</td>
+      <td bst-table-cell>{{ dockerImageBuildConfig.base_image_tag }}</td>
     </tr>
-    </tbody>
+  </tbody>
 </table>

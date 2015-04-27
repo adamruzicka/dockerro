@@ -30,11 +30,6 @@ angular.module('Dockerro.docker-image-build-configs').controller('DockerImageBui
         $scope.successMessages = [];
         $scope.errorMessages = [];
 
-        $scope.removeProducts = {
-            confirm: false,
-            workingMode: false
-        };
-
         $scope.actionParams = {
             ids: [],
             'organization_id': CurrentOrganization
@@ -45,30 +40,5 @@ angular.module('Dockerro.docker-image-build-configs').controller('DockerImageBui
             return _.pluck(rows, 'id');
         };
 
-        //$scope.removeProducts = function () {
-        //    var success, error;
-        //
-        //    $scope.removingProducts = true;
-        //    $scope.actionParams.ids = $scope.getSelectedProductIds();
-        //
-        //    success = function (data) {
-        //        $scope.productsNutupane.refresh();
-        //        $scope.table.selectAll(false);
-        //
-        //        $scope.$parent.successMessages = data.displayMessages.success;
-        //        $scope.$parent.errorMessages = data.displayMessages.error;
-        //        $scope.removingProducts = false;
-        //        $scope.transitionTo('products.index');
-        //    };
-        //
-        //    error = function (error) {
-        //        angular.forEach(error.data.errors, function (errorMessage) {
-        //            $scope.errorMessages.push(translate("An error occurred removing the Products: ") + errorMessage);
-        //        });
-        //        $scope.removingProducts = false;
-        //    };
-        //
-        //    ProductBulkAction.removeProducts($scope.actionParams, success, error);
-        //};
     }]
 );

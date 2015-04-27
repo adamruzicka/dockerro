@@ -56,11 +56,14 @@ module Actions
                                     :prior_id              => build_config.base_image_id,
                                     :pull_container_id     => pull_container ? pull_container.id : nil)
 
-            plan_action(::Actions::Dockerro::Image::AssociateWithContentHost,
-                        :image_id => built_image.output[:image_id],
-                        :activation_key_id => build_config.activation_key.id,
-                        :build_uuid => build_uuid,
-                        :content_view_version_id => build_config.content_view_version.id)
+            system = plan_action(::Actions::Dockerro::Image::AssociateWithContentHost,
+                                 :image_id => built_image.output[:image_id],
+                                 :activation_key_id => build_config.activation_key.id,
+                                 :build_uuid => build_uuid,
+                                 :content_view_version_id => build_config.content_view_version.id)
+            plan_action(::Actions::Dockerro::System::BindRepositories,
+                        [system.output[:system_id]],
+                        build_config.content_view_version.repos(build_config.environment))
           end
         end
 

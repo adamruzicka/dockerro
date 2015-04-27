@@ -1,101 +1,101 @@
 <span page-title>{{ 'New Docker Image' | translate }}</span>
 
 <div data-block="messages">
-    <div bst-alerts success-messages="successMessages" error-messages="errorMessages"></div>
+  <div bst-alerts success-messages="successMessages" error-messages="errorMessages"></div>
 </div>
 
 <div class="loading-mask fa-3x" ng-show="panel.loading">
-    <i class="fa fa-spinner fa-spin"></i>
-    {{ "Loading..." | translate }}
+  <i class="fa fa-spinner fa-spin"></i>
+  {{ "Loading..." | translate }}
 </div>
 
 <section class="nutupane-details" ng-cloak bst-container-scroll>
-<header class="new-header details-header">
+  <header class="new-header details-header">
     <h2 class="pull-left" translate>New Docker Image</h2>
-</header>
+  </header>
 
-<form name="dockerImageForm" class="form-horizontal" novalidate role="form">
+  <form name="dockerImageForm" class="form-horizontal" novalidate role="form">
 
     <div bst-form-group label="{{ 'Git URL' | translate }}">
-        <input id="git_url"
-               name="git_url"
-               ng-model="dockerImage.git_url"
-               type="text"
-               tabindex="1"
-               autofocus
-               required/>
+      <input id="git_url"
+             name="git_url"
+             ng-model="dockerImage.git_url"
+             type="text"
+             tabindex="1"
+             autofocus
+             required/>
     </div>
 
     <div bst-form-group label="{{ 'Git commit' | translate }}">
-        <input id="git_commit"
-               name="git_commit"
-               ng-model="dockerImage.git_commit"
-               type="text"
-               tabindex="1"
-               autofocus
-                />
+      <input id="git_commit"
+             name="git_commit"
+             ng-model="dockerImage.git_commit"
+             type="text"
+             tabindex="1"
+             autofocus
+             />
     </div>
 
 
-  <span bst-feature-flag="lifecycle_environments">
-    <div class="form-group">
+    <span bst-feature-flag="lifecycle_environments">
+      <div class="form-group">
         <label class="control-label col-sm-2" translate>Base Image Environment</label>
 
         <div class="col-sm-5 input">
-        <span path-selector="baseImageSelector.environments"
-              ng-model="baseImageSelector.environment"
-              mode="singleSelect">
-        </span>
+          <span path-selector="baseImageSelector.environments"
+                ng-model="baseImageSelector.environment"
+                mode="singleSelect">
+          </span>
         </div>
-    </div>
+      </div>
 
-  </span>
+    </span>
 
     <div bst-form-group label="{{ 'Base Image' | translate }}">
-        <select ng-hide="baseImages.length === 0 || baseImageSelector.environment === undefined"
-                id="base_image"
-                name="base_image"
-                ng-model="dockerImage.base_image_id"
-                ng-options="baseImage.id as baseImage.full_name for baseImage in baseImages"
-                tabindex="4"
-                autofocus
-                single>
-        </select>
-        <span class="help-block" ng-show="baseImages.length === 0 && baseImageSelector.baseImagesLoaded" translate>
-            You have no Docker Images in Pulp repositories in this Environment.
-        </span>
+      <select ng-hide="baseImages.length === 0 || baseImageSelector.environment === undefined"
+              id="base_image"
+              name="base_image"
+              ng-model="dockerImage.base_image_id"
+              ng-options="baseImage.id as baseImage.full_name for baseImage in baseImages"
+              tabindex="4"
+              autofocus
+              single>
+      </select>
+      <span class="help-block" ng-show="baseImages.length === 0 && baseImageSelector.baseImagesLoaded" translate>
+        You have no Docker Images in Pulp repositories in this Environment.
+      </span>
     </div>
 
 
     <div bst-form-group label="{{ 'Compute Resource' | translate }}">
-        <select ng-hide="computeResources.length === 0"
-                id="compute_resource_id"
-                name="compute_resource_id"
-                ng-model="dockerImage.compute_resource_id"
-                ng-options="computeResource.id as computeResource.name for computeResource in computeResources"
-                tabindex="4"
-                autofocus
-                single>
-        </select>
-        <span class="help-block" ng-show="computeResources.length === 0" translate>
-            You have no defined Compute Resources.
-        </span>
+      <select ng-hide="computeResources.length === 0"
+              id="compute_resource_id"
+              name="compute_resource_id"
+              ng-model="dockerImage.compute_resource_id"
+              ng-options="computeResource.id as computeResource.name for computeResource in computeResources"
+              tabindex="4"
+              autofocus
+              single>
+      </select>
+      <span class="help-block" ng-show="computeResources.length === 0" translate>
+        You have no defined Compute Resources.
+      </span>
     </div>
 
-  <span bst-feature-flag="lifecycle_environments">
-    <div class="form-group">
+    <span bst-feature-flag="lifecycle_environments">
+      <div class="form-group">
         <label class="control-label col-sm-2" translate>Environment</label>
 
         <div class="col-sm-5 input">
-        <span path-selector="environments"
-              ng-model="dockerImage.environment"
-              selection-required="true"
-              mode="singleSelect">
-        </span>
+          <span path-selector="environments"
+                ng-model="dockerImage.environment"
+                selection-required="true"
+                mode="singleSelect">
+          </span>
         </div>
-    </div>
+      </div>
 
-    <div bst-form-group label="{{ 'Content View' | translate }}">
+      <div bst-form-group label="{{ 'Content View' | translate }}">
         <select ng-hide="contentViews.length === 0 || dockerImage.environment === undefined "
                 id="content_view_id"
                 name="content_view_id"
@@ -104,29 +104,29 @@
                 tabindex="4"
                 autofocus>
         </select>
-      <span class="help-block" ng-show="cvloaded && dockerImage.environment !== undefined && contentViews.length === 0"
-            translate>
-        The selected environment contains no Content Views, please select a different environment.
-      </span>
+        <span class="help-block" ng-show="cvloaded && dockerImage.environment !== undefined && contentViews.length === 0"
+              translate>
+          The selected environment contains no Content Views, please select a different environment.
+        </span>
         <i class="fa fa-spinner fa-spin" ng-hide="cvloaded"></i>
-      <span class="help-block" ng-show="dockerImage.environment === undefined" translate>
-        Please select an environment.
-      </span>
-    </div>
-  </span>
+        <span class="help-block" ng-show="dockerImage.environment === undefined" translate>
+          Please select an environment.
+        </span>
+      </div>
+    </span>
 
     <div bst-form-group label="{{ 'Target Pulp Repository' | translate }}">
-        <select ng-hide="pulpRepositories.length === 0"
-                id="repository_id"
-                name="repository_id"
-                ng-model="dockerImage.repository_id"
-                ng-options="pulpRepository.id as pulpRepository.name for pulpRepository in pulpRepositories"
-                tabindex="4"
-                autofocus>
-        </select>
-        <span class="help-block" ng-show="pulpRepositories.length === 0" translate>
-            You have no defined Pulp repositories.
-        </span>
+      <select ng-hide="pulpRepositories.length === 0"
+              id="repository_id"
+              name="repository_id"
+              ng-model="dockerImage.repository_id"
+              ng-options="pulpRepository.id as pulpRepository.name for pulpRepository in pulpRepositories"
+              tabindex="4"
+              autofocus>
+      </select>
+      <span class="help-block" ng-show="pulpRepositories.length === 0" translate>
+        You have no defined Pulp repositories.
+      </span>
     </div>
 
 
@@ -135,5 +135,5 @@
          working="working">
     </div>
 
-</form>
-    </section>
+  </form>
+</section>
