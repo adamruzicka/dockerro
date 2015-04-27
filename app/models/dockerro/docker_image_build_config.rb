@@ -164,8 +164,6 @@ module Dockerro
       "#{hostname}:5000/#{base_image.repository.relative_path}"
     end
 
-    private
-
     def environment
       if template?
         nil
@@ -173,6 +171,8 @@ module Dockerro
         @environment ||= content_view.environments.select(&:library?).first
       end
     end
+
+    private
 
     def find_activation_key
       fail "Cannot build from template Build Config" if template?

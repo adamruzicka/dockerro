@@ -25,9 +25,11 @@ module Actions
 
         def plan(systems, repositories)
           unless systems.empty?
-            plan_self :repository_ids => repositories.map(&:id),
-                      :system_ids => systems.map(&:id)
-            plan_action ::Actions::Katello::System::GenerateApplicability, systems
+            sequence do
+              plan_self :repository_ids => repositories.map(&:id),
+                        :system_ids => systems.map(&:id)
+              plan_action ::Actions::Katello::System::GenerateApplicability, systems
+            end
           end
         end
 
