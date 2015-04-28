@@ -61,7 +61,7 @@ module Actions
                                  :activation_key_id => build_config.activation_key.id,
                                  :build_uuid => build_uuid,
                                  :content_view_version_id => build_config.content_view_version.id)
-            # Next action needs object responding to method .id and .uuid
+            # Next action needs object responding to methods .id and .uuid
             tmp_system = Struct.new(:id, :uuid).new(system.output[:system_id], system.output[:system_uuid])
 
             plan_action(::Actions::Dockerro::System::BindRepositories,

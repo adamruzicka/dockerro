@@ -28,8 +28,9 @@ module Actions
             levels.each do |level|
               build_config_ids = ::Katello::DockerImage.where(:id => level).pluck(:docker_image_build_config_id)
               require 'pry'; binding.pry
-              level.zip(build_config_ids).select { |_, v| v.nil? }.each { |id, _| skipped << "No build config associated with #{id}, skipping." }
-              build_configs = build_config_ids.compact.map { |id| ::Dockerro::DockerImageBuildConfig.find(id) }
+              fail "Cannot update images without Docker Image Build Config" if level.zip(build_config_ids).any? { |_, v| v.nil? }
+              build_configs = ::Dockerro::DockerImageBuildConfig.where(:id => build_config_ids.compact)
+              fail "Cannot update images with base image in non-library environment" if any_in_non_library?(build_configs, ids)
               plan_action(::Actions::BulkAction,
                           ::Actions::Dockerro::DockerImageBuildConfig::Build,
                           build_configs,
@@ -45,6 +46,11 @@ module Actions
         end
 
         private
+
+        def any_in_non_library?(build_configs, ids)
+          non_library = build_configs.select { |config| !config.base_image_environment.library? }
+          non_library.any? { |config| ids.include? config.base_image.id }
+        end
 
         def ancestor_chain(id)
           @ids ||= ::Katello::DockerImage.pluck(:id)

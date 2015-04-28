@@ -4,10 +4,12 @@ attributes :id
 
 node(:name) { |tag| "#{tag.repository.docker_upstream_name || tag.repository.label}:#{tag.name}" }
 node(:based_on) do |tag|
-  if tag.docker_image.base_image
+  if tag.docker_image.docker_image_build_config
+    tag.docker_image.docker_image_build_config.base_image_full_name
+  elsif tag.docker_image.base_image
     tags = tag.docker_image.base_image.docker_tags
     tags.select! { |t| t.name == tag.docker_image.docker_image_build_config.base_image_tag } if tag.docker_image.docker_image_build_config
-    "#{tags.first.repository}:#{tags.first.name}"
+    tags.empty? ? "Untagged" : "#{tags.first.repository}:#{tags.first.name}"
   else
     "Unknown"
   end
