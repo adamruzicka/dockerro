@@ -39,9 +39,12 @@ angular.module('Dockerro.docker-images').controller('DockerImagesController',
             'paged':            true
         };
 
-        var nutupane = new Nutupane(DDockerImage, params);
-        $scope.table = nutupane.table;
-        $scope.removeRow = nutupane.removeRow;
+        $scope.dockerImageNutupane = new Nutupane(DDockerImage, params);
+        $scope.dockerImageTable = $scope.dockerImageNutupane.table;
+        $scope.removeRow = $scope.dockerImageNutupane.removeRow;
+        $scope.dockerImageTable.refresh = $scope.dockerImageNutupane.refresh;
+
+        $scope.table = $scope.dockerImageTable;
 
         $scope.table.closeItem = function () {
              $scope.transitionTo('docker-images.index');

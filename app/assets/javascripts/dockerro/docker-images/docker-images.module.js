@@ -76,11 +76,5 @@ angular.module('Dockerro.docker-images').config(['$stateProvider', function ($st
             collapsed: true,
             controller: 'DockerImageBulkActionUpdateController',
             templateUrl: 'dockerro/docker-images/bulk/views/bulk-actions-update.html'
-        })
-        //.state('new-docker-image', {
-        //    url: '/docker_images/new',
-        //    permission: 'create_docker_images',
-        //    controller: 'NewDockerImageController',
-        //    templateUrl: 'dockerro/docker-images/new/views/docker-image-new.html'
-        //})
+        });
 }]);

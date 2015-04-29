@@ -40,9 +40,12 @@ angular.module('Dockerro.docker-image-build-configs').controller('DockerImageBui
             'with_versions':    false
         };
 
-        var nutupane = new Nutupane(DockerImageBuildConfig, params);
-        $scope.table = nutupane.table;
-        $scope.removeRow = nutupane.removeRow;
+        $scope.dockerImageBuildConfigNutupane = new Nutupane(DockerImageBuildConfig, params);
+        $scope.dockerImageBuildConfigTable = $scope.dockerImageBuildConfigNutupane.table;
+        $scope.removeRow = $scope.dockerImageBuildConfigNutupane.removeRow;
+        $scope.dockerImageBuildConfigTable.refresh = $scope.dockerImageBuildConfigNutupane.refresh;
+
+        $scope.table = $scope.dockerImageBuildConfigTable;
 
         $scope.table.closeItem = function () {
             $scope.transitionTo('docker-image-build-configs.index');
