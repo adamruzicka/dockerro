@@ -11,15 +11,13 @@
   </div>
 
   <div data-block="actions">
-    <!-- TODO: permission -->
     <button class="btn btn-default"
-            ng-show="permitted('edit_products') || permitted('destroy_products')"
+            ng-show="permitted('create_docker_images')"
             ui-sref="docker-images.bulk-actions.update"
             ng-class="{disabled: table.rows.length === 0}">
       <i class="fa fa-group leading-icon"></i>
       {{ "Bulk Update" | translate }}
     </button>
-    <!-- TODO: permission -->
     <button class="btn btn-primary" ui-sref="docker-images.new" ng-hide="denied('create_docker_images')">
       <i class="fa fa-plus"></i>
       {{ "New Docker Image" | translate }}

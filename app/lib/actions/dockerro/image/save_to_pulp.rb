@@ -15,10 +15,12 @@ module Actions
     module Image
       class SaveToPulp < Actions::EntryAction
         output_format do
-          :path
+          param :path, String
         end
 
-        # TODO: input format
+        input_format do
+          param :path, String
+        end
 
         def plan(image, repository, compute_resource)
           sequence do

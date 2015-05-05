@@ -15,7 +15,9 @@ module Actions
     module DockerImageBuildConfig
       class Destroy < Actions::EntryAction
 
-        # TODO: input format
+        input_format do
+          param :id, Integer
+        end
 
         def plan(build_config)
           plan_self :id => build_config.id
@@ -27,7 +29,7 @@ module Actions
         end
 
         def humanized_name
-          _("Create Build Config")
+          _("Destroy Build Config")
         end
 
       end

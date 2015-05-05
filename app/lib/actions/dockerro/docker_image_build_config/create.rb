@@ -15,7 +15,13 @@ module Actions
     module DockerImageBuildConfig
       class Create < Actions::EntryAction
 
-        # TODO: input format
+        input_format do
+          param :build_config_id, Integer
+        end
+
+        output_format do
+          param :build_config_id, Integer
+        end
 
         def plan(build_config)
           build_config.save!

@@ -18,14 +18,13 @@
         <div data-block="modal-body" translate>Are you sure you want to remove Docker Image Build Config "{{  dockerImageBuildConfig.repository.docker_upstream_name || dockerImageBuildConfig.repository.label }}"?</div>
       </div>
 
-      <!-- TODO: permissions -->
       <button class="btn btn-default"
               ng-click="build(dockerImageBuildConfig)">
         <i class="fa fa-plus"></i>
         {{ "Build" | translate }}
       </button>
       <button class="btn btn-default" bst-feature-flag="custom_dockerImageBuildConfigs"
-              ng-hide="denied('delete_dockerImageBuildConfigs', dockerImageBuildConfig)"
+              ng-hide="denied('delete_docker_image_build_configs', dockerImageBuildConfig)"
               ng-click="openModal()">
         <i class="fa fa-trash-o"></i>
         {{ "Remove Docker Image Build Config" | translate }}

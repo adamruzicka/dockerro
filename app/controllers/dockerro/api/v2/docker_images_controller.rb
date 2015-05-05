@@ -26,11 +26,7 @@ module Dockerro
     param :compute_resource_id, :identifier, :desc => N_("compute resource id"), :required => true
     param :base_image_id, :identifier, :desc => N_("ID of base image to build on")
     def create
-      fail "TODO: this doesn't work yet" if @compute_resource.url[/^unix:\/\//]
-      # if @build_config.activation_key.new_record?
-      #   sync_task(::Actions::Katello::ActivationKey::Create, @build_config.activation_key)
-      #   subscribe_activation_key(@build_config.activation_key)
-      # end
+      fail "Building Docker images on Compute Resource with unix socket is not supported" if @compute_resource.url[/^unix:\/\//]
       task = async_task(::Actions::Dockerro::Image::Create, @build_config, @base_image, @compute_resource, request.host)
       respond_for_async(:resource => task)
     end
@@ -81,7 +77,7 @@ module Dockerro
       respond_for_index(:collection => results)
     end
 
-    api :GET, '/docker_images'
+    api :GET, '/docker_images/:id'
     param :id, :identifier, :required => true
     def show
       respond_for_show(:resource => @docker_image)

@@ -83,10 +83,16 @@ module Dockerro
           permission :view_docker_image_build_configs,
                      :docker_image_build_configs => [:index, :show],
                      :'api/v2/docker_image_build_configs' => [:index, :show]
+        end
+
+        security_block :docker_image_build_configs do
           permission :create_docker_image_build_configs,
                      :docker_image_build_configs => [:create],
                      :'api/v2/docker_image_build_configs' => [:create]
-          permission :destroy_docker_image_build_configs,
+          permission :edit_docker_image_build_configs,
+                     :docker_image_build_configs => [:update],
+                     :'api/v2/docker_image_build_configs' => [:update]
+          permission :delete_docker_image_build_configs,
                      :docker_image_build_configs => [:destroy],
                      :'api/v2/docker_image_build_configs' => [:destroy]
         end

@@ -18,11 +18,10 @@ module Actions
           param :environment_variables
           param :container_settings
         end
-        
+
         # @param [Hash] container_options can set any of the following
         # @option container_options [String] :repository_name       Name of the image to use as build container
         # @option container_options [String] :tag ('latest')        Tag of the image to use as build container
-        # @option container_options [Int]    :registry_id           TODO: find out what it does
         # @option container_options [String] :name                  Name of the build container
         # @option container_options [Int]    :compute_resource_id   Id of the compute resource on which the build should be performed
         # @option container_options [Bool]   :tty (false)           If the container should have pseudo-tty allocated
@@ -32,8 +31,8 @@ module Actions
         # @option container_options [Bool]   :attach_stdout (true)  If the build container should have stdout allocated
         # @option container_options [Bool]   :attach_stdin (true)   If the build container should have stdin allocated
         # @option container_options [Bool]   :attach_stderr (true)  If the build container should have stderr allocated
-        # @option container_options [String] :cpu_shares (nil)      TODO: find out what it does
-        # @option container_options [String] :spu_set (nil)         TODO: find out what it does
+        # @option container_options [String] :cpu_shares (nil)      Relative weight of cpu shares in comparison to other containers
+        # @option container_options [String] :cpu_set (nil)         String value containing the cgroups Cpuset to use
         # @param [Hash] environment_variables Hash of environment variables passed to the build
         def plan(container_options, environment_variables = {})
           container_settings = add_defaults container_options
@@ -53,22 +52,22 @@ module Actions
         end
 
         def humanized_name
-          _("Create")
+          _("Create Container")
         end
 
         private
 
         def add_defaults(options)
           {
-            :tag=>"latest",
-            :registry_id=>nil,
-            :tty=>true,
-            :memory=>"",
-            :attach_stdout=>true,
-            :attach_stdin=>true,
-            :attach_stderr=>true,
-            :cpu_shares=>nil,
-            :cpu_set=>nil
+            :tag => "latest",
+            :registry_id => nil,
+            :tty => true,
+            :memory => "",
+            :attach_stdout => true,
+            :attach_stdin => true,
+            :attach_stderr => true,
+            :cpu_shares => nil,
+            :cpu_set => nil
           }.merge(options)
         end
 

@@ -204,7 +204,6 @@ module Dockerro
 
     def prebuild_plugins(hostname, base_image)
       plugins           = []
-      # TODO: Move image identification facts to postbuild plugin
       register_commands = <<-END.gsub(/^\s*\| /, '')
         | yum localinstall -y http://#{hostname}/#{katello_ca_cert_path} && \\
         | mkdir -p /etc/rhsm/facts && \\

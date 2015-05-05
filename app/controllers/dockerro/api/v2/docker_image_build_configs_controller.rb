@@ -16,7 +16,8 @@ module Dockerro
       api_base_url "/dockerro/api"
     end
 
-    # TODO: apipie
+    api :GET, "/docker_image_build_configs/", "List Docker Image Build Configs"
+    param :organization_id, :identifier, :desc => N_("oraganization id"), :required => true
     def index
       images = DockerImageBuildConfig.select { |build_config| build_config.organization.id == @organization.id }
       images = images.select(&:template?) unless params.fetch(:with_version, false)
@@ -29,33 +30,27 @@ module Dockerro
       respond_for_index(:collection => item_search(DockerImageBuildConfig, params, options))
     end
 
-    # TODO: apipie
+    api :GET, "/docker_image_build_configs/:id", "Show Docker Image Build Config"
+    param :id, :identifier, :required => true
     def show
       respond_for_show(:resource => @build_config)
     end
 
-    # TODO: remove?
-    def update
-      fail NotImplementedError
-    end
-
-    # TODO: apipie
-    # r git_url
-    #   git_commit
-    #   base_image_tag
-    #   activation_key_prefix
-    # r content_view_id
-    #   content_view_version_id
-    # r repository_id
+    api :POST, "/docker_image_build_configs/", "Create Docker Image Build Config"
+    param :git_url, String, :desc => N_("URL of git repository containing the Dockerfile"), :required => true
+    param :git_commit, String, :desc => N_("Hash of git commit to use for building")
+    param :base_image_id, :identifier, :desc => N_("id of base image's tag")
+    param :activation_key_prefix, String, :desc => N_("prefix for activation key name")
+    param :content_view_id, :identifier, :desc => N_("content view id"), :required => true
+    param :repository_id, :identifier, :desc => N_("id of target Docker repository"), :required => true
     def create
       sync_task(::Actions::Dockerro::DockerImageBuildConfig::Create, @build_config)
       @build_config.reload
       respond_for_show(:resource => @build_config)
-      # render :json => @build_config
     end
 
-    # TODO: apipie
-    # r build_config_id
+    api :POST, "/docker_image_build_config/build/:id", "Build Docker Image from Docker image build config"
+    param :id, :identifier
     def build
       task = async_task ::Actions::Dockerro::DockerImageBuildConfig::Build,
                         @build_config,
@@ -64,8 +59,8 @@ module Dockerro
       respond_for_async(:resource => task)
     end
 
-    # TODO: apipie
-    # r id
+    api :DELETE, "/docker_image_build_config/:id", "Destroy Docker image build config"
+    param :id, :identifier
     def destroy
       task = async_task(::Actions::Dockerro::DockerImageBuildConfig::Destroy, @build_config)
       respond_for_async(:resource => task)
@@ -73,7 +68,6 @@ module Dockerro
 
     private
 
-    # TODO: Comments?
     def create_build_config
       @build_config = ::Dockerro::DockerImageBuildConfig.new(::Dockerro::DockerImageBuildConfig.docker_image_build_config_params(params))
       unless @base_image.nil?

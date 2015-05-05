@@ -7,27 +7,27 @@
 
     <div class="detail">
       <span class="info-label" translate>Git url</span>
-      <!-- TODO: permissions -->
       <span class="info-value"
             bst-edit-text="dockerImageBuildConfig.git_url"
             on-save="save(dockerImageBuildConfig)"
-            readonly="dockerImageBuildConfig.readonly || denied('edit_products', product)">
+            readonly="dockerImageBuildConfig.readonly || denied('edit_docker_image_build_configs', dockerImageBuildConfig)">
       </span>
     </div>
 
     <div class="detail">
       <span class="info-label" translate>Git commit</span>
-      <!-- TODO: permissions -->
       <span class="info-value"
             bst-edit-text="dockerImageBuildConfig.git_commit"
             on-save="save(dockerImageBuildConfig)"
-            readonly="dockerImageBuildConfig.readonly || denied('edit_products', product)">
+            readonly="dockerImageBuildConfig.readonly || denied('edit_docker_image_build_configs', dockerImageBuildConfig)">
       </span>
     </div>
 
     <div class="detail">
       <span class="info-label" translate>Automatic builds on publish</span>
-      <input type="checkbox"
+      <!-- TODO: Checkbox value is not being saved -->
+      <input class="info-value"
+             type="checkbox"
              id="automatic"
              name="automatic"
              ng-model="dockerImageBuildConfig.automatic"

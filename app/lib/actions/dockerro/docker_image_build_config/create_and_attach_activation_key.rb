@@ -16,7 +16,9 @@ module Actions
       class CreateAndAttachActivationKey < ::Actions::EntryAction
         include Dynflow::Action::WithSubPlans
 
-        # TODO: input format
+        input_format do
+          param :activation_key_id, Integer
+        end
 
         middleware.use Actions::Middleware::KeepCurrentUser
 

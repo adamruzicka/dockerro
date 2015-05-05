@@ -17,7 +17,11 @@ module Actions
 
         middleware.use Actions::Middleware::KeepCurrentUser
 
-        # TODO: input format
+        input_format do
+          param :build_config_ids, Array
+          param :compute_resource_id, Integer
+          param :hostname, String
+        end
 
         def self.subscribe
           ::Actions::Katello::ContentView::Publish
@@ -38,13 +42,13 @@ module Actions
         end
 
         def finalize
+          # build_config = ::Dockerro::DockerImageBuildConfig.where(:id => input[:build_config_ids])
           build_configs = input[:build_config_ids].map { |id| ::Dockerro::DockerImageBuildConfig.find(id) }
           world.trigger(::Actions::BulkAction,
                         ::Actions::Dockerro::DockerImageBuildConfig::Build,
                         build_configs,
                         input[:compute_resource_id],
                         input[:hostname])
-          true
         end
 
         def hostname
