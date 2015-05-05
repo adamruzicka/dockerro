@@ -16,6 +16,7 @@ module Dockerro
       api_base_url "/dockerro/api"
     end
 
+    # TODO: apipie
     def index
       images = DockerImageBuildConfig.select { |build_config| build_config.organization.id == @organization.id }
       images = images.select(&:template?) unless params.fetch(:with_version, false)
@@ -28,14 +29,17 @@ module Dockerro
       respond_for_index(:collection => item_search(DockerImageBuildConfig, params, options))
     end
 
+    # TODO: apipie
     def show
       respond_for_show(:resource => @build_config)
     end
 
+    # TODO: remove?
     def update
       fail NotImplementedError
     end
 
+    # TODO: apipie
     # r git_url
     #   git_commit
     #   base_image_tag
@@ -50,6 +54,7 @@ module Dockerro
       # render :json => @build_config
     end
 
+    # TODO: apipie
     # r build_config_id
     def build
       task = async_task ::Actions::Dockerro::DockerImageBuildConfig::Build,
@@ -59,6 +64,7 @@ module Dockerro
       respond_for_async(:resource => task)
     end
 
+    # TODO: apipie
     # r id
     def destroy
       task = async_task(::Actions::Dockerro::DockerImageBuildConfig::Destroy, @build_config)
@@ -67,6 +73,7 @@ module Dockerro
 
     private
 
+    # TODO: Comments?
     def create_build_config
       @build_config = ::Dockerro::DockerImageBuildConfig.new(::Dockerro::DockerImageBuildConfig.docker_image_build_config_params(params))
       unless @base_image.nil?

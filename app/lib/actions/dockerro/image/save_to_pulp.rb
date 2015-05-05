@@ -18,6 +18,8 @@ module Actions
           :path
         end
 
+        # TODO: input format
+
         def plan(image, repository, compute_resource)
           sequence do
             tar = plan_action(::Actions::Dockerro::Image::Save, :image_name => image, :url => compute_resource.url)

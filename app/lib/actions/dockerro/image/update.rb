@@ -15,6 +15,8 @@ module Actions
     module Image
       class Update < Actions::EntryAction
 
+        # TODO: input format
+
         def plan(ids, compute_resource, hostname)
           skipped = []
           # Find dependencies among the images

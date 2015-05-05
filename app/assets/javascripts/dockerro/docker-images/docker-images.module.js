@@ -1,3 +1,4 @@
+// TODO: ngdoc?
 angular.module('Dockerro.docker-images', [
     'ngResource',
     'Bastion.components',

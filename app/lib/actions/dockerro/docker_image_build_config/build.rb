@@ -29,9 +29,6 @@ module Actions
             action_subject(config)
             plan_action ::Actions::Dockerro::Image::Create,
                         config,
-                        # TODO: vvvvvv this finds bad tag vvvvvv
-                        # config.base_image.docker_tags.where(:name => config.base_image_tag).first,
-                        # TODO: ^^^^^^                    ^^^^^^
                         config.latest_base_tag,
                         compute_resource,
                         hostname

@@ -25,7 +25,6 @@ module Dockerro
     param :repository_id, :identifier, :desc => N_("target pulp repository id")
     param :compute_resource_id, :identifier, :desc => N_("compute resource id"), :required => true
     param :base_image_id, :identifier, :desc => N_("ID of base image to build on")
-
     def create
       fail "TODO: this doesn't work yet" if @compute_resource.url[/^unix:\/\//]
       # if @build_config.activation_key.new_record?

@@ -1,3 +1,4 @@
+// TODO: ngdoc
 /**
  * @ngdoc service
  * @name  Bastion.products.factory:ProductBulkAction

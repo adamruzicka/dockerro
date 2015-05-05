@@ -1,11 +1,11 @@
 /**
  * @ngdoc service
- * @name  Bastion.products.factory:ProductBulkAction
+ * @name  Dockerro.docker-images.factory:DDockerImage
  *
  * @requires BastionResource
  *
  * @description
- *   Provides a BastionResource for bulk actions on products.
+ *   Provides a BastionResource for Dockerro docker images.
  */
 angular.module('Dockerro.docker-images').factory('DDockerImage',
 ['BastionResource',
@@ -18,12 +18,12 @@ function (BastionResource) {
 
 /**
  * @ngdoc service
- * @name  Bastion.products.factory:ProductBulkAction
+ * @name  Dockerro.docker-images.factory:DockerImageBulkAction
  *
  * @requires BastionResource
  *
  * @description
- *   Provides a BastionResource for bulk actions on products.
+ *   Provides a BastionResource for bulk actions on docker images.
  */
 angular.module('Dockerro.docker-images').factory('DockerImageBulkAction',
     ['BastionResource',

@@ -17,6 +17,8 @@ module Actions
 
         middleware.use Actions::Middleware::KeepCurrentUser
 
+        # TODO: input format
+
         def self.subscribe
           ::Actions::Katello::ContentView::Promote
         end

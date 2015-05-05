@@ -27,6 +27,7 @@ module Dockerro
       ForemanTasks.dynflow.config.eager_load_paths.concat(action_paths)
     end
 
+    # TODO: remove?
     # initializer 'dockerro.register_gettext', :after => :load_config_initializers do
     #   locale_dir = File.join(File.expand_path('../../..', __FILE__), 'locale')
     #   locale_domain = 'dockerro'
@@ -74,6 +75,7 @@ module Dockerro
                 :parent => :infrastructure_menu,
                 :turbolinks => false
 
+        # TODO: Fill missing permissions
         security_block :docker_images do
           permission :create_docker_images,
                      :docker_images          => [:create],

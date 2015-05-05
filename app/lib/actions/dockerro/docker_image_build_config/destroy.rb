@@ -15,6 +15,8 @@ module Actions
     module DockerImageBuildConfig
       class Destroy < Actions::EntryAction
 
+        # TODO: input format
+
         def plan(build_config)
           plan_self :id => build_config.id
         end

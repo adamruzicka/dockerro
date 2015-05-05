@@ -15,6 +15,8 @@ module Actions
     module Image
       class Create < Actions::EntryAction
 
+        # TODO: input format
+
         def plan(build_config, base_image, compute_resource, hostname)
           plan_action(::Actions::Dockerro::DockerImageBuildConfig::CreateAndAttachActivationKey, build_config.activation_key) if build_config.activation_key.new_record?
           # create container

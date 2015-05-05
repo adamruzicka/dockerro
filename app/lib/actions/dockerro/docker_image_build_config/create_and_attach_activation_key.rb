@@ -16,6 +16,8 @@ module Actions
       class CreateAndAttachActivationKey < ::Actions::EntryAction
         include Dynflow::Action::WithSubPlans
 
+        # TODO: input format
+
         middleware.use Actions::Middleware::KeepCurrentUser
 
         def create_sub_plans

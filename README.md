@@ -51,7 +51,4 @@ TODO:
 - [x] Build docker images with base image from Katello
 - [x] Keep information about from which image and using which build config an image was built
 - [x] Provide the possiblity to do bulk builds
-- [ ] Trigger the bulk build automatically when publishing new version
-- [ ] Trigger automatic rebuilds on incremental updates
-- [ ] Notify about possible updates for docker images
-- [ ] Rebuild images on base image update
+- [x] Trigger the bulk build automatically when publishing new version
