@@ -10,7 +10,7 @@
  * have received a copy of GPLv2 along with this software; if not, see
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
  */
-// TODO: ngdoc
+
 /**
  * @ngdoc object
  * @name  Dockerro.docker-image-build-configs.controller:DockerImageBuildConfigDetailsController
@@ -18,6 +18,7 @@
  * @requires $scope
  * @requires $state
  * @requires DockerImageBuildConfig
+ * @requires CurrentOrganization
  *
  * @description
  *   Provides the functionality for the docker image build config details action pane.

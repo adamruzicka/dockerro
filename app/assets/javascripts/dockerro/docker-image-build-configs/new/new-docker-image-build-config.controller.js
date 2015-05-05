@@ -10,13 +10,14 @@
  * have received a copy of GPLv2 along with this software; if not, see
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
  */
-// TODO: ngdoc
+
 /**
  * @ngdoc object
  * @name  Dockerro.docker-image-build-configs.controller:NewDockerImageBuildConfigController
  *
  * @requires $scope
  * @requires $q
+ * @requires $location
  * @requires FormUtils
  * @requires DockerImageBuildConfig
  * @requires DockerTag
@@ -24,9 +25,10 @@
  * @requires CurrentOrganization
  * @requires ContentView
  * @requires Repository
+ * @requires BastionResource
  *
  * @description
- *   Controls the creation of an empty DockerImage object for use by sub-controllers.
+ *   Controls the creation of a docker image build config object.
  */
 angular.module('Dockerro.docker-image-build-configs').controller('NewDockerImageBuildConfigController',
     ['$scope', '$q', '$location', 'FormUtils', 'DockerImageBuildConfig', 'DockerTag', 'Organization', 'CurrentOrganization', 'ContentView', 'Repository', 'BastionResource',

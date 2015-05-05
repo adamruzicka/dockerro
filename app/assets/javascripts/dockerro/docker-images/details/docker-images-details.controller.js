@@ -10,13 +10,14 @@
  * have received a copy of GPLv2 along with this software; if not, see
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
  */
-// TODO: ngdoc
+
 /**
  * @ngdoc object
  * @name  Dockerro.docker-images.controller:DockerImageDetailsController
  *
  * @requires $scope
  * @requires $state
+ * @requires DDockerImage
  * @requires DockerImage
  *
  * @description

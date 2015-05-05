@@ -10,21 +10,25 @@
  * have received a copy of GPLv2 along with this software; if not, see
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
  */
-// TODO: ngdoc
+
 /**
  * @ngdoc object
- * @name  Bastion.docker-images.controller:NewDockerImageController
+ * @name  Dockerro.docker-images.controller:NewDockerImageController
  *
  * @requires $scope
  * @requires $q
+ * @requires $location
  * @requires FormUtils
- * @requires DockerImage
+ * @requires DDockerImage
+ * @requires DockerTag
  * @requires Organization
  * @requires CurrentOrganization
  * @requires ContentView
+ * @requires Repository
+ * @requires BastionResource
  *
  * @description
- *   Controls the creation of an empty DockerImage object for use by sub-controllers.
+ *   Controls the creation of a Docker Image object.
  */
 angular.module('Dockerro.docker-images').controller('NewDockerImageController',
     ['$scope', '$q', '$location', 'FormUtils', 'DDockerImage', 'DockerTag', 'Organization', 'CurrentOrganization', 'ContentView', 'Repository', 'BastionResource',

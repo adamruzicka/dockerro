@@ -10,20 +10,20 @@
  * have received a copy of GPLv2 along with this software; if not, see
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 */
-// TODO: ngdoc
+
 /**
  * @ngdoc object
- * @name  Bastion.activation-keys.controller:ActivationKeysController
+ * @name  Dockerro.docker-images.controller:DockerImagesController
  *
  * @requires $scope
  * @requires $location
  * @requires translate
  * @requires Nutupane
- * @requires ActivationKey
+ * @requires DDockerImage
  * @requires CurrentOrganization
  *
  * @description
- *   Provides the functionality specific to activation keys for use with the Nutupane UI pattern.
+ *   Provides the functionality specific to docker images for use with the Nutupane UI pattern.
  *   Defines the columns to display and the transform function for how to generate each row
  *   within the table.
  */

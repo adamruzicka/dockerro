@@ -10,17 +10,21 @@
  * have received a copy of GPLv2 along with this software; if not, see
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
  */
-// TODO: ngdoc
+
 /**
  * @ngdoc object
- * @name  Bastion.products.controller:ProductsBulkActionSyncController
+ * @name  Dockerro.docker-image-build-configs.controller:DockerImageBuildConfigsBulkActionBuildController
  *
  * @requires $scope
+ * @requires $q
+ * @requires $state
  * @requires translate
- * @requires ProductBulkAction
+ * @requires DockerImageBulkAction
+ * @requires BastionResource
+ * @requires CurrentOrganization
  *
  * @description
- *   A controller for providing bulk sync functionality for products..
+ *   A controller for providing bulk build functionality for docker image build configs.
  */
 angular.module('Dockerro.docker-image-build-configs').controller('DockerImageBuildConfigsBulkActionBuildController',
     ['$scope', '$q', '$state', 'translate', 'DockerImageBulkAction', 'BastionResource', 'CurrentOrganization',

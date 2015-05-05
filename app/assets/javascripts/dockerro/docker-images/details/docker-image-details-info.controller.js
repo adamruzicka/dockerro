@@ -10,19 +10,21 @@
  * have received a copy of GPLv2 along with this software; if not, see
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
  */
-// TODO: ngdoc
+
 /**
  * @ngdoc object
  * @name  Dockerro.docker-images.controller:DockerImageDetailsInfoController
  *
  * @requires $scope
+ * @requires @state
  * @requires $q
  * @requires translate
- * @requires DockerImage
+ * @requires DDockerImage
  * @requires MenuExpander
+ * @requires CurrentOrganization
  *
  * @description
- *   Provides the functionality for the product details action pane.
+ *   Provides the functionality for the docker images details action pane.
  */
 angular.module('Dockerro.docker-images').controller('DockerImageDetailsInfoController',
     ['$scope', '$state', '$q', 'translate', 'DDockerImage', 'MenuExpander', 'CurrentOrganization',

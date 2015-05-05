@@ -10,18 +10,18 @@
  * have received a copy of GPLv2 along with this software; if not, see
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
  */
-// TODO: ngdoc
+
 /**
  * @ngdoc object
- * @name  Bastion.products.controller:ProductsBulkActionController
+ * @name  Dockerro.docker-image-build-configs.controller:DockerImageBuildConfigsBulkActionController
  *
  * @requires $scope
  * @requires translate
- * @requires ProductBulkAction
+ * @requires DockerImageBulkAction
  * @requires CurrentOrganization
  *
  * @description
- *   A controller for providing bulk action functionality to the products page.
+ *   A controller for providing bulk action functionality to the docker image build configs page.
  */
 angular.module('Dockerro.docker-image-build-configs').controller('DockerImageBuildConfigsBulkActionController',
     ['$scope', 'translate', 'DockerImageBulkAction', 'CurrentOrganization',

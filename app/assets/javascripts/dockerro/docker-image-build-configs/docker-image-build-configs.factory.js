@@ -1,12 +1,11 @@
-// TODO: ngdoc
 /**
  * @ngdoc service
- * @name  Bastion.products.factory:ProductBulkAction
+ * @name  Dockerro.docker-image-build-configs.factory:DockerImageBuildConfig
  *
  * @requires BastionResource
  *
  * @description
- *   Provides a BastionResource for bulk actions on products.
+ *   Provides a BastionResource for docker image build configs.
  */
 angular.module('Dockerro.docker-image-build-configs').factory('DockerImageBuildConfig',
 ['BastionResource',

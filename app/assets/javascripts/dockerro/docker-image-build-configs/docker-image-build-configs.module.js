@@ -1,4 +1,10 @@
-// TODO: ngdoc?
+/**
+ * @ngdoc module
+ * @name  Dockerro.docker-image-build-configs
+ *
+ * @description
+ *   Module for docker image build config related functionality.
+ */
 angular.module('Dockerro.docker-image-build-configs', [
     'ngResource',
     'Bastion.components',

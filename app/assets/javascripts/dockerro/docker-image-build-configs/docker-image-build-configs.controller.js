@@ -10,7 +10,7 @@
  * have received a copy of GPLv2 along with this software; if not, see
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 */
-// TODO: ngdoc
+
 /**
  * @ngdoc object
  * @name  Dockerro.docker-image-build-configs.controller:DockerImageBuildConfigsController
@@ -23,7 +23,7 @@
  * @requires CurrentOrganization
  *
  * @description
- *   Provides the functionality specific to activation keys for use with the Nutupane UI pattern.
+ *   Provides the functionality specific to docker image build configs for use with the Nutupane UI pattern.
  *   Defines the columns to display and the transform function for how to generate each row
  *   within the table.
  */

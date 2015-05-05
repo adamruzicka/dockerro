@@ -10,31 +10,28 @@
  * have received a copy of GPLv2 along with this software; if not, see
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
  */
-// TODO: ngdoc
+
 /**
  * @ngdoc object
- * @name  Bastion.products.controller:ProductsBulkActionSyncController
+ * @name  Dockerro.docker-images.controller:DockerImageBulkActionUpdateController
  *
  * @requires $scope
+ * @requires $q
  * @requires translate
- * @requires ProductBulkAction
+ * @requires DockerImageBulkAction
+ * @requires BastionResource
+ * @requires CurrentOrganization
  *
  * @description
- *   A controller for providing bulk sync functionality for products..
+ *   A controller for providing bulk update functionality for docker images.
  */
 angular.module('Dockerro.docker-images').controller('DockerImageBulkActionUpdateController',
     ['$scope', '$q', '$state', 'translate', 'DockerImageBulkAction', 'BastionResource', 'CurrentOrganization',
         function ($scope, $q, $state, translate, DockerImageBulkAction, BastionResource, CurrentOrganization) {
             $scope.computeResources = [];
 
-            //$q.all([fetchComputeResources().$promise]).finally(function () {
-            //    $scope.panel.loading = false;
-            //});
-
             $scope.buildDockerImages = function () {
                 $scope.actionParams.ids = $scope.getSelectedDockerImageIds();
-                // $scope.actionParams.compute_resource_id = $scope.compute_resource.id;
-
                 DockerImageBulkAction.bulkUpdate($scope.actionParams, function (task) {
                     $state.go('task', {taskId: task.id});
                 });
