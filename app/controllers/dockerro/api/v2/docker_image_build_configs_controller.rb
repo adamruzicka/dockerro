@@ -2,7 +2,7 @@ module Dockerro
   class Api::V2::DockerImageBuildConfigsController < ::Katello::Api::V2::ApiController
     respond_to :json
 
-    include Api::V2::Rendering
+    include ::Dockerro::Api::V2::Rendering
 
     before_filter :find_build_config, :only => [:show, :destroy, :build]
     before_filter :find_organization, :only => [:index, :create, :build]
@@ -72,14 +72,15 @@ module Dockerro
       @build_config = ::Dockerro::DockerImageBuildConfig.new(::Dockerro::DockerImageBuildConfig.docker_image_build_config_params(params))
       unless @base_image.nil?
         @build_config.base_image_full_name = @base_image.full_name
-        @build_config.base_image = @base_image.docker_image
+        @build_config.base_image = @base_image.docker_image unless @base_image.nil?
         @build_config.base_image_content_view = @base_image.repository.content_view
         @build_config.base_image_environment = @base_image.repository.environment
       end
     end
 
     def find_base_image
-      @base_image = ::Katello::DockerTag.find(params[:base_image_id])
+      @base_image = nil
+      @base_image = ::Katello::DockerTag.find(params[:base_image_id]) if params[:base_image_id]
     end
 
     def find_build_config

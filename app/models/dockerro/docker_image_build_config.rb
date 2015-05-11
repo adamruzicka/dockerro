@@ -61,7 +61,6 @@ module Dockerro
 
     validates :repository, :presence => true
     validates :content_view, :presence => true
-    validates :base_image, :presence => true
     validates_uniqueness_of :content_view_version_id, :scope => :repository_id
 
     def image_name
@@ -125,7 +124,7 @@ module Dockerro
       new_config                      = self.dup
       new_config.content_view_version = content_view.versions.last
       new_config.parent_config        = self
-      new_config.base_image_id = latest_base_tag.docker_image.id
+      new_config.base_image_id        = latest_base_tag.docker_image.id unless latest_base_tag.nil?
       unless new_config.valid?
         new_config = child_configs.
             select { |config| config.content_view_version_id == new_config.content_view_version_id }.first
@@ -162,6 +161,8 @@ module Dockerro
     end
 
     def latest_base_tag
+      require 'pry'; binding.pry
+      return nil if base_image_full_name.nil?
       @found_bases ||= ::Katello::DockerTag.where(:name => base_image_tag)
                            .joins(:repository)
                            .where('environment_id = %s' % base_image_environment.id)
@@ -173,7 +174,6 @@ module Dockerro
 
     def find_activation_key
       fail "Cannot build from template Build Config" if template?
-      require 'pry'; binding.pry
       key_name       = "#{activation_key_prefix}-#{content_view.label}-#{environment.label}"
       matching_keys  = ::Katello::ActivationKey.where(:name            => key_name,
                                                       :content_view_id => content_view.id)

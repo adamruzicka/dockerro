@@ -7,7 +7,7 @@ class CreateDockerroTables < ActiveRecord::Migration
       t.string  'activation_key_prefix', :default => 'dockerro'
       t.boolean 'automatic', :default => false
 
-      t.integer 'base_image_id', :null => false
+      t.integer 'base_image_id'
       t.integer 'content_view_id', :null => false
       t.integer 'content_view_version_id'
       t.integer 'repository_id', :null => false

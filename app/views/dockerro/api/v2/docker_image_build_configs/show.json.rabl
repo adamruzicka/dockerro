@@ -1,5 +1,7 @@
 object @resource
-attributes :id, :git_url, :git_commit, :base_image_tag, :abstract, :activation_key_prefix, :content_view_id, :content_view_version_id, :repository_id, :base_image_id, :name, :automatic
+attributes :id, :git_url, :git_commit, :abstract, :activation_key_prefix, :content_view_id, :content_view_version_id, :repository_id, :base_image_id, :name, :automatic
+
+node(:base_image_tag) { |config| config.base_image_full_name ? config.base_image_tag : "" }
 
 child :content_view => :content_view do
     extends "katello/api/v2/content_views/show"

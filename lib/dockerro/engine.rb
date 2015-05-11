@@ -120,5 +120,9 @@ module Dockerro
       ::Katello::System.send :include, Dockerro::Concerns::SystemExtensions
       ::Taxonomy.send :include, Dockerro::Concerns::TaxonomyExtensions
     end
+
+    rake_tasks do
+      load File.expand_path('../tasks/test.rake', __FILE__)
+    end
   end
 end
