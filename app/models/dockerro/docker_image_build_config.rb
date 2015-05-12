@@ -133,7 +133,7 @@ module Dockerro
     end
 
     def base_image_tag
-      @base_image_tag ||= base_image_full_name.split(":").last
+      @base_image_tag ||= base_image_full_name.nil? ? "" : base_image_full_name.split(":").last
     end
 
     def based_on_old_image?
@@ -161,7 +161,6 @@ module Dockerro
     end
 
     def latest_base_tag
-      require 'pry'; binding.pry
       return nil if base_image_full_name.nil?
       @found_bases ||= ::Katello::DockerTag.where(:name => base_image_tag)
                            .joins(:repository)

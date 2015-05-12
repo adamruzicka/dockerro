@@ -1,7 +1,6 @@
 module Dockerro
   class BuildResource < ActiveRecord::Base
     include Taxonomix
-    # include Encryptable
     include Authorizable
     include Parameterizable::ByIdName
 

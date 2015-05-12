@@ -100,7 +100,8 @@ module Dockerro
     end
 
     def find_build_resource
-      @build_resource = ::Dockerro::BuildResource.scoped.first
+      @build_resource = ::Dockerro::BuildResource.with_taxonomy_scope.first
+      fail "There is no Build Resource in current Organization and Location" if @build_resource.nil?
     end
 
     def find_image

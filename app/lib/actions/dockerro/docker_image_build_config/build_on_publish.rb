@@ -17,10 +17,10 @@ module Actions
 
         def plan(content_view, _)
           # Select applicable build configs, eg templates with automatic flag set
-          build_configs = content_view.docker_image_build_configs.select(&:template?).select(&:automatic?)
+          build_configs = content_view.docker_image_build_configs.select { |c| c.template? && c.automatic? }
           unless build_configs.empty?
             # Get compute resource from build resource
-            compute_resource = ::Dockerro::BuildResource.scoped.first.compute_resource
+            compute_resource = ::Dockerro::BuildResource.with_taxonomy_scope(nil, content_view.organization).first.compute_resource
 
             # Plan bulk build for found build configs
             plan_self :build_config_ids => build_configs.map(&:id),
