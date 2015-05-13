@@ -7,10 +7,6 @@ module Actions
           param :id, Integer
         end
 
-        def plan(build_config)
-          plan_self :id => build_config.id
-        end
-
         def run
           @build_config = ::Dockerro::DockerImageBuildConfig.find(input[:id])
           @build_config.destroy!

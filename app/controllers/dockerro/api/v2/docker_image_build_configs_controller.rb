@@ -62,7 +62,7 @@ module Dockerro
     api :DELETE, "/docker_image_build_config/:id", "Destroy Docker image build config"
     param :id, :identifier
     def destroy
-      task = async_task(::Actions::Dockerro::DockerImageBuildConfig::Destroy, @build_config)
+      task = async_task(::Actions::Dockerro::DockerImageBuildConfig::Destroy, :id => @build_config.id)
       respond_for_async(:resource => task)
     end
 
