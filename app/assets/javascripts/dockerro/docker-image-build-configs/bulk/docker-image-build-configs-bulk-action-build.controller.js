@@ -35,9 +35,15 @@ angular.module('Dockerro.docker-image-build-configs').controller('DockerImageBui
              $scope.actionParams.ids = $scope.getSelectedDockerImageBuildConfigIds();
              $scope.actionParams.compute_resource_id = $scope.compute_resource.id;
 
-             DockerImageBulkAction.bulkBuild($scope.actionParams, function (task) {
+             var success = function (task) {
                  $state.go('task', {taskId: task.id});
-             });
+             };
+
+             var error = function(err) {
+                 $scope.errorMessages.push(err.data.displayMessage);
+             };
+
+             DockerImageBulkAction.bulkBuild($scope.actionParams, success, error);
          }
     }]
 );

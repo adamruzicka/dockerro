@@ -14,9 +14,6 @@ angular.module('Dockerro.docker-image-build-configs').controller('DockerImageBui
     ['$scope', 'translate', 'DockerImageBulkAction', 'CurrentOrganization',
     function ($scope, translate, DockerImageBulkAction, CurrentOrganization) {
 
-        $scope.successMessages = [];
-        $scope.errorMessages = [];
-
         $scope.actionParams = {
             ids: [],
             'organization_id': CurrentOrganization

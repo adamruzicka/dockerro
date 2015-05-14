@@ -17,9 +17,6 @@ angular.module('Dockerro.docker-image-build-configs').controller('DockerImageBui
     ['$scope', '$state', '$q', 'translate', 'DockerImageBuildConfig', 'MenuExpander', 'CurrentOrganization',
     function ($scope, $state, $q, translate, DockerImageBuildConfig, MenuExpander, CurrentOrganization) {
 
-        $scope.successMessages = [];
-        $scope.errorMessages = [];
-
         $scope.menuExpander = MenuExpander;
         $scope.panel = $scope.panel || {loading: false};
 

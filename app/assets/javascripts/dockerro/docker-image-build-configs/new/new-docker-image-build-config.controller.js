@@ -81,7 +81,7 @@ angular.module('Dockerro.docker-image-build-configs').controller('NewDockerImage
             }
 
             function error(response) {
-                $scope.working = false
+                $scope.working = false;
                 $scope.errorMessages.push(response.data.displayMessage);
             }
 
