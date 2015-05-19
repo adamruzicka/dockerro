@@ -45,10 +45,10 @@ module Dockerro
       refute @build_config.valid?
     end
 
-    test 'it has to have a base image' do
+    test 'it may have a base image' do
       assert @build_config.valid?
       @build_config.base_image = nil
-      refute @build_config.valid?
+      assert @build_config.valid?
     end
 
     test 'it has to have unique combination of content_view_version and repository' do
@@ -69,7 +69,7 @@ module Dockerro
     end
 
     test 'it select library as environment if environment is not set' do
-      # TODO: This doesn't workskip "not working yet"
+      # TODO: This doesn't work yet
       skip "not working yet"
       assert_equal @library, @build_config.send(:environment)
     end
@@ -90,35 +90,37 @@ module Dockerro
       refute key.auto_attach
     end
 
-    # test 'it uses already existing activation key' do
-    #   key = ::Katello::ActivationKey.new
-    #   key.name = "#{@build_config.activation_key_prefix}-#{@content_view.name}-#{@environment.name}"
-    #   key.content_view = @content_view
-    #   key.environment = @environment
-    #   key.organization = @organization
-    #   key.auto_attach = false
-    #   key.save!
-    #   @build_config.environment = @environment
-    #   assert_equal key, @build_config.activation_key
-    # end
+    test 'it uses already existing activation key' do
+      key = ::Katello::ActivationKey.new
+      key.name = "#{@build_config.activation_key_prefix}-#{@content_view.label}-#{@environment.label}"
+      key.content_view = @content_view
+      key.environment = @environment
+      key.organization = @organization
+      key.auto_attach = false
+      key.save!
+      @build_config.environment = @environment
+      assert_equal key, @build_config.activation_key
+    end
 
     test 'it generates prebuild plugins' do
-      # TODO
+      # TODO: Write this test
       skip "Not Implemented"
     end
 
     test 'it clones itself for the latest version' do
+      @build_config_template.expects(:latest_base_tag).returns(nil)
       cloned = @build_config_template.clone_for_latest_version
       assert_equal @content_view_version, cloned.content_view_version
       assert_equal @build_config_template, cloned.parent_config
     end
 
-    # test 'it returns saved cloned if it already exists for the version' do
-    #   cloned = @build_config_template.clone_for_latest_version
-    #   cloned.save!
-    #   cloned2 = @build_config_template.clone_for_latest_version
-    #   assert_equal cloned2, cloned
-    # end
+    test 'it returns saved cloned if it already exists for the version' do
+      @build_config_template.expects(:latest_base_tag).twice.returns(nil)
+      cloned = @build_config_template.clone_for_latest_version
+      cloned.save!
+      cloned2 = @build_config_template.clone_for_latest_version
+      assert_equal cloned2, cloned
+    end
 
     test 'it generates postbuild plugins' do
       @build_config.environment = @environment

@@ -28,9 +28,10 @@ namespace :test do
     desc "Run the Dockerro plugin unit test suite."
     task :test => ['db:test:prepare'] do
       # set_test_runner
-      #
+
       test_task = Rake::TestTask.new('dockerro_test_task') do |t|
-        t.libs << ["test", "#{Dockerro::Engine.root}/test"]
+        t.libs << "test"
+        t.libs << "#{Dockerro::Engine.root}/test"
         t.test_files = [
           "#{Dockerro::Engine.root}/test/**/*_test.rb",
         ]
